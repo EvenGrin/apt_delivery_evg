@@ -11,10 +11,12 @@
     <script defer src="{% static 'home/js/dragscroll.js' %}"></script>
     <script src="{% static 'home/js/jquery-3.7.1.js' %}"></script>
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 container">
 {% include 'home/elements/header.html' %}
-{% block body %}
-{% endblock %}
+<main class="my-4">
+    {% block body %}
+    {% endblock %}
+</main>
 {% include 'home/elements/footer.html' %}
 </body>
 </html>
