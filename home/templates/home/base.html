@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% block head%}{% endblock %}
+    <link rel="stylesheet" href="{% static 'home/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+    <link rel="icon" href="{% static 'home/images/logo.png' %}">
+    <script defer src="{% static 'home/js/dragscroll.js' %}"></script>
+    <script src="{% static 'home/js/jquery-3.7.1.js' %}"></script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+{% include 'home/header.html' %}
+{% block body %}
+{% endblock %}
+{% include 'home/footer.html' %}
+</body>
+</html>
