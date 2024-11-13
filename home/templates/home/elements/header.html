@@ -36,11 +36,11 @@
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-white" aria-current="page" href="#">Главная</a>
+                        <a class="nav-link text-white" aria-current="page" href="{% url 'home' %}">Главная</a>
                     </li>
                     {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-white" aria-current="page" href="#">Корзина</a>
+                        <a class="nav-link text-white" aria-current="page" href="{% url 'cart' %}">Корзина</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" aria-current="page" href="#">Заказы</a>

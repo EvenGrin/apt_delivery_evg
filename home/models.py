@@ -17,6 +17,6 @@ class Meal(models.Model):
     out = models.CharField(max_length=10)
     image = models.ImageField(upload_to='images')
     category = models.ForeignKey(Category, default=None, on_delete=models.CASCADE)
-
+    quantity = models.IntegerField(default=3)
     def __str__(self):
         return self.name

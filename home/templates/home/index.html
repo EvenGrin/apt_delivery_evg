@@ -1,15 +1,12 @@
 {% extends 'home/base.html' %}
+{% load static %}
 {% block title %}Главная{% endblock %}
 {% block body %}
 
 {% include 'home/elements/aside.html' %}
 <div id="card_inner" class="row row-cols-1 row-cols-md-2  row-cols-xl-3 g-3">
-    {% for meal in meals%}
-    <div class="">
-        {% include 'home/elements/meals_cards.html'%}
-    </div>
-    {% endfor %}
+{% include 'home/elements/meals_cards.html'%}
 </div>
 
-
+<script src="{% static 'home/js/ajax/pagintion.js'%}"></script>
 {% endblock %}
