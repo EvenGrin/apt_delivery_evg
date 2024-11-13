@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'home',
+    'cart',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,9 @@ ROOT_URLCONF = 'main.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
