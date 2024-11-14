@@ -19,16 +19,16 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#">Выход</a>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Выход</a>
                             </li>
                         </ul>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link text-white px-2" href="#">Регистрация</a>
+                        <a class="nav-link text-white px-2" href="{% url 'register' %}">Регистрация</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Войти</a>
+                        <a class="nav-link text-white" href="{% url 'login' %}">Войти</a>
                     </li>
                     {% endif %}
                 </ul>

@@ -1,0 +1,26 @@
+{% extends 'home/base.html' %}
+{% load static %}
+{% block title %}Главная{% endblock %}
+{% block body %}
+
+<div class="d-flex justify-content-center  ">
+    <form class="d-flex flex-column w-100 px-5 py-4 rounded-2 shadow bg-white ajaxForm" method="POST" style="max-width: 500px;">
+        {% if error %}
+        <p>{{ error }}</p>
+        {% endif %}
+        {% csrf_token %}
+        <div class="mb-3 ">
+            <label class="form-label" for="username">Логин:</label>
+            <input type="text" name="username" id="username" class="form-control" placeholder="Логин" required>
+        </div>
+        <div class="mb-3 ">
+            <label class="form-label" for="password">Пароль:</label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Пароль" required>
+        </div>
+        <div class="d-flex justify-content-end">
+            <button class="w-100 btn btn-lg btn-primary checkFormBtn">Войти</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

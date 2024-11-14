@@ -1,5 +1,3 @@
-from lib2to3.fixes.fix_input import context
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpRequest, HttpResponse
@@ -13,21 +11,18 @@ def login_view(request: HttpRequest) -> HttpResponse:
         user = authenticate(username=username, password=password)
 
         if user is None:
-            context = {
-                'error': 'Неверный логин или пароль'
-            }
             print('Все не правильно')
-        else:
+        else: 
             login(request, user)
             return redirect('/')
-
-    return render(request, 'log_reg/login.html', context)
+        
+    return render(request, 'login/login.html')
 
 
 def register_view(request: HttpRequest) -> HttpResponse:
     if request.method == "GET":
         form = forms.RegisterForm()
-        return render(request, 'log_reg/register.html', {
+        return render(request, 'login/register.html', {
             'form': form
         })
 
@@ -39,7 +34,7 @@ def register_view(request: HttpRequest) -> HttpResponse:
             return redirect('/')
 
         else:
-            return render(request, 'log_reg/register.html', {
+            return render(request, 'login/register.html', {
                 'form': form
             })
 

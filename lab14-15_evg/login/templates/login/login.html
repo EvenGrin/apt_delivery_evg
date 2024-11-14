@@ -1,0 +1,24 @@
+{% extends 'questions/base.html' %}
+{% block title %}Авторизация{% endblock %}
+{% block content %}
+    <h1>Авторизация</h1>
+    {% if error %}
+        <p>{{ error }}</p>
+    {% endif %}
+<div class="row mb-3">
+    <form method="post" class="col-md-6">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="username" >Логин</label>
+            <input id="username"  type="text" name="username" placeholder="Имя пользователя">
+        </div>
+        <div class="mb-3">
+            <label for="password" >Пароль</label>
+          <input id="password"  type="password" name="password" placeholder="Пароль">
+        </div>
+        <button  type="submit">Войти</button>
+    </form>
+</div>
+
+    <p>Еще не зарегистрированы? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+{% endblock %}
