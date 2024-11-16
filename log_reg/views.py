@@ -7,6 +7,7 @@ from . import forms
 
 
 def login_view(request: HttpRequest) -> HttpResponse:
+    context = {}
     if request.method == 'POST':
         username = request.POST["username"]
         password = request.POST["password"]

@@ -17,10 +17,10 @@ def cart(request):
 
 @login_required  # Требуется авторизация
 def add_to_cart(request):
-    if request.method == 'POST':
-        meal_id = request.POST.get('meal_id')
-        quantity = int(request.POST.get('quantity', 1))
-
+    if request.method == 'GET':
+        meal_id = request.GET.get('meal_id')
+        quantity = int(request.GET.get('quantity', 1))
+        print(meal_id, quantity)
         try:
             meal = Meal.objects.get(pk=meal_id)
         except Meal.DoesNotExist:
