@@ -1,7 +1,8 @@
+from django.contrib.auth.decorators import login_required  # Для авторизации
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required  # Для авторизации
-from cart.models import Cart
+
+from cart.models import Cart, Cabinet
 from home.models import Meal
 
 
@@ -9,9 +10,12 @@ from home.models import Meal
 
 
 def cart(request):
+
     current_user = request.user.id
+    cabs = Cabinet.objects.all().order_by("num")
     carts = Cart.objects.filter(user__id=current_user)
-    context = {'carts': carts}
+    context = {'carts': carts,
+               'cabs': cabs}
     return render(request, 'cart/index.html', context)
 
 
@@ -36,6 +40,7 @@ def add_to_cart(request):
         return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(user=request.user).count()})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 def cart_empty(request):
     if request.method == 'GET':

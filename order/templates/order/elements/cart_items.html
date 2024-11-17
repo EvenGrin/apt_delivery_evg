@@ -1,0 +1,21 @@
+<div class="card shadow-sm h-100  d-flex mb-3">
+    <div class="row">
+        <div class="col-md-4"><img src="{{cart.meal.image.url}}" class="card-img-top object-fit-contain " height="225"
+                                   alt="катринка с блюдом">
+        </div>
+        <div class="col-md-8 d-flex">
+            <div class="card-body d-flex flex-column justify-content-between h-100">
+                <div>
+                    <h5 class="card-title name_meal">{{cart.meal.name}}</h5>
+                    <p class="card-text name_cat">{{cart.meal.category.name}}</p>
+                </div>
+                <div class="price_meal fs-3 fw-semibold">{{cart.meal.price}}</div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="cart_buttons d-flex justify-content-center align-items-center gap-3 w-100">
+                        <button class="btn btn-danger cart_remove me-auto" data-id="{{cart.meal.id}}">Убрать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

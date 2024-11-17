@@ -43,14 +43,13 @@
                         <a class="nav-link text-white" aria-current="page" href="{% url 'cart' %}">Корзина</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" aria-current="page" href="#">Заказы</a>
+                        <a class="nav-link text-white" aria-current="page" href="{% url 'order' %}">Заказы</a>
                     </li>
+                    {% if user.is_superuser %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">АдминПанель</a>
+                        <a class="nav-link" href="/admin">АдминПанель</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Доставки</a>
-                    </li>
+{% endif %}
                     {% endif %}
                 </ul>
             </div>
