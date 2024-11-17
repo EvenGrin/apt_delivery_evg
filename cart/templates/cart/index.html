@@ -14,12 +14,9 @@
     {% endif %}
 </div>
 {% include 'cart/elements/cart_modal.html'%}
-{% if not carts %}
-{% include 'home/elements/danger.html' with text="Корзина пуста"%}
-{% endif %}
-{% for cart in carts %}
+
 {% include 'cart/elements/cart_items.html' %}
-{% endfor %}
+
 <script src="{% static 'cart/js/script.js' %}"></script>
 
 {% endblock %}

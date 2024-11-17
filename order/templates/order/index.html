@@ -2,24 +2,13 @@
 {% load static %}
 {% block title %}Главная{% endblock %}
 {% block body %}
-<div id="head" class="d-flex justify-content-between flex-wrap align-items-center">
-    <h2 class=" ps-0  px-3 py-2">Корзина</h2>
-    {% if carts %}
-    <div>
-        <button class="cart_empty btn btn-danger">Очистить корзину</button>
-        <button class="create_order btn btn-primary" data-bs-toggle="modal" data-bs-target="#CreateOrderModal">
-            Оформить заказ
-        </button>
-    </div>
-    {% endif %}
+<div class="d-flex justify-content-between flex-wrap align-items-center">
+  <h2 class=" ps-0  px-3 py-2">Заказы</h2>
+  <div class="d-flex justify-content-end z-1">
+    <button class="view_all btn btn-primary position-fixed " style="top:80px;">Показать все</button>
+  </div>
 </div>
-{% include 'cart/elements/cart_modal.html'%}
-{% if not carts %}
-{% include 'home/elements/danger.html' with text="Корзина пуста"%}
-{% endif %}
-{% for cart in carts %}
-{% include 'cart/elements/cart_items.html' %}
-{% endfor %}
-<script src="{% static 'cart/js/script.js' %}"></script>
+{% include 'order/elements/order_item.html'%}
+<script src="{% static 'order/js/order_view_close.js' %}"></script>
 
 {% endblock %}

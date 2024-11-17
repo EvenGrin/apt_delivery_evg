@@ -13,6 +13,9 @@ class Status(models.Model):
         verbose_name = 'Статус'
         verbose_name_plural = 'Статусы'
 
+    def __str__(self):
+        return  self.name
+
 
 
 
@@ -21,7 +24,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     date_create = models.DateTimeField(verbose_name='Дата заказа', auto_now_add=True)
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус', default=1)
-    result = models.CharField(max_length=50, verbose_name='Причина отказа')
+    result = models.CharField(default=None, max_length=50, verbose_name='Причина отказа')
 
     @property
     def amount(self):
@@ -45,3 +48,6 @@ class OrderMeal(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
     amount = models.IntegerField(verbose_name='Количество товаров')
+    class Meta:
+        verbose_name = 'Заказ блюд'
+        verbose_name_plural = 'Заказы блюд'
