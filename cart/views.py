@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required  # Для авторизации
 from cart.models import Cart
@@ -36,3 +36,20 @@ def add_to_cart(request):
         return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(user=request.user).count()})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+def cart_empty(request):
+    if request.method == 'GET':
+        carts = Cart.objects.filter(user__id=request.user.id)
+        carts.delete()
+        return HttpResponse("<div class='alert alert-danger text-center'>В корзине ничего нет</div>")
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+def remove_from_cart(request):
+    if request.method == 'GET':
+        meal_id = request.GET.get('meal_id')
+        row = Cart.objects.all().filter(user=request.user, meal=meal_id)
+        print(row)
+        row.delete()
+        return HttpResponse("<span class='error-count'>Товар в корзине отсутствует!</span>")

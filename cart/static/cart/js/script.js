@@ -1,26 +1,27 @@
-$(".add-to-cart-button").on("click", function(e) {
-    e.preventDefault();
-
-    const productId = $(this).closest(".meal-item").data("id");
-    const quantity = $(this).data("quantity") || 1;
-
-    $.ajax({
-        type: "GET",
-        url: "/add-to-cart/",
-        data: {
-            meal_id: productId,
-            quantity: quantity
-        },
-        success: function(response) {
-            if (response.success) {
-            } else {
-                alert("Ошибка добавления товара в корзину.");
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("AJAX error:", error);
-            alert("Ошибка связи с сервером.");
-        }
+$(document).ready(function () {
+  $(document).on("click", ".cart_empty", function (e) {
+    $.get("/cart_empty/", {}, (data) => {
+      $("#head div").remove();
+      $("#head").after(
+        "<div class='alert alert-danger text-center'>Корзина пуста</div>"
+      );
+      $("div.card").remove();
+      $("div.modal").remove();
     });
-});
+  });
 
+  $(document).on("click", ".cart_remove", function (e) {
+    console.log($(this).closest(".card"));
+    $.get("/remove_from_cart/", { meal_id: $(this).data("id") }, () => {
+      if ($(this).closest(".card")) {
+        $("#head div").remove();
+        $("#head").after(
+          "<div class='alert alert-danger text-center'>Корзина пуста</div>"
+        );
+        $("div.card").remove();
+        $("div.modal").remove();
+      }
+      $(this).closest(".card").remove();
+    });
+  });
+});
