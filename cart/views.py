@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required  # Для авторизации
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from cart.forms import CreateOrderForm
 from cart.models import Cart, Cabinet
@@ -16,7 +16,7 @@ def cart(request):
     current_user = request.user.id
     cabs = Cabinet.objects.all().order_by("num")
     carts = Cart.objects.filter(user__id=current_user)
-
+    # заказы
     if request.method == 'POST':
         form = CreateOrderForm(request.POST)
         if request.user.check_password(request.POST['password']):
@@ -29,7 +29,7 @@ def cart(request):
                 op = OrderMeal(order=order, meal=p.meal, amount=p.quantity)
                 op.save()
                 p.delete()
-            return HttpResponseRedirect('orders')
+            return redirect('order')
         else:
             form.add_error('password', 'не верный пароль')
     else:
