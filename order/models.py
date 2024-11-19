@@ -24,7 +24,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     date_create = models.DateTimeField(verbose_name='Дата заказа', auto_now_add=True)
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус', default=1)
-    result = models.CharField(default=None, max_length=50, verbose_name='Причина отказа')
+    result = models.CharField( max_length=50, verbose_name='Причина отказа')
 
     @property
     def amount(self):

@@ -24,4 +24,5 @@ $(document).ready(function () {
       $(this).closest(".card").remove();
     });
   });
+
 });

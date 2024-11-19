@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required  # Для авторизации
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
+from cart.forms import CreateOrderForm
 from cart.models import Cart, Cabinet
 from home.models import Meal
+from order.models import OrderMeal, Order
 
 
 # Create your views here.
@@ -14,8 +16,27 @@ def cart(request):
     current_user = request.user.id
     cabs = Cabinet.objects.all().order_by("num")
     carts = Cart.objects.filter(user__id=current_user)
+
+    if request.method == 'POST':
+        form = CreateOrderForm(request.POST)
+        if request.user.check_password(request.POST['password']):
+            order = Order(user=request.user)
+            print(order)
+            order.save()
+            products = Cart.objects.all().filter(user=request.user)
+            for p in products:
+
+                op = OrderMeal(order=order, meal=p.meal, amount=p.quantity)
+                op.save()
+                p.delete()
+            return HttpResponseRedirect('orders')
+        else:
+            form.add_error('password', 'не верный пароль')
+    else:
+        form = CreateOrderForm()
     context = {'carts': carts,
-               'cabs': cabs}
+               'cabs': cabs,
+               'form': form}
     return render(request, 'cart/index.html', context)
 
 
