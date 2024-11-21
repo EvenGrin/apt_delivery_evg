@@ -1,6 +1,6 @@
 const form = document.querySelector('form');
 if (form) {
-  const p = document.querySelectorAll('p')
+  const p = form.querySelectorAll('p')
   p.forEach(p=>{
     p.outerHTML = "<div class='row mb-2 w-100'>"+p.innerHTML+"</div>"
   })

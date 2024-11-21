@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Sum
 
 from home.models import Meal
 
@@ -15,9 +16,22 @@ class Cart(models.Model):
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзины'
 
+    @property
+    def total_quantity(self):
+        return self.quantity
+
+    @property
+    def total_amount(self):
+        return self.meal.price * self.quantity
+
+
+
 class Cabinet(models.Model):
     num = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.num
 
     class Meta:
         verbose_name = 'Кабинет'

@@ -1,7 +1,10 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum
 
+from cart.models import Cabinet
 from home.models import Meal
 
 
@@ -25,6 +28,14 @@ class Order(models.Model):
     date_create = models.DateTimeField(verbose_name='Дата заказа', auto_now_add=True)
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус', default=1)
     result = models.CharField( max_length=50, verbose_name='Причина отказа')
+    cab = models.ForeignKey(Cabinet, on_delete=models.CASCADE, verbose_name='Кабинет', default=1)
+
+    @property
+    def total_amount(self):
+        total = 0
+        for item in self.ordermeal_set.all():  # ordermeal_set - обратный related_name
+            total += item.meal.price * item.amount
+        return total
 
     @property
     def amount(self):

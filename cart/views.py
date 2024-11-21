@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required  # Для авторизации
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 
 from cart.forms import CreateOrderForm
@@ -12,20 +12,20 @@ from order.models import OrderMeal, Order
 
 
 def cart(request):
-
     current_user = request.user.id
     cabs = Cabinet.objects.all().order_by("num")
     carts = Cart.objects.filter(user__id=current_user)
     # заказы
     if request.method == 'POST':
+        cab = request.POST["cab"]
         form = CreateOrderForm(request.POST)
+
         if request.user.check_password(request.POST['password']):
             order = Order(user=request.user)
-            print(order)
+            order.cab = Cabinet.objects.get(pk=cab)
             order.save()
             products = Cart.objects.all().filter(user=request.user)
             for p in products:
-
                 op = OrderMeal(order=order, meal=p.meal, amount=p.quantity)
                 op.save()
                 p.delete()

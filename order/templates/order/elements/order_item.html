@@ -1,9 +1,11 @@
+{% load humanize %}
 <div class="accordion ">
     {% for order in orders%}
     <div class="bg-white rounded-2 overflow-hidden shadow-sm mt-3">
 
         <div class="d-flex justify-content-between flex-wrap align-items-center border rounded-top ">
             <p class="h2 px-3 py-2">{{ order.date_create }}</p>
+            <p class="h3 px-3 py-2">{{order.cab}}</p>
         </div>
 
 
@@ -28,7 +30,7 @@
                         </div>
                         <div class="btn btn-outline-primary">
                             <span>Сумма:</span>
-{{ order.price }}
+                            {{ order.total_amount }}
                         </div>
                     </div>
                 </button>
