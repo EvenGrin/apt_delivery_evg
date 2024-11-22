@@ -24,8 +24,8 @@ def cart(request):
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
             order.save()
-            products = Cart.objects.all().filter(user=request.user)
-            for p in products:
+            meals = Cart.objects.all().filter(user=request.user)
+            for p in meals:
                 op = OrderMeal(order=order, meal=p.meal, amount=p.quantity)
                 op.save()
                 p.delete()
@@ -40,34 +40,35 @@ def cart(request):
     return render(request, 'cart/index.html', context)
 
 
-@login_required  # Требуется авторизация
+@login_required
 def add_to_cart(request):
     if request.method == 'GET':
-        meal_id = request.GET.get('meal_id')
-        quantity = int(request.GET.get('quantity', 1))
-        print(meal_id, quantity)
-        try:
-            meal = Meal.objects.get(pk=meal_id)
-        except Meal.DoesNotExist:
-            return JsonResponse({'error': 'Product not found'}, status=404)
+        id = request.GET.get('meal_id')
+        row = Cart.objects.all().filter(user=request.user, meal=id)
+        meal = Meal.objects.get(pk=id)
+        if len(row):
+            row = row[0]
+            if row.quantity >= meal.quantity:
+                return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(
+                    user=request.user).count(), 'quantity': 'Больше незя'})
+            row.quantity += 1
+        else:
+            row = Cart(user=request.user, meal=meal, quantity=1)
 
-        try:
-            cart_item = Cart.objects.get(user=request.user, meal=meal)
-            cart_item.quantity += quantity
-            cart_item.save()
-        except Cart.DoesNotExist:
-            Cart.objects.create(user=request.user, meal=meal, quantity=quantity)
-
-        return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(user=request.user).count()})
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        row.save()
+        return JsonResponse({'success': True,
+                             'quantity': row.quantity,
+                             'cart_count': (
+                                 Cart.objects.filter(
+                                     user=request.user).count())})
 
 
 def cart_empty(request):
     if request.method == 'GET':
         carts = Cart.objects.filter(user__id=request.user.id)
         carts.delete()
-        return HttpResponse("<div class='alert alert-danger text-center'>В корзине ничего нет</div>")
+        return HttpResponse(
+            "<div class='alert alert-danger text-center'>В корзине ничего нет</div>")
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 

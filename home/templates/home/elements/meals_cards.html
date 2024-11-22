@@ -15,12 +15,21 @@
             </div>
             <div class="meal-price fs-3 fw-semibold">{{meal.price}}р</div>
             {% if request.user.is_authenticated %}
-            <div class="card-button d-flex justify-content-center align-items-center gap-3 w-100" >
-            {% if meal.cart %}
-                <button class="cart_remove btn btn-danger  me-auto" data-id="{{ meal.id }}">Убрать</button>
-            {% else %}
-                <button class="add-to-cart-button btn btn-primary cart_add ms-auto" data-id="{{ meal.id }}">В корзину</button>
-            {% endif %}
+            <div class="card-button d-flex justify-content-center align-items-center gap-3 w-100">
+                {% if meal.cart %}
+                <button class="cart_remove btn btn-danger  me-auto" data-id="{{ meal.id }}">
+                    Убрать
+                </button>
+
+                <button class="btn btn-primary cart_sub" data-id="{{ meal.id }}">-</button>
+                <span>{{meal.cart}}</span>
+                <button class="add-to-cart-button btn btn-primary cart_add"
+                        data-id="{{ meal.id }}">+</button>
+                {% else %}
+                <button class="add-to-cart-button btn btn-primary cart_add ms-auto"
+                        data-id="{{ meal.id }}">В корзину
+                </button>
+                {% endif %}
             </div>
             {% endif %}
         </div>

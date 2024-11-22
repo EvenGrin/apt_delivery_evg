@@ -4,9 +4,12 @@ $(document).ready(function () {
       $(this)
         .closest(".card-button")
         .html(
-          "<button class='cart_remove btn btn-danger  me-auto' data-id='" +
-            $(this).data("id") +
-            "'>Убрать</button>"
+        `
+          <button class='cart_remove btn btn-danger  me-auto' data-id='${$(this).data("id")}'>Убрать</button>
+          <button class="btn btn-primary cart_sub" data-id="${$(this).data("id")}">-</button>
+          <span>${data.quantity}</span>
+          <button class="add-to-cart-button btn btn-primary cart_add" data-id="${$(this).data("id")}">+</button>
+        `
         );
     });
   });
