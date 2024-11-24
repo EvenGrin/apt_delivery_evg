@@ -62,6 +62,23 @@ def add_to_cart(request):
                                  Cart.objects.filter(
                                      user=request.user).count())})
 
+@login_required
+def sub_from_cart(request):
+    if request.method == 'GET':
+        id = request.GET.get('meal_id')
+        row = Cart.objects.all().filter(user=request.user, meal=id)
+        if len(row):
+            row = row[0]
+            if row.quantity:
+                row.quantity -= 1;
+                row.save() if row.quantity else row.delete()
+                return JsonResponse({'success': True,
+                             'quantity': row.quantity,
+                             'cart_count': (
+                                 Cart.objects.filter(
+                                     user=request.user).count())})
+        return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(
+                    user=request.user).count(), 'quantity': 'Я больше не в корзине'})
 
 def cart_empty(request):
     if request.method == 'GET':
