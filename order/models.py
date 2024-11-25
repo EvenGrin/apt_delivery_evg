@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Sum
 
@@ -27,8 +28,12 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     date_create = models.DateTimeField(verbose_name='Дата заказа', auto_now_add=True)
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус', default=1)
-    result = models.CharField( max_length=50, verbose_name='Причина отказа')
+    result = models.CharField( max_length=50, verbose_name='Причина отказа', blank=True, null=True)
     cab = models.ForeignKey(Cabinet, on_delete=models.CASCADE, verbose_name='Кабинет', default=1)
+
+    def clean(self):
+        if self.status.id == 3 and not self.result:
+            raise ValidationError({'result': 'Обязательное поле при статусе "Отменён"'})
 
     @property
     def total_amount(self):
@@ -62,3 +67,6 @@ class OrderMeal(models.Model):
     class Meta:
         verbose_name = 'Заказ блюд'
         verbose_name_plural = 'Заказы блюд'
+
+    def __str__(self):
+        return f'покупатель: {self.order.user}, дата: {str(self.order.date_create).split(".")[0]}'

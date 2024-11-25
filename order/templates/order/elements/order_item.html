@@ -3,11 +3,18 @@
     {% for order in orders%}
     <div class="bg-white rounded-2 overflow-hidden shadow-sm mt-3">
 
-        <div class="d-flex justify-content-between flex-wrap align-items-center border rounded-top ">
-            <p class="h2 px-3 py-2">{{ order.date_create }}</p>
-            <p class="h3 px-3 py-2">{{order.cab}}</p>
-        </div>
+        <div class="border rounded-top px-3 py-2">
+            <div class="d-flex justify-content-between flex-wrap align-items-center">
+                <p class="h2 ">{{ order.date_create }}</p>
+                <p class="h3">{{order.cab}}</p>
+            </div>
+            {% if order.result %}
+            <p>
+                Причина отмены:{{order.result}}
+            </p>
+            {% endif %}
 
+        </div>
 
 
         <div class="accordion-item ">
@@ -16,12 +23,14 @@
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#order_{{ order.id }}" aria-expanded="false"
                         aria-controls="order_{{ order.id }}">
-                    <div class="order_view btn-group order_info  btn-group-lg bg-white" data-id="{{ order.id }}">
+                    <div class="order_view btn-group order_info  btn-group-lg bg-white"
+                         data-id="{{ order.id }}">
                         <div class="btn btn-outline-primary">
                             <span>Заказ</span> №
                             {{ order.id }} от {{ order.date_create }}
                         </div>
-                        <div class="btn  ">
+                        <div
+                                class="btn  {% if order.status.id == 1%} btn-primary {%elif order.status.id == 2%}btn-success{%elif order.status.id == 3%}btn-danger{% else %}btn-outline-primary{%endif%}">
                             <span>Статус: </span>{{ order.status }}
                         </div>
                         <div class="btn btn-outline-primary">

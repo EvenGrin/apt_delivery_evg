@@ -1,5 +1,3 @@
-from symtable import Class
-
 from django.db import models
 
 
@@ -16,12 +14,13 @@ class Category(models.Model):
         return self.name
 
 class Meal(models.Model):
-    name = models.CharField(max_length=150)
-    price = models.FloatField()
-    out = models.CharField(max_length=10)
-    image = models.ImageField(upload_to='images')
-    category = models.ForeignKey(Category, default=None, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=3)
+    name = models.CharField(max_length=150, verbose_name="Название")
+    price = models.FloatField(verbose_name="Цена")
+    out = models.CharField(max_length=10, verbose_name="Выход")
+    image = models.ImageField(upload_to='images', verbose_name="Изображение")
+    category = models.ForeignKey(Category, default=None, on_delete=models.CASCADE,
+                                 verbose_name="Категория")
+    quantity = models.IntegerField(default=3, verbose_name="Количество")
 
     class Meta:
         verbose_name = 'Блюдо'
@@ -30,3 +29,4 @@ class Meal(models.Model):
 
     def __str__(self):
         return self.name
+
