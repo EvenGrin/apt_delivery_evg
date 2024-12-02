@@ -4,10 +4,15 @@ if (form) {
   p.forEach(p=>{
     p.outerHTML = "<div class='row mb-2 w-100'>"+p.innerHTML+"</div>"
   })
-  const inputs = form.querySelectorAll('input, textarea');
+  const inputs = form.querySelectorAll('input[type=email], input[type=password], input[type=text], textarea');
   inputs.forEach(input => {
-    input.classList.add('form-control', "col-6");
+    input.classList.add('form-control');
     input.outerHTML = "<div class='col-6'>" + input.outerHTML + "</div>";
+  });
+  const checkbox = form.querySelectorAll('input[type=checkbox]');
+  checkbox.forEach(input => {
+
+    input.outerHTML = "<div class='col-6 d-flex align-items-center'>" + input.outerHTML + "</div>";
   });
   const labels = form.querySelectorAll('label');
   labels.forEach(label => {

@@ -1,10 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'home/base.html'%}
+{% load static %}
+{% block body %}
+<div class="d-flex justify-content-center  ">
 
-</body>
-</html>
+    <form method="post" class="w-100 px-5 py-4 rounded-2 shadow bg-white ajaxForm" style="max-width: 500px;">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-primary checkFormBtn">Зарегистрировать</button>
+        </div>
+
+    </form>
+</div>
+<script src="{% static 'cart/js/form_style.js'%}"></script>
+{% endblock%}
