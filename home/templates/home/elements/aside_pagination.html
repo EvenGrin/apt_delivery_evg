@@ -1,13 +1,13 @@
-<aside id='aside'
+<aside id='contain'
        class="d-flex flex-wrap align-items-center justify-content-between sticky-top z-2 rounded-2 overflow-hidden   float-none float-lg-start mb-4"
        style="top: 80px;">
     <div id="nav" class="btn-group overflow-x-auto dragscroll flex-row flex-lg-column">
-<!--        <a href="#cat_0" data-category-id="0"-->
-<!--           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">-->
-<!--            Все-->
-<!--        </a>-->
+        <a href="#" data-category-id="0"
+           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">
+            Все
+        </a>
         {% for category in categories %}
-        <a href="#cat_{{category.id}}" data-category-id="{{ category.id }}"
+        <a href="#" data-category-id="{{ category.id }}"
            class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">
             {{ category.name }}
         </a>
