@@ -36,7 +36,20 @@ def meal_list(request):
     return render(request, 'home/index.html', context)
 
 
+def menu(request):
+    context = {}
 
+    context['categories'] = Category.objects.annotate(meal_count=Count('meals'))
+    meals = Meal.objects.all()
+
+    if request.user.is_authenticated:
+        cart_items = Cart.objects.filter(user=request.user, meal__in=meals).values('meal_id', 'quantity')
+
+        context['cart_items'] = cart_items
+        context['cart_items_id'] = [cart_item['meal_id'] for cart_item in cart_items]
+
+
+    return render(request, 'home/index.html', context)
 
 
 
