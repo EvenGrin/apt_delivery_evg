@@ -1,4 +1,3 @@
-from venv import logger
 
 from django.db.models import Count
 from django.http import JsonResponse
@@ -17,14 +16,23 @@ def pagination(request, categories):
         return render(request, 'home/index.html', context)
 
 def meal_list(request):
+    context = {}
+
+    context['categories'] = Category.objects.annotate(meal_count=Count('meals'))
     meals = Meal.objects.all()
+
     if request.user.is_authenticated:
-        for meal in meals:
-            cart = Cart.objects.filter(user=request.user, meal=meal).first()
-            meal.cart = cart.quantity if cart else 0
-    categories = Category.objects.annotate(meal_count=Count('meals'))
-    context = {'meals': meals, 'categories': categories}
-    pagination(request, categories)
+        cart_items = Cart.objects.filter(user=request.user, meal__in=meals).values('meal_id', 'quantity')
+
+        context['cart_items'] = cart_items
+        context['cart_items_id'] = [cart_item['meal_id'] for cart_item in cart_items]
+
+    # if request.user.is_authenticated:
+    #     for meal in meals:
+    #         cart = Cart.objects.filter(user=request.user, meal=meal).first()
+    #         meal.cart = cart.quantity if cart else 0
+
+    # pagination(request, categories)
     return render(request, 'home/index.html', context)
 
 

@@ -13,6 +13,7 @@ $(document).ready(function () {
         );
     });
   });
+
   $(document).on("click", ".sub-from-cart-button", function (e) {
     $.get("/sub-from-cart/", { meal_id: $(this).data("id") }, (data) => {
     console.log(data)
