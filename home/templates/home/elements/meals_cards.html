@@ -4,7 +4,11 @@
 </div>
 {% endif %}
 {% for meal in meals%}
+
 <div class="">
+    {% for day in meal.days.all %}
+    {{day}}
+    {% endfor %}
     <div class="meal-item card shadow-sm h-100" data-id="{{ meal.id }}">
         <img src="{{meal.image.url}}" class="meal-image card-img-top object-fit-contain w-100"
              height="225" alt="катринка с блюдом">
@@ -25,13 +29,14 @@
                 <button class="btn btn-primary sub-from-cart-button" data-id="{{ meal.id }}">-</button>
                 {% for cart_item in cart_items %}
 
-                    {% if cart_item.meal_id == meal.id %}
-                        <span>{{cart_item.quantity }}</span>
-                    {% endif %}
+                {% if cart_item.meal_id == meal.id %}
+                <span>{{cart_item.quantity }}</span>
+                {% endif %}
                 {% endfor %}
 
                 <button class="add-to-cart-button btn btn-primary cart_add"
-                        data-id="{{ meal.id }}">+</button>
+                        data-id="{{ meal.id }}">+
+                </button>
                 {% else %}
                 <button class="add-to-cart-button btn btn-primary cart_add ms-auto"
                         data-id="{{ meal.id }}">В корзину
