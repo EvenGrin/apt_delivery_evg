@@ -1,7 +1,8 @@
-<div class="sticky-top d-flex justify-content-end" style="top: 80px;">
+{% load humanize %}
+<div class="sticky-top d-flex justify-content-end z-1" style="top: 80px;">
     <div class="btn-group  " role="group" aria-label="Basic example">
-        {% for day in weekdays %}
-        <a href="#" class="btn btn-primary">{{day}}</a>
+        {% for day in days %}
+        <a href="#" class="btn btn-primary">{{day.date|naturaltime}}</a>
         {% endfor %}
     </div>
 </div>

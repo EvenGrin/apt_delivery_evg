@@ -1,14 +1,9 @@
+import datetime
 from symtable import Class
 
 from django.db import models
+from django.template.defaultfilters import default
 
-class DayOfWeek(models.Model):
-    name = models.CharField(max_length=15, unique=True, verbose_name="День недели")  # 'Понедельник', 'Вторник' и т.д.
-    class Meta:
-        verbose_name = 'День недели'
-        verbose_name_plural = 'Дни недели'
-    def __str__(self):
-        return self.name
 
 class Category(models.Model):
     name = models.CharField(max_length=20)
@@ -28,7 +23,6 @@ class Meal(models.Model):
     category = models.ForeignKey(Category, default=None, on_delete=models.CASCADE,
                                  verbose_name="Категория", related_name='meals')
     quantity = models.IntegerField(default=3, verbose_name="Количество")
-    days = models.ManyToManyField(DayOfWeek, blank=True)
     class Meta:
         verbose_name = 'Блюдо'
         verbose_name_plural = 'Блюда'
@@ -37,13 +31,16 @@ class Meal(models.Model):
     def __str__(self):
         return self.name
 
-
-
 class Menu(models.Model):
-    days = models.ManyToManyField(DayOfWeek, blank=True)
-    meal = models.OneToOneField(Meal, default=None, on_delete=models.CASCADE)
+    date = models.DateTimeField(verbose_name='Дата', default=datetime.date.today)
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+
     class Meta:
         verbose_name = 'Меню'
         verbose_name_plural = 'Меню'
+
     def __str__(self):
-        return self.meal.name
+        return f'{self.date}'
+
+
+
