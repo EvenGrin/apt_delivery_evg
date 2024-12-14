@@ -50,7 +50,8 @@ class MenuDay(models.Model):
         verbose_name_plural = 'Меню на день'
 
     def __str__(self):
-        return f'{self.get_week_day_display()}'
+        return f'{self.DAYS_OF_WEEK[self.week_day][1]}'
+
 
 class Menu(models.Model):
     date = models.DateTimeField(verbose_name='Дата', default=timezone.now, blank=True)

@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import render
 from cart.models import Cart
-from .models import Meal, Category, Menu
+from .models import Meal, Category, MenuDay
 
 
 def pagination(request, categories):
@@ -16,10 +16,11 @@ def pagination(request, categories):
         context = {'meals': meals, 'categories': categories}
         return render(request, 'home/index.html', context)
 
-def meal_list(request):
+
+def meal_list(request, id):
     context = {}
     context['categories'] = Category.objects.annotate(meal_count=Count('meals'))
-    context['days'] = Menu.objects.order_by('-date')[:5]
+    context['days'] = MenuDay.objects.all()
     meals = Meal.objects.all()
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user, meal__in=meals).values('meal_id', 'quantity')
