@@ -3,6 +3,7 @@ from symtable import Class
 
 from django.db import models
 from django.template.defaultfilters import default
+from django.utils import timezone
 
 
 class Category(models.Model):
@@ -31,9 +32,28 @@ class Meal(models.Model):
     def __str__(self):
         return self.name
 
-class Menu(models.Model):
-    date = models.DateTimeField(verbose_name='Дата', default=datetime.date.today)
+
+class MenuDay(models.Model):
+    DAYS_OF_WEEK = (
+        (0, 'Понедельник'),
+        (1, 'Вторник'),
+        (2, 'Среда'),
+        (3, 'Четверг'),
+        (4, 'Пятница'),
+        (5, 'Суббота'),
+    )
+    week_day = models.IntegerField(choices=DAYS_OF_WEEK, default=0)
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Меню на день'
+        verbose_name_plural = 'Меню на день'
+
+    def __str__(self):
+        return f'{self.get_week_day_display()}'
+
+class Menu(models.Model):
+    date = models.DateTimeField(verbose_name='Дата', default=timezone.now, blank=True)
 
     class Meta:
         verbose_name = 'Меню'
@@ -41,6 +61,7 @@ class Menu(models.Model):
 
     def __str__(self):
         return f'{self.date}'
+
 
 
 

@@ -19,7 +19,7 @@ def pagination(request, categories):
 def meal_list(request):
     context = {}
     context['categories'] = Category.objects.annotate(meal_count=Count('meals'))
-    context['days'] = Menu.objects.order_by('date')[:5]
+    context['days'] = Menu.objects.order_by('-date')[:5]
     meals = Meal.objects.all()
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user, meal__in=meals).values('meal_id', 'quantity')

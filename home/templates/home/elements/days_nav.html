@@ -2,7 +2,7 @@
 <div class="sticky-top d-flex justify-content-end z-1" style="top: 80px;">
     <div class="btn-group  " role="group" aria-label="Basic example">
         {% for day in days %}
-        <a href="#" class="btn btn-primary">{{day.date|naturaltime}}</a>
+        <a href="#" class="btn btn-primary text-capitalize">{{day.date|naturalday:'D'}}<br>{{day.date|date:'d M' }}</a>
         {% endfor %}
     </div>
 </div>
