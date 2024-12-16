@@ -17,7 +17,7 @@ def pagination(request, categories):
         return render(request, 'home/index.html', context)
 
 
-def meal_list(request, id):
+def meal_list(request, id=0):
     context = {}
     context['categories'] = Category.objects.annotate(meal_count=Count('meals'))
     context['days'] = MenuDay.objects.all()
