@@ -1,5 +1,5 @@
 from django.contrib import admin
-from home.models import Category, Meal, Menu, MenuDay
+from home.models import Category, Meal, MenuDay
 
 
 class MealView(admin.ModelAdmin):
@@ -13,5 +13,4 @@ class MealView(admin.ModelAdmin):
 
 admin.site.register(Category)
 admin.site.register(Meal, MealView)
-admin.site.register(Menu)
 admin.site.register(MenuDay)

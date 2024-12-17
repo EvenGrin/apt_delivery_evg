@@ -1,3 +1,4 @@
+from traceback import print_list
 
 from django.db.models import Count
 from django.http import JsonResponse
@@ -17,11 +18,14 @@ def pagination(request, categories):
         return render(request, 'home/index.html', context)
 
 
-def meal_list(request, id=0):
+def meal_list(request, id=None):
     context = {}
     context['categories'] = Category.objects.annotate(meal_count=Count('meals'))
-    context['days'] = MenuDay.objects.all()
+    context['days'] = MenuDay.objects.order_by('week_day')
+    print(MenuDay.objects.order_by('week_day'))
     meals = Meal.objects.all()
+    if id!=None:
+        context['menu'] = MenuDay.objects.filter(week_day = id)
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user, meal__in=meals).values('meal_id', 'quantity')
 

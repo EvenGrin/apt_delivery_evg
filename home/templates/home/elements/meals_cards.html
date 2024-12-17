@@ -1,14 +1,4 @@
-{% if not meals %}
-<div class="col w-100">
-    {% include 'home/elements/danger.html' with text="Ничего не найдено"%}
-</div>
-{% endif %}
-{% for meal in meals%}
-
 <div class="">
-    {% for day in meal.days.all %}
-    {{day}}
-    {% endfor %}
     <div class="meal-item card shadow-sm h-100" data-id="{{ meal.id }}">
         <img src="{{meal.image.url}}" class="meal-image card-img-top object-fit-contain w-100"
              height="225" alt="катринка с блюдом">
@@ -47,7 +37,7 @@
         </div>
     </div>
 </div>
-{% endfor %}
+
 
 
 
