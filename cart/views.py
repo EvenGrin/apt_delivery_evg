@@ -54,6 +54,7 @@ def add_to_cart(request):
             row.quantity += 1
         else:
             row = Cart(user=request.user, meal=meal, quantity=1)
+            print(Cart(meal=meal))
             print(request.user, meal, 1)
 
         row.save()
