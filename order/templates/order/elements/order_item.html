@@ -5,7 +5,7 @@
 
         <div class="border rounded-top px-3 py-2">
             <div class="d-flex justify-content-between flex-wrap align-items-center">
-                <p class="h2 ">{{ order.date_create }}</p>
+                <p class="h2 ">{{ order.date_create| naturaltime }}</p>
                 <p class="h3">{{order.cab}}</p>
             </div>
             {% if order.result %}
@@ -48,7 +48,7 @@
                 <div class="accordion-body cart" data-id="{{ order.id }}">
 
                     {% for meal in order.meals %}
-                    {% include 'order/elements/order_items.html'%}
+                    {% include 'order/elements/order_item_meals.html'%}
                     {% endfor %}
                 </div>
             </div>

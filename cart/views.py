@@ -43,9 +43,9 @@ def cart(request):
 @login_required
 def add_to_cart(request):
     if request.method == 'GET':
-        id = request.GET.get('meal_id')
-        row = Cart.objects.all().filter(user=request.user, meal=id)
-        meal = Meal.objects.get(pk=id)
+        meal_id = request.GET.get('meal_id')
+        row = Cart.objects.all().filter(user=request.user, meal=meal_id)
+        meal = Meal.objects.get(pk=meal_id)
         if len(row):
             row = row[0]
             if row.quantity >= meal.quantity:
@@ -54,6 +54,7 @@ def add_to_cart(request):
             row.quantity += 1
         else:
             row = Cart(user=request.user, meal=meal, quantity=1)
+            print(request.user, meal, 1)
 
         row.save()
         return JsonResponse({'success': True,

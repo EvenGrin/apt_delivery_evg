@@ -21,8 +21,7 @@ def pagination(request, categories):
 def meal_list(request, id=None):
     context = {}
     context['categories'] = Category.objects.annotate(meal_count=Count('meals'))
-    context['days'] = MenuDay.objects.order_by('week_day')
-    print(MenuDay.objects.order_by('week_day'))
+    context['days'] = MenuDay.DAYS_OF_WEEK
     meals = Meal.objects.all()
     if id!=None:
         context['menu'] = MenuDay.objects.filter(week_day = id)
