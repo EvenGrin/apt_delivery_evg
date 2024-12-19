@@ -1,3 +1,5 @@
+from lib2to3.fixes.fix_input import context
+
 from django.contrib.auth.decorators import login_required  # Для авторизации
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
@@ -10,16 +12,10 @@ from order.models import OrderMeal, Order
 
 # Create your views here.
 
-
-def cart(request):
-    current_user = request.user.id
-    cabs = Cabinet.objects.all().order_by("num")
-    carts = Cart.objects.filter(user__id=current_user)
-    # заказы
+def make_order(request):
     if request.method == 'POST':
         cab = request.POST["cab"]
         form = CreateOrderForm(request.POST)
-
         if request.user.check_password(request.POST['password']):
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
@@ -34,9 +30,15 @@ def cart(request):
             form.add_error('password', 'не верный пароль')
     else:
         form = CreateOrderForm()
-    context = {'carts': carts,
-               'cabs': cabs,
-               'form': form}
+    return form
+
+
+def cart(request):
+    context = {}
+    current_user = request.user.id
+    context['cabs'] = Cabinet.objects.all().order_by("num")
+    context['carts'] = Cart.objects.filter(user__id=current_user)
+    context['form'] = make_order(request)
     return render(request, 'cart/index.html', context)
 
 

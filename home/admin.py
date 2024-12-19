@@ -4,6 +4,7 @@ from home.models import Category, Meal, MenuDay
 
 class MealView(admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'out', 'image', 'quantity')
+    list_filter = ('category', )
 
 # class MenuView(admin.ModelAdmin):
 #     list_display = ('date', 'meal')  # Add a custom display function

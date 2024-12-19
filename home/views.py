@@ -1,3 +1,4 @@
+from calendar import weekday
 from traceback import print_list
 
 from django.db.models import Count
@@ -22,6 +23,7 @@ def meal_list(request, id=None):
     context = {}
     context['categories'] = Category.objects.annotate(meal_count=Count('meals'))
     context['days'] = MenuDay.DAYS_OF_WEEK
+    context['week_days'] = MenuDay.objects.values('week_day').distinct
     meals = Meal.objects.all()
     if id!=None:
         context['menu'] = MenuDay.objects.filter(week_day = id)
