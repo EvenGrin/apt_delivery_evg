@@ -52,7 +52,7 @@ def add_to_cart(request):
             row = row[0]
             if row.quantity >= meal.quantity:
                 return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(
-                    user=request.user).count(), 'quantity': 'Больше незя'})
+                    user=request.user).count(), 'quantity': 'Больше нельзя'})
             row.quantity += 1
         else:
             row = Cart(user=request.user, meal=meal, quantity=1)
@@ -82,7 +82,7 @@ def sub_from_cart(request):
                                  Cart.objects.filter(
                                      user=request.user).count())})
         return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(
-                    user=request.user).count(), 'quantity': 'Я больше не в корзине'})
+                    user=request.user).count(), 'quantity': 'Больше не в корзине'})
 
 def cart_empty(request):
     if request.method == 'GET':
