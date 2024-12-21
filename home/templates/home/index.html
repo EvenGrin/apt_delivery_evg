@@ -1,10 +1,10 @@
 {% extends 'home/base.html' %}
 {% load static %}
 {% block title %}Главная{% endblock %}
-{% block body %}
 
+{% block body %}
+{% include 'home/css/style.html'%}
 {% include 'home/elements/aside.html' %}
-{% include 'home/elements/days_nav.html' %}
 <section data-bs-spy="scroll" data-bs-smooth-scroll="true" class="row" tabindex="0">
 
     {% for category in categories %}

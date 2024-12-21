@@ -40,7 +40,7 @@
                     </li>
                     {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-white" aria-current="page" href="{% url 'cart' %}">Корзина</a>
+                        <a class="nav-link text-white" aria-current="page" href="{% url 'cart' %}">Корзина <i class="bi bi-basket3"></i><span class="material-icons">face</span></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" aria-current="page" href="{% url 'order' %}">Заказы</a>
