@@ -4,13 +4,20 @@
       font-family: 'Material Icons';
       font-style: normal;
       font-weight: 400;
-      src: url(https://example.com/MaterialIcons-Regular.eot); /* For IE6-8 */
       src: local('Material Icons'),
         local('MaterialIcons-Regular'),
         url({% static 'home/fonts/MaterialIcons-Regular.ttf' %}) format('truetype');
     }
+    @font-face {
+      font-family: 'Material Icons Outlined';
+      font-style: normal;
+      font-weight: 400;
+      src: local('Material Icons'),
+        local('MaterialIconsOutlined-Regular'),
+        url({% static 'home/fonts/MaterialIconsOutlined-Regular.otf' %}) format('truetype');
+    }
 
-    .material-icons {
+    .material-icons, .material-icons-outlined {
       font-family: 'Material Icons';
       font-weight: normal;
       font-style: normal;
@@ -34,4 +41,10 @@
       /* Support for IE. */
       font-feature-settings: 'liga';
     }
+    .material-icons-outlined{
+        font-family: 'Material Icons Outlined';
+    }
+
+}
+
 </style>

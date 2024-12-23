@@ -1,0 +1,66 @@
+<header class="sticky-top z-3  ">
+    <nav class="navbar navbar-expand-lg bg-primary rounded " data-bs-theme="dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                    aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="/">АптДоставка</a>
+            <div class="form-inline order-lg-3">
+                <ul class="navbar-nav d-flex flex-row align-items-center justify-content-center">
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{user.username}}
+
+                        </button>
+                        <ul class="dropdown-menu position-absolute">
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Выход</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white px-2" href="{% url 'registration' %}">Регистрация</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'login' %}">Войти</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item ">
+                        <a class="nav-link text-white d-flex align-items-center justify-content-center"
+                           aria-current="page" href="{% url 'home' %}">Главная</a>
+                    </li>
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white d-flex align-items-center justify-content-center"
+                           aria-current="page" href="{% url 'cart' %}">Корзина
+                            <span class="material-icons-outlined">shopping_cart</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white d-flex align-items-center justify-content-center"
+                           aria-current="page" href="{% url 'order' %}">Заказы
+                            <span class="material-icons">room_service</span>
+                        </a>
+                    </li>
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center justify-content-center"
+                           href="/admin">АдминПанель</a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

@@ -35,6 +35,7 @@ def make_order(request):
 
 def cart(request):
     context = {}
+    context['cart_count'] = Cart.objects.filter(user=request.user).count()
     current_user = request.user.id
     context['cabs'] = Cabinet.objects.all().order_by("num")
     context['carts'] = Cart.objects.filter(user__id=current_user)
@@ -100,4 +101,6 @@ def remove_from_cart(request):
         row = Cart.objects.all().filter(user=request.user, meal=meal_id)
         print(row)
         row.delete()
-        return HttpResponse("<span class='error-count'>Товар в корзине отсутствует!</span>")
+        # return HttpResponse(""
+        return JsonResponse({'cart_count': Cart.objects.filter(
+                                     user=request.user).count(), 'quantity': "<span class='error-count'>Товар в корзине отсутствует!</span>"})

@@ -1,6 +1,7 @@
 $(document).ready(function () {
   $(document).on("click", ".add-to-cart-button", function (e) {
     $.get("/add-to-cart/", { meal_id: $(this).data("id") }, (data) => {
+      $('.cart_info').html(data.cart_count? data.cart_count: '')
       $(this)
         .closest(".card-button")
         .html(
@@ -16,7 +17,7 @@ $(document).ready(function () {
 
   $(document).on("click", ".sub-from-cart-button", function (e) {
     $.get("/sub-from-cart/", { meal_id: $(this).data("id") }, (data) => {
-    console.log(data)
+      $('.cart_info').html(data.cart_count? data.cart_count: '')
       $(this)
         .closest(".card-button")
         .html(
@@ -31,9 +32,10 @@ $(document).ready(function () {
   });
 
   $(document).on("click", ".cart_remove", function (e) {
-    console.log($(this));
-    $.get("/remove_from_cart/", { meal_id: $(this).data("id") }, () => {
+
+    $.get("/remove_from_cart/", { meal_id: $(this).data("id") }, (data) => {
       $(this).closest(".card-button").html("<button class='add-to-cart-button btn btn-primary cart_add ms-auto' data-id="+ $(this).data("id") +">В корзину</button>");
+      $('.cart_info').html(data.cart_count? data.cart_count: '')
     });
   });
 });
