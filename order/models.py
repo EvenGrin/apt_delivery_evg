@@ -53,13 +53,16 @@ class Order(models.Model):
         verbose_name_plural = 'Заказы'
 
     def __str__(self):
-        return f'покупатель: {self.user}, дата: {str(self.date_create).split(".")[0]}'
+        return f'покупатель: {self.user},\n дата: {str(self.date_create).split(".")[0]}'
 
 
 class OrderMeal(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name="Заказ")
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE, verbose_name="Блюдо")
     amount = models.IntegerField(verbose_name='Количество товаров')
     class Meta:
         verbose_name = 'Заказ блюд'
         verbose_name_plural = 'Заказы блюд'
+
+    def __str__(self):
+        return f'{self.order}'

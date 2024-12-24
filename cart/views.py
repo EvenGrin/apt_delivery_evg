@@ -11,7 +11,7 @@ from order.models import OrderMeal, Order
 
 
 # Create your views here.
-
+@login_required
 def make_order(request):
     if request.method == 'POST':
         cab = request.POST["cab"]
@@ -32,7 +32,7 @@ def make_order(request):
         form = CreateOrderForm()
     return form
 
-
+@login_required
 def cart(request):
     context = {}
     context['cart_count'] = Cart.objects.filter(user=request.user).count()
@@ -84,7 +84,7 @@ def sub_from_cart(request):
                                      user=request.user).count())})
         return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(
                     user=request.user).count(), 'quantity': 'Больше не в корзине'})
-
+@login_required
 def cart_empty(request):
     if request.method == 'GET':
         carts = Cart.objects.filter(user__id=request.user.id)
@@ -94,7 +94,7 @@ def cart_empty(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-
+@login_required
 def remove_from_cart(request):
     if request.method == 'GET':
         meal_id = request.GET.get('meal_id')
