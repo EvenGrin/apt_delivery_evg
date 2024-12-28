@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'cart',
     'order',
     'log_reg',
+    'deliver',
 ]
 
 MIDDLEWARE = [

@@ -23,6 +23,14 @@
                             <span class="badge order_info text-bg-secondary">{% if order_count %}{{order_count}}{% endif %}</span>
                         </a>
                     </li>
+                    {% if request.user.groups.all.0.name == "доставщики" %}
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center justify-content-center"
+                           href="/deliver">Доставка
+                        <span class="material-icons">directions_run</span>
+                        </a>
+                    </li>
+                    {% endif %}
                     {% if user.is_superuser %}
                     <li class="nav-item">
                         <a class="nav-link d-flex align-items-center justify-content-center"

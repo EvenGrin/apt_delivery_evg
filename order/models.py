@@ -27,7 +27,7 @@ class Order(models.Model):
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус', default=1)
     result = models.CharField(max_length=50, verbose_name='Причина отказа', blank=True, null=True)
     cab = models.ForeignKey(Cabinet, on_delete=models.CASCADE, verbose_name='Кабинет', default=1)
-    courier = models.ForeignKey(
+    deliver = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         related_name='courier_orders',
