@@ -9,13 +9,12 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ('status', 'user',)
 
 
-admin.site.register(Status)
+@admin.register(Status)
+class StatusAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 
 @admin.register(OrderMeal)
 class OrderMealView(admin.ModelAdmin):
     list_display = ('order', 'meal', 'amount',)
     list_filter = ('order',)
-
-
-

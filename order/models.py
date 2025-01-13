@@ -12,7 +12,6 @@ from log_reg.models import User
 
 class Status(models.Model):
     name = models.CharField(max_length=30)
-
     class Meta:
         verbose_name = 'Статус'
         verbose_name_plural = 'Статусы'
@@ -61,6 +60,8 @@ class Order(models.Model):
     def clean(self):
         if self.status.id == 3 and not self.result:
             raise ValidationError({'result': 'Обязательное поле при статусе "Отменён"'})
+        if self.status.id > 3 and self.deliver is None:
+            raise ValidationError({'deliver': 'Укажите курьера'})
 
 
 

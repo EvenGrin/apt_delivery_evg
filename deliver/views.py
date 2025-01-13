@@ -6,10 +6,17 @@ from order.models import Order
 
 
 @login_required
+def take_order(request):
+    context = {}
+    context['orders'] = Order.objects.filter(status__name = '').order_by('-date_create')
+    return render(request, 'deliver/order_list.html', context)
+
+
+@login_required
 def deliver_order_list(request):
     context = {}
     deliver = request.user # Получаем авторизованного курьера
-    context['orders'] = Order.objects.filter(deliver=deliver) # Фильтруем заказы
+    context['orders'] = Order.objects.filter(status = 4) # Фильтруем заказы
 
     # Другие варианты фильтрации:
     # orders = Order.objects.filter(status='ready_for_delivery') # Заказы без курьера

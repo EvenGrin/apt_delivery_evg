@@ -5,7 +5,7 @@
 
         <div class="border rounded-top px-3 py-2">
             <div class="d-flex justify-content-between flex-wrap align-items-center">
-                <p class="h2 ">{{ order.date_create| naturaltime }}</p>
+                <p class="h2 ">{{ order.date_create|naturalday}}</p>
                 <p class="h3">{{order.cab}}</p>
             </div>
             {% if order.result %}
@@ -13,6 +13,9 @@
                 Причина отмены:{{order.result}}
             </p>
             {% endif %}
+            {% if request.user.groups.all.0.name == "доставщики" %}
+            <button class="btn btn-primary">Взять</button>
+            {% endif%}
 
         </div>
 
@@ -34,7 +37,7 @@
                             <span>Статус: </span>{{ order.status }}
                         </div>
                         <div class="btn btn-outline-primary">
-                            <span>Товаров:</span>
+                            <span>Блюд:</span>
                             {{ order.amount }}
                         </div>
                         <div class="btn btn-outline-primary">
