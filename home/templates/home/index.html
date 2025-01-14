@@ -11,15 +11,9 @@
             <h2>{{category.name}}</h2>
         </div>
         <div class="row row-cols-1 row-cols-md-2  row-cols-xl-3 g-3">
-            {% with meals=category.meals.all%}
+            {% with meals=category.ordered_meals%}
                 {% for meal in meals %}
-                    {% for day in menu %}
-                        {% if day.meal == meal %}
-                            {% include 'home/elements/meals_cards.html' %}
-                        {% endif %}
-                    {% empty%}
                         {% include 'home/elements/meals_cards.html' %}
-                    {% endfor %}
                 {% empty %}
                     <div class="col w-100">
                         {% include 'home/elements/danger.html' with text="Ничего не найдено"%}

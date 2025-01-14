@@ -32,6 +32,7 @@ def make_order(request):
         form = CreateOrderForm()
     return form
 
+
 @login_required
 def cart(request):
     context = {}
@@ -46,26 +47,33 @@ def cart(request):
 @login_required
 def add_to_cart(request):
     if request.method == 'GET':
+
         meal_id = request.GET.get('meal_id')
         row = Cart.objects.all().filter(user=request.user, meal=meal_id)
         meal = Meal.objects.get(pk=meal_id)
+
         if len(row):
             row = row[0]
             if row.quantity >= meal.quantity:
-                return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(
-                    user=request.user).count(), 'quantity': 'Больше нельзя'})
+                return JsonResponse({
+                    'success': True,
+                    'cart_count': Cart.objects.filter(user=request.user).count(),
+                    'quantity': 'Больше нельзя'
+                })
             row.quantity += 1
         else:
             row = Cart(user=request.user, meal=meal, quantity=1)
             print(Cart(meal=meal))
             print(request.user, meal, 1)
-
         row.save()
-        return JsonResponse({'success': True,
-                             'quantity': row.quantity,
-                             'cart_count': (
-                                 Cart.objects.filter(
-                                     user=request.user).count())})
+
+        return JsonResponse({
+            'success': True,
+            'cart_count': Cart.objects.filter(user=request.user).count(),
+            'quantity': row.quantity,
+            'total_amount': row.total_amount
+        })
+
 
 @login_required
 def sub_from_cart(request):
@@ -82,8 +90,14 @@ def sub_from_cart(request):
                              'cart_count': (
                                  Cart.objects.filter(
                                      user=request.user).count())})
-        return JsonResponse({'success': True, 'cart_count': Cart.objects.filter(
-                    user=request.user).count(), 'quantity': 'Больше не в корзине'})
+        return JsonResponse({
+            'success': True,
+            'cart_count': Cart.objects.filter(
+                    user=request.user).count(),
+            'quantity': 'Больше не в корзине'
+        })
+
+
 @login_required
 def cart_empty(request):
     if request.method == 'GET':
@@ -94,6 +108,7 @@ def cart_empty(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+
 @login_required
 def remove_from_cart(request):
     if request.method == 'GET':
@@ -102,5 +117,7 @@ def remove_from_cart(request):
         print(row)
         row.delete()
         # return HttpResponse(""
-        return JsonResponse({'cart_count': Cart.objects.filter(
-                                     user=request.user).count(), 'quantity': "<span class='error-count'>Товар в корзине отсутствует!</span>"})
+        return JsonResponse({
+            'cart_count': Cart.objects.filter(user=request.user).count(),
+            'quantity': "<span class='error-count'>Товар в корзине отсутствует!</span>"
+        })
