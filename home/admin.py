@@ -1,16 +1,28 @@
 from django.contrib import admin
+from django.db.models import Q
+
 from home.models import Category, Meal, MenuDay
+from order.models import Order, OrderMeal
 
 
+@admin.register(Meal)
 class MealView(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'out', 'image', 'quantity')
+    list_display = ('name', 'category', 'price', 'out', 'image', 'quantity', 'sold_meal_count')
+    list_filter = ('category',)
+    search_fields = ('name__iregex',)  # Case-insensitive search directly
 
-# class MenuView(admin.ModelAdmin):
+    def sold_meal_count(self, obj):
+        result = OrderMeal.objects.filter(meal=obj).count()
+        return result
+    # class MenuView(admin.ModelAdmin):
+    sold_meal_count.short_description = "Количество заказанных"
+
 #     list_display = ('date', 'meal')  # Add a custom display function
 
 
+@admin.register(Category)
+class CategoryView(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name__iregex',)  # Case-insensitive search directly
 
-
-admin.site.register(Category)
-admin.site.register(Meal, MealView)
 admin.site.register(MenuDay)

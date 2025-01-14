@@ -2,10 +2,10 @@
 {% load static %}
 {% block title %}Главная{% endblock %}
 {% block body %}
-<div id="head" class="d-flex justify-content-between flex-wrap align-items-center">
-    <h2 class=" ps-0  px-3 py-2">Корзина</h2>
+<div id="head" class="d-flex justify-content-between flex-wrap align-items-center py-2">
+    <h2 class=" ps-0  px-3 ">Корзина</h2>
     {% if carts %}
-    <div>
+    <div class="d-flex gap-1">
         <button class="cart_empty btn btn-danger">Очистить корзину</button>
         <button class="create_order btn btn-primary" data-bs-toggle="modal" data-bs-target="#CreateOrderModal">
             Оформить заказ
