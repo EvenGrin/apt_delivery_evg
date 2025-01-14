@@ -45,7 +45,8 @@
                     {% if request.user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{user.username}}
+                            {{user.last_name}}
+                            {{user.first_name|slice:"1"}}.{%if user.patronymic %}{{user.patronymic|slice:"1"}}.{% endif %}
 
                         </button>
                         <ul class="dropdown-menu position-absolute dropdown-menu-end">
