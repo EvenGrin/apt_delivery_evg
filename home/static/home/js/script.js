@@ -1,8 +1,9 @@
 $(document).ready(function () {
   $(document).on("click", ".add-to-cart-button", function (e) {
     $.get("/add-to-cart/", { meal_id: $(this).data("id") }, (data) => {
+    card = $('.card')
       $('.cart_info').html(data.cart_count? data.cart_count: '')
-      console.log($(this).closest('span.total_amount'))
+      $(`.card[data-id='${$(this).data("id")}']`).find('.total_amount').html(data.total_amount)
       $(this)
         .closest(".card-button")
         .html(

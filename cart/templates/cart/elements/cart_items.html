@@ -2,7 +2,7 @@
 {% include 'home/elements/danger.html' with text="Корзина пуста"%}
 {% endif %}
 {% for cart in carts %}
-<div class="card shadow-sm h-100  d-flex mb-3">
+<div class="card shadow-sm h-100  d-flex mb-3" data-id="{{cart.meal.id}}">
     <div class="row">
         <div class="col-md-4"><img src="{{cart.meal.image.url}}" class="card-img-top object-fit-contain " height="225"
                                    alt="катринка с блюдом">
