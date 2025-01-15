@@ -2,7 +2,8 @@
 {% load static %}
 {% block title %}Главная{% endblock %}
 {% block body %}
-<div id="head" class="d-flex justify-content-between flex-wrap align-items-center py-2">
+<div id="head" class="pb-2">
+    <div class="d-flex justify-content-between flex-wrap align-items-center py-2">
     <h2 class=" ps-0  px-3 ">Корзина</h2>
     {% if carts %}
     <div class="d-flex gap-1">
@@ -13,9 +14,20 @@
     </div>
     {% endif %}
 </div>
-<div>
-
+    {% if carts %}
+<div class="d-flex flex-column align-items-end">
+    <div>
+        Общ. кол-во блюд: <span id="amount">{{amount}}</span>
+    </div>
+    <div>
+        Общ цена: <span id="total_price">{{total_price}}</span>р
+    </div>
 </div>
+
+{% endif %}
+</div>
+
+
 {% include 'cart/elements/cart_modal.html'%}
 
 {% include 'cart/elements/cart_items.html' %}

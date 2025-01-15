@@ -18,7 +18,7 @@ class Category(models.Model):
 
 class Meal(models.Model):
     name = models.CharField(max_length=150, verbose_name="Название")
-    price = models.FloatField(verbose_name="Цена")
+    price = models.IntegerField(verbose_name="Цена")
     out = models.CharField(max_length=10, verbose_name="Выход")
     image = models.ImageField(upload_to='images', verbose_name="Изображение")
     category = models.ForeignKey(Category, default=None, on_delete=models.CASCADE,

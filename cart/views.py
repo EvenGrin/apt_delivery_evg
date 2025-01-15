@@ -1,12 +1,14 @@
 from lib2to3.fixes.fix_input import context
 
 from django.contrib.auth.decorators import login_required  # Для авторизации
+from django.db.models import Sum
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 
 from cart.forms import CreateOrderForm
 from cart.models import Cart, Cabinet
 from home.models import Meal
+from home.views import meal_list
 from order.models import OrderMeal, Order
 
 
@@ -33,76 +35,84 @@ def make_order(request):
     return form
 
 
+def get_cart_data(user):
+    total = sum(item.meal.price * item.quantity for item in Cart.objects.filter(user=user))
+    amount = Cart.objects.filter(user=user).aggregate(Sum('quantity'))['quantity__sum'] or 0
+    cart_count = Cart.objects.filter(user=user).count()
+    return {
+        'total_price': total,
+        'amount': amount,
+        'cart_count': cart_count
+    }
+
+
 @login_required
 def cart(request):
-    context = {}
-    context['cart_count'] = Cart.objects.filter(user=request.user).count()
-    current_user = request.user.id
+    context = get_cart_data(request.user)
     context['cabs'] = Cabinet.objects.all().order_by("num")
-    context['carts'] = Cart.objects.filter(user__id=current_user)
+    context['carts'] = Cart.objects.filter(user=request.user)
     context['form'] = make_order(request)
     return render(request, 'cart/index.html', context)
 
 
 @login_required
+def update_cart_item(request, action):
+    """Обновляет количество товара в корзине."""
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+    meal_id = request.GET.get('meal_id')
+    meal = Meal.objects.get(pk=meal_id)
+    cart_item, created = Cart.objects.get_or_create(user=request.user, meal=meal, defaults={'quantity': 0})
+    quantity_change = 1 if action == 'add' else -1 if action == 'sub' else 0
+
+    if action == 'add':
+        if cart_item.quantity >= meal.quantity:
+            return JsonResponse({
+                'success': True,
+                'cart_count': Cart.objects.filter(user=request.user).count(),
+                'quantity': 'Больше нельзя'
+            })
+        cart_item.quantity += quantity_change
+
+    if action == 'sub':
+        if cart_item.quantity == 0:
+            return JsonResponse({
+                'success': True,
+                'cart_count': Cart.objects.filter(user=request.user).count(),
+                'quantity': 'Больше не в корзине'
+            })
+
+        cart_item.quantity += quantity_change;
+
+    if cart_item.quantity > 0:
+        cart_item.save()
+    else:
+        cart_item.delete()
+
+    cart_data = get_cart_data(request.user)
+    return JsonResponse({
+        'success': True,
+        'quantity': cart_item.quantity,
+        'total_amount': cart_item.total_amount if hasattr(cart_item, 'total_amount') else None,
+        **cart_data
+    })
+
+
+@login_required
 def add_to_cart(request):
-    if request.method == 'GET':
-
-        meal_id = request.GET.get('meal_id')
-        row = Cart.objects.all().filter(user=request.user, meal=meal_id)
-        meal = Meal.objects.get(pk=meal_id)
-
-        if len(row):
-            row = row[0]
-            if row.quantity >= meal.quantity:
-                return JsonResponse({
-                    'success': True,
-                    'cart_count': Cart.objects.filter(user=request.user).count(),
-                    'quantity': 'Больше нельзя'
-                })
-            row.quantity += 1
-        else:
-            row = Cart(user=request.user, meal=meal, quantity=1)
-            print(Cart(meal=meal))
-            print(request.user, meal, 1)
-        row.save()
-
-        return JsonResponse({
-            'success': True,
-            'cart_count': Cart.objects.filter(user=request.user).count(),
-            'quantity': row.quantity,
-            'total_amount': row.total_amount
-        })
+    return update_cart_item(request, 'add')
 
 
 @login_required
 def sub_from_cart(request):
-    if request.method == 'GET':
-        id = request.GET.get('meal_id')
-        row = Cart.objects.all().filter(user=request.user, meal=id)
-        if len(row):
-            row = row[0]
-            if row.quantity:
-                row.quantity -= 1;
-                row.save() if row.quantity else row.delete()
-                return JsonResponse({'success': True,
-                             'quantity': row.quantity,
-                             'cart_count': (
-                                 Cart.objects.filter(
-                                     user=request.user).count())})
-        return JsonResponse({
-            'success': True,
-            'cart_count': Cart.objects.filter(
-                    user=request.user).count(),
-            'quantity': 'Больше не в корзине'
-        })
+    return update_cart_item(request, 'sub')
 
 
 @login_required
 def cart_empty(request):
     if request.method == 'GET':
-        carts = Cart.objects.filter(user__id=request.user.id)
-        carts.delete()
+        Cart.objects.filter(user=request.user).delete()
         return HttpResponse(
             "<div class='alert alert-danger text-center'>В корзине ничего нет</div>")
     else:
@@ -113,11 +123,11 @@ def cart_empty(request):
 def remove_from_cart(request):
     if request.method == 'GET':
         meal_id = request.GET.get('meal_id')
-        row = Cart.objects.all().filter(user=request.user, meal=meal_id)
-        print(row)
-        row.delete()
-        # return HttpResponse(""
-        return JsonResponse({
-            'cart_count': Cart.objects.filter(user=request.user).count(),
-            'quantity': "<span class='error-count'>Товар в корзине отсутствует!</span>"
-        })
+        Cart.objects.all().filter(user=request.user, meal=meal_id).delete()
+        print('удаление из корзины'+ meal_id)
+        return JsonResponse(get_cart_data(request.user))
+
+
+@login_required
+def update_cart_view(request):
+  return JsonResponse(get_cart_data(request.user))

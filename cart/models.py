@@ -27,6 +27,8 @@ class Cart(models.Model):
 
 
 
+
+
 class Cabinet(models.Model):
     num = models.CharField(max_length=10, verbose_name="Номер")
     name = models.CharField(max_length=100, verbose_name="Название")
