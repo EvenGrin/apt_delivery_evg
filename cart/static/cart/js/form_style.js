@@ -4,7 +4,7 @@ if (form) {
   p.forEach(p=>{
     p.outerHTML = "<div class='row mb-2 w-100'>"+p.innerHTML+"</div>"
   })
-  const inputs = form.querySelectorAll('input[type=email], input[type=password], input[type=text], textarea');
+  const inputs = form.querySelectorAll('input[type=email], input[type=password], input[type=datetime-local], input[type=text], textarea');
   inputs.forEach(input => {
     input.classList.add('form-control');
     input.outerHTML = "<div class='col-6'>" + input.outerHTML + "</div>";
@@ -32,3 +32,4 @@ if (form) {
   const button = form.querySelector('button');
   button.classList.add('btn', 'btn-primary', 'btn-block');
 }
+

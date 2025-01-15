@@ -1,5 +1,3 @@
-from lib2to3.fixes.fix_input import context
-
 from django.contrib.auth.decorators import login_required  # Для авторизации
 from django.db.models import Sum
 from django.http import JsonResponse, HttpResponse
@@ -21,6 +19,7 @@ def make_order(request):
         if request.user.check_password(request.POST['password']):
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
+            order.order_date = request.POST['order_date']
             order.save()
             meals = Cart.objects.all().filter(user=request.user)
             for p in meals:
