@@ -2,31 +2,20 @@
 {% load static %}
 {% block title %}Главная{% endblock %}
 {% block body %}
-<div id="head" class="pb-2">
-    <div class="d-flex justify-content-between flex-wrap align-items-center py-2">
+
+<div id="head" class="d-flex justify-content-between flex-wrap align-items-center py-2">
     <h2 class=" ps-0  px-3 ">Корзина</h2>
-    {% if carts %}
-    <div class="d-flex gap-1">
-        <button class="cart_empty btn btn-danger">Очистить корзину</button>
-        <button class="create_order btn btn-primary" data-bs-toggle="modal" data-bs-target="#CreateOrderModal">
-            Оформить заказ
-        </button>
-    </div>
-    {% endif %}
-</div>
-    {% if carts %}
-<div class="d-flex flex-column align-items-end">
-    <div>
-        Общ. кол-во блюд: <span id="amount">{{amount}}</span>
-    </div>
-    <div>
-        Общ цена: <span id="total_price">{{total_price}}</span>р
-    </div>
-</div>
 
+
+</div>
+{% if carts %}
+<div class="d-flex gap-1 sticky-top justify-content-end pb-2" style="top:80px">
+    <button class="cart_empty btn btn-danger shadow">Очистить корзину</button>
+    <button class="create_order btn btn-primary shadow" data-bs-toggle="modal" data-bs-target="#CreateOrderModal">
+        Оформить заказ <span id="total_price">{{total_price}}</span>р
+    </button>
+</div>
 {% endif %}
-</div>
-
 
 {% include 'cart/elements/cart_modal.html'%}
 
