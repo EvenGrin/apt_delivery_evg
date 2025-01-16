@@ -9,7 +9,7 @@
 
 </div>
 {% if carts %}
-<div class="d-flex gap-1 sticky-top justify-content-end pb-2" style="top:80px">
+<div class="d-flex gap-1 sticky-top justify-content-end pb-2 z-1" style="top:80px">
     <button class="cart_empty btn btn-danger shadow">Очистить корзину</button>
     <button class="create_order btn btn-primary shadow" data-bs-toggle="modal" data-bs-target="#CreateOrderModal">
         Оформить заказ <span id="total_price">{{total_price}}</span>р

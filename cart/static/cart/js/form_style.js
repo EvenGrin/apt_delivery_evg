@@ -7,7 +7,7 @@ if (form) {
   const inputs = form.querySelectorAll('input[type=email], input[type=password], input[type=datetime-local], input[type=text], textarea');
   inputs.forEach(input => {
     input.classList.add('form-control');
-    input.outerHTML = "<div class='col-6'>" + input.outerHTML + "</div>";
+    input.outerHTML = "<div >" + input.outerHTML + "</div>";
   });
   const checkbox = form.querySelectorAll('input[type=checkbox]');
   checkbox.forEach(input => {
@@ -16,7 +16,7 @@ if (form) {
   });
   const labels = form.querySelectorAll('label');
   labels.forEach(label => {
-    label.classList.add('col-6', 'col-form-label');
+    label.classList.add( 'col-form-label');
   });
 
   const brs = form.querySelectorAll('br');
