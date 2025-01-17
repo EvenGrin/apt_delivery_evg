@@ -15,8 +15,8 @@ from order.models import OrderMeal, Order
 def make_order(request):
     if request.method == 'POST':
         cab = request.POST["cab"]
-        form = CreateOrderForm(request.POST)
-        if request.user.check_password(request.POST['password']):
+        form = CreateOrderForm(user=request.user, data=request.POST)
+        if form.is_valid():
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
             order.order_date = request.POST['order_date']
@@ -28,9 +28,10 @@ def make_order(request):
                 p.delete()
             return redirect('order')
         else:
-            form.add_error('password', 'не верный пароль')
+            print(form.errors)
+            # form.add_error('password', 'не верный пароль')
     else:
-        form = CreateOrderForm()
+        form = CreateOrderForm(user=request.user)
     return form
 
 
@@ -50,6 +51,7 @@ def cart(request):
     context = get_cart_data(request.user)
     context['cabs'] = Cabinet.objects.all().order_by("num")
     context['carts'] = Cart.objects.filter(user=request.user)
+    #
     context['form'] = make_order(request)
     return render(request, 'cart/index.html', context)
 

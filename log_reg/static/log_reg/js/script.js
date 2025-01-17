@@ -25,4 +25,9 @@ if (form) {
 
   const button = form.querySelector('button');
   button.classList.add('btn', 'btn-primary', 'btn-block');
+
+const errorlist = form.querySelectorAll('.errorlist');
+  errorlist.forEach(error => {
+    error.classList.add('text-danger');
+  });
 }
