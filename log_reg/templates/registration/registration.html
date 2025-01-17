@@ -3,7 +3,7 @@
 {% block body %}
 <div class="d-flex justify-content-center  ">
 
-    <form method="post" class="w-100 px-5 py-4 rounded-2 shadow bg-white ajaxForm" style="max-width: 800px;">
+    <form method="post" class="w-100 px-5 py-4 rounded-2 shadow bg-white ajaxForm" style="max-width: 800px;" >
         {% csrf_token %}
         {{ form.as_p }}
 
