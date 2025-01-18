@@ -1,11 +1,16 @@
 $(document).ready(function () {
-    function updateDataCart(url, mealId, element) {
-        $.get(url, { meal_id: mealId }, (data) => {
+    function updateData(data, mealId=0){
             $('.cart_info').html(data.cart_count ? data.cart_count : '');
-            $(`.card[data-id='${mealId}']`).find('.total_amount').html(data.total_amount);
             $('#total_price').html(data.total_price);
             $('#amount').html(data.amount); // Обновляем #amount
+            if (mealId) {
+                $(`.card[data-id='${mealId}']`).find('.total_amount').html(data.total_amount);
+            }
+    }
 
+    function updateDataCart(url, mealId, element) {
+        $.get(url, { meal_id: mealId }, (data) => {
+            updateData(data, mealId)
             // Обновляем кнопки только если элемент (кнопка) передан
             if (element) {
                 element.closest(".card-button").html(`
@@ -18,14 +23,14 @@ $(document).ready(function () {
 
         });
     }
-    function updateCart() {
 
-        $("#head div").remove();
+    function updateCart() {
         $("#head").after(
             "<div class='alert alert-danger text-center'>Корзина пуста</div>"
         );
         $("div.card").remove();
         $("div.modal").remove();
+        $("#cart_buttons").remove();
     }
 
     $(document).on("click", ".add-to-cart-button", function (e) {
@@ -38,6 +43,7 @@ $(document).ready(function () {
 
     $(document).on("click", ".cart_empty", function (e) {
         $.get("/cart_empty/", {}, (data) => {
+            updateData(data)
             updateCart()
         });
     });
@@ -45,10 +51,7 @@ $(document).ready(function () {
     $(document).on("click", ".cart_remove", function (e) {
         mealId = $(this).data("id")
         $.get("/remove_from_cart/", { meal_id: mealId }, (data) => {
-            $('.cart_info').html(data.cart_count ? data.cart_count : '');
-            $(`.card[data-id='${mealId}']`).find('.total_amount').html(data.total_amount);
-            $('#total_price').html(data.total_price);
-            $('#amount').html(data.amount);
+            updateData(data, mealId)
             if (window.location.href.includes('cart')) {
                 if ($(".card").length - 1 == 0) {
                     updateCart()
@@ -60,6 +63,7 @@ $(document).ready(function () {
 
         });
     });
+    
 
 }
 

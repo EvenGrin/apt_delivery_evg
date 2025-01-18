@@ -1,7 +1,9 @@
 from decimal import Decimal
 
 from django.conf import settings
+from datetime import date, datetime
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models import Sum
 from django.utils import timezone
@@ -22,10 +24,14 @@ class Status(models.Model):
 
 def get_default_created_at():
    return timezone.now() + timedelta(minutes=10)
+
+
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     date_create = models.DateTimeField(verbose_name='Дата заказа', auto_now_add=True)
-    order_date = models.DateTimeField(default=get_default_created_at, verbose_name='Дата и время получения заказа')
+    order_date = models.DateTimeField(default=get_default_created_at, verbose_name='Дата и время получения заказа',
+        validators=[MaxValueValidator(limit_value=datetime.now)]
+    )
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус', default=1)
     result = models.CharField(max_length=50, verbose_name='Причина отказа', blank=True, null=True)
     cab = models.ForeignKey(Cabinet, on_delete=models.CASCADE, verbose_name='Кабинет', default=1)

@@ -5,7 +5,7 @@ from order.models import Order, Status, OrderMeal
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('date_create', 'user', 'status', 'amount')
+    list_display = ('date_create', 'order_date', 'user', 'status', 'amount')
     list_filter = ('status', 'user',)
 
 

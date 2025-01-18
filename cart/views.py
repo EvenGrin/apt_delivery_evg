@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.decorators import login_required  # Для авторизации
 from django.db.models import Sum
 from django.http import JsonResponse, HttpResponse
@@ -15,8 +17,8 @@ from order.models import OrderMeal, Order
 def make_order(request):
     if request.method == 'POST':
         cab = request.POST["cab"]
-        form = CreateOrderForm(request.POST)
-        if request.user.check_password(request.POST['password']):
+        form = CreateOrderForm(user=request.user, data=request.POST)
+        if form.is_valid():
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
             order.order_date = request.POST['order_date']
@@ -28,9 +30,10 @@ def make_order(request):
                 p.delete()
             return redirect('order')
         else:
-            form.add_error('password', 'не верный пароль')
+            print(form.errors)
+            # form.add_error('password', 'не верный пароль')
     else:
-        form = CreateOrderForm()
+        form = CreateOrderForm(user=request.user)
     return form
 
 
@@ -44,12 +47,21 @@ def get_cart_data(user):
         'cart_count': cart_count
     }
 
-
+def sort_cabs(cabinet):
+    """Функция для определения ключа сортировки."""
+    if re.match(r'^\d', cabinet.num):
+        return (1, cabinet.num)  # Сначала сортировка по 1 (цифровые), затем по номеру
+    else:
+        return (0, cabinet.num)  # Сначала сортировка по 0 (нецифровые), затем по номеру
 @login_required
 def cart(request):
     context = get_cart_data(request.user)
-    context['cabs'] = Cabinet.objects.all().order_by("num")
+    cabs = Cabinet.objects.all()
+    sorted_cabs = sorted(cabs, key=sort_cabs)
+
+    context['cabs'] = sorted_cabs
     context['carts'] = Cart.objects.filter(user=request.user)
+    #
     context['form'] = make_order(request)
     return render(request, 'cart/index.html', context)
 
