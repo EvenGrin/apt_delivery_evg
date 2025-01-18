@@ -5,23 +5,23 @@ from django.shortcuts import render, redirect
 from . import forms
 
 
-def login_view(request: HttpRequest) -> HttpResponse:
-    context = {}
-    if request.method == 'POST':
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(username=username, password=password)
-
-        if user is None:
-            context = {
-                'error': 'Неверный логин или пароль'
-            }
-            print('Все не правильно')
-        else:
-            login(request, user)
-            return redirect('/')
-
-    return render(request, 'log_reg/login.html', context)
+# def login_view(request: HttpRequest) -> HttpResponse:
+#     context = {}
+#     if request.method == 'POST':
+#         username = request.POST["username"]
+#         password = request.POST["password"]
+#         user = authenticate(username=username, password=password)
+#
+#         if user is None:
+#             context = {
+#                 'error': 'Неверный логин или пароль'
+#             }
+#             print('Все не правильно')
+#         else:
+#             login(request, user)
+#             return redirect('/')
+#
+#     return render(request, 'log_reg/login.html', context)
 
 
 def register_view(request: HttpRequest) -> HttpResponse:
@@ -33,7 +33,7 @@ def register_view(request: HttpRequest) -> HttpResponse:
             return HttpResponseRedirect('login')
     else:
         form = forms.RegisterForm()
-    return render(request, 'log_reg/register.html', {
+    return render(request, 'registration/registration.html', {
         'form': form
     })
 

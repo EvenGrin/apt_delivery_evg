@@ -2,7 +2,6 @@ $(document).ready(function() {
     const modalId = '#CreateOrderModal';
     const modalOpenKey = 'modal_open';
     const emptyCartAlert = $('.alert.alert-danger.text-center'); //находим элемент с классом
-
     // Функция для открытия модального окна
     function openModal() {
         $(modalId).modal('show');

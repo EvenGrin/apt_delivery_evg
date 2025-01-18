@@ -9,6 +9,7 @@
                            aria-current="page" href="{% url 'home' %}">Главная</a>
                     </li>
                     {% if request.user.is_authenticated %}
+                    {% if request.user.groups.all.0.name != "доставщики" %}
                     <li class="nav-item">
                         <a class="nav-link text-white d-flex align-items-center justify-content-center"
                            aria-current="page" href="{% url 'cart' %}">Корзина
@@ -23,6 +24,7 @@
                             <span class="badge order_info text-bg-secondary">{% if order_count %}{{order_count}}{% endif %}</span>
                         </a>
                     </li>
+                    {% endif %}
                     {% if request.user.groups.all.0.name == "доставщики" %}
                     <li class="nav-item">
                         <a class="nav-link d-flex align-items-center justify-content-center"
