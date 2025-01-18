@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.decorators import login_required  # Для авторизации
 from django.db.models import Sum
 from django.http import JsonResponse, HttpResponse
@@ -45,11 +47,19 @@ def get_cart_data(user):
         'cart_count': cart_count
     }
 
-
+def sort_cabs(cabinet):
+    """Функция для определения ключа сортировки."""
+    if re.match(r'^\d', cabinet.num):
+        return (1, cabinet.num)  # Сначала сортировка по 1 (цифровые), затем по номеру
+    else:
+        return (0, cabinet.num)  # Сначала сортировка по 0 (нецифровые), затем по номеру
 @login_required
 def cart(request):
     context = get_cart_data(request.user)
-    context['cabs'] = Cabinet.objects.all().order_by("num")
+    cabs = Cabinet.objects.all()
+    sorted_cabs = sorted(cabs, key=sort_cabs)
+
+    context['cabs'] = sorted_cabs
     context['carts'] = Cart.objects.filter(user=request.user)
     #
     context['form'] = make_order(request)

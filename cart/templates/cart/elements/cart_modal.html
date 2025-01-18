@@ -5,13 +5,13 @@
                 <h1 class="modal-title fs-5" id="CreateOrderModalLabel">Подтверждение паролем</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" class="" novalidate>
+            <form method="POST" class="ajaxForm" novalidate>
                 {% csrf_token %}
                 <div class="modal-body my-4 mx-5 d-flex flex-column align-items-center  ajaxForm">
 
                     <div class="row mb-2 w-100">
-                        <label class="col-6 col-form-label" for="cab">Место доставки:</label>
-                        <div class="col-6">
+                        <label class="col-form-label" for="cab">Место доставки:</label>
+                        <div class="">
                             <select name="cab" id="cab" class="form-select">
                                 {% for cab in cabs %}
 
