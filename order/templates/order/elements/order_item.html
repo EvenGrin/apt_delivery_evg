@@ -1,11 +1,12 @@
 {% load humanize %}
-<div class="accordion ">
+<div class="accordion row">
     {% for order in orders%}
-    <div class="bg-white rounded-2 overflow-hidden shadow-sm mt-3">
+    <div>
+    <div class="bg-white rounded-2 overflow-hidden shadow-sm mb-3">
 
         <div class="border rounded-top px-3 py-2">
             <div class="d-flex justify-content-between flex-wrap align-items-center">
-                <p class="h2 ">{{ order.date_create|naturalday}}</p>
+                <p class="h2 ">Создан: {{ order.date_create|naturalday}}</p>
                 <p class="h3">{{order.cab}}</p>
             </div>
             {% if order.result %}
@@ -30,7 +31,7 @@
                          data-id="{{ order.id }}">
                         <div class="btn btn-outline-primary">
                             <span>Заказ</span> №
-                            {{ order.id }} от {{ order.date_create }}
+                            {{ order.id }} на {{ order.order_date }}
                         </div>
                         <div
                                 class="btn  {% if order.status.id == 1%} btn-primary {%elif order.status.id == 2%}btn-success{%elif order.status.id == 3%}btn-danger{% else %}btn-outline-primary{%endif%}">
@@ -56,6 +57,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
     {% endfor %}
 </div>

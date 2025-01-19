@@ -2,8 +2,9 @@ import re
 
 from django.contrib.auth.decorators import login_required  # Для авторизации
 from django.db.models import Sum
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse
 
 from cart.forms import CreateOrderForm
 from cart.models import Cart, Cabinet
@@ -18,20 +19,18 @@ def make_order(request):
     if request.method == 'POST':
         cab = request.POST["cab"]
         form = CreateOrderForm(user=request.user, data=request.POST)
-        if form.is_valid():
+        meals = Cart.objects.all().filter(user=request.user)
+        if form.is_valid() and meals:
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
             order.order_date = request.POST['order_date']
             order.save()
-            meals = Cart.objects.all().filter(user=request.user)
             for p in meals:
                 op = OrderMeal(order=order, meal=p.meal, amount=p.quantity)
                 op.save()
                 p.delete()
-            return redirect('order')
-        else:
-            print(form.errors)
-            # form.add_error('password', 'не верный пароль')
+            return redirect(reverse('cart'))
+
     else:
         form = CreateOrderForm(user=request.user)
     return form
@@ -62,7 +61,16 @@ def cart(request):
     context['cabs'] = sorted_cabs
     context['carts'] = Cart.objects.filter(user=request.user)
     #
-    context['form'] = make_order(request)
+    if request.method == 'POST':
+        form = make_order(request)
+        if isinstance(form, HttpResponseRedirect):
+            return form
+        else:
+            context['form'] = form
+    else:
+        form = make_order(request)
+        context['form'] = form
+
     return render(request, 'cart/index.html', context)
 
 
