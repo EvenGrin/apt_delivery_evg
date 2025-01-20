@@ -24,7 +24,7 @@ def order_history(request, order='-date_create', filter=0):
     context = {}
     context['order'] = order
     context['filter'] = filter
-    context['orders'] = Order.objects.filter(deliver=request.user, status=9).order_by('-date_create')
+    context['orders'] = Order.objects.filter(deliver=request.user, status=9).order_by(order)
     return render(request, 'deliver/order_list.html', context)
 
 @login_required
@@ -32,17 +32,15 @@ def change_status_order(request, order='-date_create', filter=0):
     context = {}
     context['order'] = order
     context['filter'] = filter
-    context['orders'] = Order.objects.filter(deliver=request.user).order_by('-date_create')
+    context['orders'] = Order.objects.filter(deliver=request.user).order_by(order)
     return render(request, 'deliver/order_list.html', context)
 @login_required
 def order_list(request, order='-date_create', filter=0):
     context = {}
     context['order'] = order
     context['filter'] = filter
-    context['statuses'] = Status.objects.all()
-    orders = Order.objects.filter(~Q(cab=0), status__in=[1, 2, 4], deliver=None).order_by(order)  # Фильтруем заказы
-    context['orders'] = orders
-    context['limit_orders'] = Order.objects.filter(deliver=request.user).count()
+    context['orders'] = Order.objects.filter(~Q(cab=0), status__in=[1, 2, 4], deliver=None).order_by(order)  # Фильтруем заказы
+    print(str(context['orders'].query))
     return render(request, 'deliver/order_list.html', context)
 
 
