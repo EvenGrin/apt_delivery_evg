@@ -65,11 +65,11 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
-    def clean(self):
-        if self.status.id == 3 and not self.result:
-            raise ValidationError({'result': 'Обязательное поле при статусе "Отменён"'})
-        if self.status.id > 3 and self.deliver is None:
-            raise ValidationError({'deliver': 'Укажите курьера'})
+    # def clean(self):
+    #     if self.status.id == 3 and not self.result:
+    #         raise ValidationError({'result': 'Обязательное поле при статусе "Отменён"'})
+    #     if self.status.id > 3 and self.deliver is None:
+    #         raise ValidationError({'deliver': 'Укажите курьера'})
 
 
 

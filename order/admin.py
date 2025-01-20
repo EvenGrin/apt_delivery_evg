@@ -18,3 +18,4 @@ class StatusAdmin(admin.ModelAdmin):
 class OrderMealView(admin.ModelAdmin):
     list_display = ('order', 'meal', 'amount',)
     list_filter = ('order',)
+
