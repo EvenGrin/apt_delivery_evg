@@ -29,8 +29,7 @@ def get_default_created_at():
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     date_create = models.DateTimeField(verbose_name='Дата заказа', auto_now_add=True)
-    order_date = models.DateTimeField(default=get_default_created_at, verbose_name='Дата и время получения заказа',
-        validators=[MaxValueValidator(limit_value=datetime.now)]
+    order_date = models.DateTimeField(default=get_default_created_at, verbose_name='Дата и время получения заказа'
     )
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус', default=1)
     result = models.CharField(max_length=50, verbose_name='Причина отказа', blank=True, null=True)
@@ -41,7 +40,7 @@ class Order(models.Model):
         related_name='courier_orders',
         blank=True,
         null=True,
-        limit_choices_to={'groups__name': 'доставщики'},
+        limit_choices_to={'groups__name': 'deliver'},
         verbose_name="Курьер"
     )
 

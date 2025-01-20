@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='order',
             name='courier',
-            field=models.ForeignKey(blank=True, limit_choices_to={'groups__name': 'доставщики'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='courier_orders', to=settings.AUTH_USER_MODEL, verbose_name='Курьер'),
+            field=models.ForeignKey(blank=True, limit_choices_to={'groups__name': 'deliver'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='courier_orders', to=settings.AUTH_USER_MODEL, verbose_name='Курьер'),
         ),
         migrations.AlterField(
             model_name='ordermeal',

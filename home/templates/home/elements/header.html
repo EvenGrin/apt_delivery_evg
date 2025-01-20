@@ -9,7 +9,7 @@
                            aria-current="page" href="{% url 'home' %}">Главная</a>
                     </li>
                     {% if request.user.is_authenticated %}
-                    {% if request.user.groups.all.0.name != "доставщики" %}
+                    {% if request.user.groups.all.0.name != "deliver" and not user.is_superuser %}
                     <li class="nav-item">
                         <a class="nav-link text-white d-flex align-items-center justify-content-center"
                            aria-current="page" href="{% url 'cart' %}">Корзина
@@ -25,7 +25,7 @@
                         </a>
                     </li>
                     {% endif %}
-                    {% if request.user.groups.all.0.name == "доставщики" %}
+                    {% if request.user.groups.all.0.name == "deliver" %}
                     <li class="nav-item">
                         <a class="nav-link d-flex align-items-center justify-content-center"
                            href="/deliver">Доставка

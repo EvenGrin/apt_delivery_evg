@@ -9,14 +9,18 @@
                 <p class="h2 ">Создан: {{ order.date_create|naturalday}}</p>
                 <p class="h3">{{order.cab}}</p>
             </div>
+            {% if request.user.groups.all.0.name == "deliver"  %}
+            <p class="h2 ">Получатель: {{ order.user}}</p>
+            {% if filter == 1 %}
+            {% endif %}
+            <button class="btn btn-primary">Взять</button>
+            {% endif%}
             {% if order.result %}
             <p>
                 Причина отмены:{{order.result}}
             </p>
             {% endif %}
-            {% if request.user.groups.all.0.name == "доставщики" %}
-            <button class="btn btn-primary">Взять</button>
-            {% endif%}
+
 
         </div>
 
