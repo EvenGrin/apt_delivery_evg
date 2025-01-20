@@ -4,7 +4,6 @@
 {% block body %}
 {% include 'home/elements/aside.html' %}
 <section data-bs-spy="scroll" data-bs-smooth-scroll="true" class="row" tabindex="0">
-
     {% for category in categories %}
     <div id="cat_{{category.id}}" class="pb-5">
         <div>
@@ -24,7 +23,6 @@
     </div>
     {% endfor %}
 </section>
-
 <!--<script src="{% static 'home/js/ajax/pagintion.js'%}"></script>-->
 <script src="{% static 'home/js/script.js' %}"></script>
 {% endblock %}

@@ -9,21 +9,17 @@
             </div>
             <div class="meal-price fs-3 fw-semibold">{{meal.price}}р</div>
             {% if request.user.is_authenticated %}
-
             <div class="card-button d-flex justify-content-center align-items-center gap-3 w-100">
                 {% if meal.id in cart_items_id %}
                 <button class="cart_remove btn btn-danger  me-auto" data-id="{{ meal.id }}">
                     Убрать
                 </button>
-
                 <button class="btn btn-primary sub-from-cart-button" data-id="{{ meal.id }}">-</button>
                 {% for cart_item in cart_items %}
-
                 {% if cart_item.meal_id == meal.id %}
                 <span>{{cart_item.quantity }}</span>
                 {% endif %}
                 {% endfor %}
-
                 <button class="add-to-cart-button btn btn-primary cart_add"
                         data-id="{{ meal.id }}">+
                 </button>

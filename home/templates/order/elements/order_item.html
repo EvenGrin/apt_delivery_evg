@@ -3,11 +3,7 @@
     {% for order in orders%}
     <div>
         <div class="bg-white rounded-2 overflow-hidden shadow-sm mb-3">
-
-
             <div class="border rounded-top px-3 py-2">
-
-
                 {% if request.user.groups.all.0.name == "deliver" %}
                 <table class="table">
                     <thead>
