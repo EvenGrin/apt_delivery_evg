@@ -2,66 +2,93 @@
 <div class="accordion row">
     {% for order in orders%}
     <div>
-    <div class="bg-white rounded-2 overflow-hidden shadow-sm mb-3">
+        <div class="bg-white rounded-2 overflow-hidden shadow-sm mb-3">
 
-        <div class="border rounded-top px-3 py-2">
-            <div class="d-flex justify-content-between flex-wrap align-items-center">
-                <p class="h2 ">Создан: {{ order.date_create|naturalday}}</p>
-                <p class="h3">{{order.cab}}</p>
+
+            <div class="border rounded-top px-3 py-2">
+
+
+                {% if request.user.groups.all.0.name == "deliver" %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Дата создания заказа</th>
+                        <th scope="col">Получатель</th>
+                        <th scope="col">Курьер</th>
+                        <th scope="col">Место доставки</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ order.date_create|naturalday}}</td>
+                        <td>{{order.user}}</td>
+                        {% if order.deliver %}
+                        <td>{{order.deliver}}</td>
+                        {% else %}
+                        <td>Курьер не выбран</td>
+                        {% endif %}
+                        <td>{{order.cab}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                {% if 'order_list' in request.path %}
+                <button class="take_order btn btn-primary" data-id="{{order.id}}">Взять</button>
+                {% endif %}
+
+                {% else %}
+                <div class="d-flex justify-content-between flex-wrap align-items-center">
+                    <p class="h2 ">Создан: {{ order.date_create|naturalday}}</p>
+                    <p class="h3">{{order.cab}}</p>
+                </div>
+                {% endif%}
+                {% if order.result %}
+                <p>
+                    Причина отмены:{{order.result}}
+                </p>
+                {% endif %}
+
+
             </div>
-            {% if request.user.groups.all.0.name == "deliver"  %}
-            <p class="h2 ">Получатель: {{ order.user}}</p>
-            {% if filter == 1 %}
-            {% endif %}
-            <button class="btn btn-primary">Взять</button>
-            {% endif%}
-            {% if order.result %}
-            <p>
-                Причина отмены:{{order.result}}
-            </p>
-            {% endif %}
 
 
-        </div>
+            <div class="accordion-item ">
 
-
-        <div class="accordion-item ">
-
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#order_{{ order.id }}" aria-expanded="false"
-                        aria-controls="order_{{ order.id }}">
-                    <div class="order_view btn-group order_info  btn-group-lg bg-white"
-                         data-id="{{ order.id }}">
-                        <div class="btn btn-outline-primary">
-                            <span>Заказ</span> №
-                            {{ order.id }} на {{ order.order_date }}
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#order_{{ order.id }}" aria-expanded="false"
+                            aria-controls="order_{{ order.id }}">
+                        <div class="order_view btn-group order_info  btn-group-lg bg-white"
+                             data-id="{{ order.id }}">
+                            <div class="btn btn-outline-primary">
+                                <span>Заказ</span> №
+                                {{ order.id }} на {{ order.order_date }}
+                            </div>
+                            <div
+                                    class="btn  {% if order.status.id == 1%} btn-primary {%elif order.status.id == 2%}btn-success{%elif order.status.id == 3%}btn-danger{% else %}btn-outline-primary{%endif%}">
+                                <span>Статус: </span>{{ order.status }}
+                            </div>
+                            <div class="btn btn-outline-primary">
+                                <span>Блюд:</span>
+                                {{ order.amount }}
+                            </div>
+                            <div class="btn btn-outline-primary">
+                                <span>Сумма:</span>
+                                {{ order.total_amount }}
+                            </div>
                         </div>
-                        <div
-                                class="btn  {% if order.status.id == 1%} btn-primary {%elif order.status.id == 2%}btn-success{%elif order.status.id == 3%}btn-danger{% else %}btn-outline-primary{%endif%}">
-                            <span>Статус: </span>{{ order.status }}
-                        </div>
-                        <div class="btn btn-outline-primary">
-                            <span>Блюд:</span>
-                            {{ order.amount }}
-                        </div>
-                        <div class="btn btn-outline-primary">
-                            <span>Сумма:</span>
-                            {{ order.total_amount }}
-                        </div>
+                    </button>
+                </h2>
+                <div id="order_{{ order.id }}" class="accordion-collapse collapse">
+                    <div class="accordion-body cart" data-id="{{ order.id }}">
+
+                        {% for meal in order.meals %}
+                        {% include 'order/elements/order_item_meals.html'%}
+                        {% endfor %}
                     </div>
-                </button>
-            </h2>
-            <div id="order_{{ order.id }}" class="accordion-collapse collapse">
-                <div class="accordion-body cart" data-id="{{ order.id }}">
-
-                    {% for meal in order.meals %}
-                    {% include 'order/elements/order_item_meals.html'%}
-                    {% endfor %}
                 </div>
             </div>
         </div>
-    </div>
     </div>
     {% endfor %}
 </div>

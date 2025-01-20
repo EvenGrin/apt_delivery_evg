@@ -7,28 +7,26 @@ from order.models import Order, Status
 
 
 @login_required
-def take_order(request):
+def take_order(request, order='-date_create', filter=0):
     context = {}
-    context['orders'] = Order.objects.filter(status__name='').order_by('-date_create')
+    context['order'] = order
+    context['filter'] = filter
+    context['orders'] = Order.objects.filter(status__id__in=[1, 2, 4]).order_by('-date_create')
     return render(request, 'deliver/order_list.html', context)
 
+@login_required
+def change_status_order(request):
+    context = {}
+    context['orders'] = Order.objects.filter(deliver=request.user).order_by('-date_create')
+    return render(request, 'deliver/order_list.html', context)
 
 @login_required
-def deliver_order_list(request, order='-date_create', filter=0):
+def order_list(request, order='-date_create', filter=0):
     context = {}
     context['order'] = order
     context['filter'] = filter
     context['statuses'] = Status.objects.all()
-
-    deliver = request.user  # Получаем авторизованного курьера
-    context['orders'] = Order.objects.filter(status=4)  # Фильтруем заказы
-
-    # Другие варианты фильтрации:
-    # orders = Order.objects.filter(status='ready_for_delivery') # Заказы без курьера
-    # orders = Order.objects.all() # Все заказы
-    orders = Order.objects.all().order_by(order)
-    if filter:
-        orders = orders.filter(status__id=filter)
+    orders = Order.objects.filter(status__in=[1,2,4])  # Фильтруем заказы
     context['orders'] = orders
     return render(request, 'deliver/order_list.html', context)
 

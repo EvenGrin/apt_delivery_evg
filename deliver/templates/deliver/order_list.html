@@ -24,25 +24,22 @@
 </div>
 <div class="d-flex flex-wrap align-items-center justify-content-between  z-1 rounded-2 overflow-hidden     mb-4"
      style="top: 80px;">
-    <div class="mb-1">Фильтровать по статусу</div>
     <div class="btn-group overflow-x-auto dragscroll flex-row ">
         <a href="{% url 'deliver' %}"
-           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">
-            Все
+           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if 'order_list' in request.path %}disabled{% endif %}">
+            Взять заказ
         </a>
-        {% for status in statuses %}
-        <a href="{% url 'deliver' order=order filter=status.id %}"
-           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if status.id == filter %}disabled{% endif %}">
-            {{ status.name }}
+        <a href="{% url 'change_status_order'  %}"
+           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if 'change_status_order' in request.path %}disabled{% endif %}">
+            Изменить статус
         </a>
-        {% empty %}
-        <div class="col w-100">
-            {% include 'home/elements/danger.html' with text="Ничего не найдено"%}
-        </div>
-        {% endfor %}
+        <a href="{% url 'order_history' %}"
+           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if  'order_history' in request.path %}disabled{% endif %}">
+            История выполненных заказов
+        </a>
     </div>
 </div>
 {% include 'order/elements/order_item.html'%}
 <script src="{% static 'order/js/order_view_close.js' %}"></script>
-
+<script src="{% static 'deliver/js/script.js' %}"></script>
 {% endblock %}
