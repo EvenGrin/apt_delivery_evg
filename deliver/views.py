@@ -12,7 +12,7 @@ limit = 10  # ограничение количества взятия зака�
 @login_required
 def take_order(request):
     order_id = request.GET['order_id']
-    count = Order.objects.filter(deliver=request.user).count()
+    count = Order.objects.filter(~Q(status=7), deliver=request.user).count()
     if (Order.objects.filter(id=order_id, cab=0)):
         return JsonResponse({'message': 'Нельзя взять заказы с самовыносом', 'count': count})
     if count < 10:
@@ -23,26 +23,8 @@ def take_order(request):
         return JsonResponse({'message': 'Уже взято 10 заказов', 'count': count})
 
 
-@login_required
-def order_history(request, order='-date_create', filter=0):
-    context = {}
-    context['order'] = order
-    context['filter'] = filter
-    context['count'] = Order.objects.filter(deliver=request.user).count()
-    #  заказы, у которыз курьер текущий пользователь (доставщик), со статусом доставлен
-    context['orders'] = Order.objects.filter(deliver=request.user, status=7).order_by(order)
-    return render(request, 'deliver/order_list.html', context)
 
 
-@login_required
-def change_status(request, order='-date_create', filter=0):
-    context = {}
-    context['order'] = order
-    context['filter'] = filter
-    context['count'] = Order.objects.filter(deliver=request.user).count()
-    #  заказы, у которых статус не равен доставлен, не самовынос, курьер текущий пользователь (доставщик)
-    context['orders'] = Order.objects.filter(~Q(cab=0), status__in=[4, 6], deliver=request.user).order_by(order)
-    return render(request, 'deliver/order_list.html', context)
 
 
 @login_required
@@ -53,7 +35,7 @@ def update_status(request):
         return JsonResponse({'class_add': 'delivered', 'class_remove': 'in_way', 'html': 'Изменить на джоставлен'})
     elif Order.objects.filter(id=order_id, status=6):
         order = Order.objects.filter(id=order_id).update(status=7)
-        return JsonResponse({'message': 'Уже взято 10 заказов'})
+        return JsonResponse({'class_add': 'btn-outline', 'class_remove': 'delivered', 'html': 'Изменен'})
 
 
 @login_required
@@ -62,6 +44,7 @@ def order_list(request, order='-date_create', filter=0):
     context['order'] = order
     context['filter'] = filter
     context['count'] = Order.objects.filter(deliver=request.user).count()
+
     # заказы, которые не самовынос, без курьера, со статусом новый подтвержден, собран
     context['orders'] = Order.objects.filter(~Q(cab=0), status__in=[1, 2, 4], deliver=None).order_by(
         order)  # Фильтруем заказы
@@ -74,6 +57,10 @@ def deliver_orders(request, order='-date_create', filter=0):
     context['order'] = order
     context['filter'] = filter
     context['count'] = Order.objects.filter(deliver=request.user).count()
+    context['statuses'] = Status.objects.filter(~Q(id=5))
+    orders = Order.objects.filter(deliver=request.user).order_by(order)
     # Все заказы
-    context['orders'] = Order.objects.filter(deliver=request.user).order_by(order)  # Фильтруем заказы
+    if filter:
+        orders = Order.objects.filter(deliver=request.user, status=filter).order_by(order)
+    context['orders'] = orders  # Фильтруем заказы
     return render(request, 'deliver/order_list.html', context)

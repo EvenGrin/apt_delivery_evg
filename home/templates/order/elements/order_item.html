@@ -9,10 +9,11 @@
 
 
                 {% if request.user.groups.all.0.name == "deliver" %}
-                <table class="table">
+                <table class="table fs-6">
                     <thead>
                     <tr>
-                        <th scope="col">Дата создания заказа</th>
+                        <th scope="col">Номер заказа</th>
+                        <th scope="col">Дата получения</th>
                         <th scope="col">Получатель</th>
                         <th scope="col">Курьер</th>
                         <th scope="col">Место доставки</th>
@@ -20,7 +21,8 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td>{{ order.date_create|naturalday}}</td>
+                        <td>{{ order.id}}</td>
+                        <td>{{order.order_date}}</td>
                         <td>{{order.user}}</td>
                         {% if order.deliver %}
                         <td>{{order.deliver}}</td>
@@ -33,18 +35,19 @@
                 </table>
                 {% if 'order_list' in request.path %}
                 <button class="take_order btn btn-primary" data-id="{{order.id}}">Взять</button>
-                {% elif 'change_status' in request.path %}
+                {% elif 'deliver_order' in request.path %}
                 {% if order.status.id == 4 %}
                 <button class="in_way btn btn-primary" data-id="{{order.id}}">Изменить на в пути</button>
                 {%  elif order.status.id == 6 %}
-                <button class="delivered btn btn-primary" data-id="{{order.id}}">Измекнить на доставлен</button>
+                <button class="delivered btn btn-primary" data-id="{{order.id}}">Изменить на доставлен</button>
                 {% endif %}
                 {% endif %}
 
                 {% else %}
                 <div class="d-flex justify-content-between flex-wrap align-items-center">
-                    <p class="h2 ">Создан: {{ order.date_create|naturalday}}</p>
-                    <p class="h3">{{order.cab}}</p>
+                    <p class="fs-3 "><span>Заказ</span> №
+                                {{ order.id }} на {{ order.order_date }}</p>
+                    <p class="fs-3">{{order.cab}}</p>
                 </div>
                 {% endif%}
                 {% if order.result %}
@@ -58,11 +61,10 @@
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             data-bs-target="#order_{{ order.id }}" aria-expanded="false"
                             aria-controls="order_{{ order.id }}">
-                        <div class="order_view btn-group order_info  btn-group-lg bg-white"
+                        <div class="order_view btn-group order_info btn-group-lg  bg-white"
                              data-id="{{ order.id }}">
                             <div class="btn btn-outline-primary">
-                                <span>Заказ</span> №
-                                {{ order.id }} на {{ order.order_date }}
+                                <span>Создан: </span>{{ order.date_create|naturalday}}
                             </div>
                             <div class="btn
                             {% if order.status.id  == 1%} btn-primary
@@ -93,5 +95,7 @@
             </div>
         </div>
     </div>
+    {% empty %}
+    {% include 'home/elements/danger.html' with text='Заказов нет'%}
     {% endfor %}
 </div>

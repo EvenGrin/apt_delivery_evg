@@ -9,10 +9,10 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on("click", ".in_way", function (e) {
-    console.log(123)
+    $(document).on("click", ".in_way, .delivered", function (e) {
     $.get("/deliver/update_status/", { order_id:  $(this).data("id")}, (data) => {
-            $(this).html('Изменить на доставлен').addClass('delivered').removeClass('in_way')
+            console.log($(this))
+            $(this).html(data.message).addClass(data.class_add).removeClass(data.class_remove)
         });
     });
 
