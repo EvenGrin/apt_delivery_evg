@@ -58,8 +58,11 @@
                                 <span>Заказ</span> №
                                 {{ order.id }} на {{ order.order_date }}
                             </div>
-                            <div
-                                    class="btn  {% if order.status.id == 1%} btn-primary {%elif order.status.id == 2%}btn-success{%elif order.status.id == 3%}btn-danger{% else %}btn-outline-primary{%endif%}">
+                            <div class="btn
+                            {% if order.status.id  == 1%} btn-primary
+                            {% elif order.status.id == 2 or order.status.id == 7 or order.status.id == 5 %}btn-success
+                            {%elif order.status.id == 3%}btn-danger
+                            {% else %}btn-outline-primary{%endif%}">
                                 <span>Статус: </span>{{ order.status }}
                             </div>
                             <div class="btn btn-outline-primary">
