@@ -4,39 +4,56 @@
 {% block body %}
 <div class="d-flex justify-content-between flex-wrap align-items-center">
     <h2 class=" ps-0  px-3 py-2">Заказы</h2>
+
     <div class="d-flex justify-content-end z-1">
         <button class="view_all btn btn-primary position-fixed " style="top:80px;">Показать все</button>
     </div>
 </div>
+<p>У вас <span id="count">{{count}}</span> заказов</p>
+<!--<div class="d-flex flex-wrap align-items-center justify-content-between  z-1 rounded-2 overflow-hidden     mb-4"-->
+<!--     style="top: 80px;">-->
+<!--    <div class="mb-1">Сортировать по</div>-->
+<!--    <div class="btn-group overflow-x-auto dragscroll flex-row ">-->
+<!--        <a href="{% url 'deliver' order='-date_create' filter=filter %}"-->
+<!--           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">-->
+<!--            Дате создания заказа-->
+<!--        </a>-->
+<!--        <a href="{% url 'deliver' order='-order_date' filter=filter %}"-->
+<!--           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">-->
+<!--            Дате получения заказа-->
+<!--        </a>-->
+<!--    </div>-->
+<!--</div>-->
+{% if 'deliver_orders' in request.path %}
 <div class="d-flex flex-wrap align-items-center justify-content-between  z-1 rounded-2 overflow-hidden     mb-4"
      style="top: 80px;">
-    <div class="mb-1">Сортировать по</div>
-    <div class="btn-group overflow-x-auto dragscroll flex-row ">
-        <a href="{% url 'deliver' order='-date_create' filter=filter %}"
+    <div class="mb-1">Фильтровать по статусу</div>
+    <div  class="btn-group overflow-x-auto dragscroll flex-row ">
+        <a href="{% url 'deliver_orders' %}"
            class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">
-            Дате создания заказа
+            Все
         </a>
-        <a href="{% url 'deliver' order='-order_date' filter=filter %}"
-           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">
-            Дате получения заказа
+        {% for status in statuses %}
+        <a href="{% url 'deliver_orders' order=order filter=status.id %}"
+           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if status.id == filter %}disabled{% endif %}">
+            {{ status.name }}
         </a>
+        {% endfor %}
     </div>
 </div>
+{% endif %}
 <div class="d-flex flex-wrap align-items-center justify-content-between  z-1 rounded-2 overflow-hidden     mb-4"
      style="top: 80px;">
     <div class="btn-group overflow-x-auto dragscroll flex-row ">
+        <a href="{% url 'deliver_orders' %}"
+           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if 'deliver_orders' in request.path %}disabled{% endif %}">
+            Ваши заказы
+        </a>
         <a href="{% url 'deliver' %}"
            class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if 'order_list' in request.path %}disabled{% endif %}">
             Взять заказ
         </a>
-        <a href="{% url 'change_status_order'  %}"
-           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if 'change_status_order' in request.path %}disabled{% endif %}">
-            Изменить статус
-        </a>
-        <a href="{% url 'order_history' %}"
-           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if  'order_history' in request.path %}disabled{% endif %}">
-            История выполненных заказов
-        </a>
+
     </div>
 </div>
 {% include 'order/elements/order_item.html'%}

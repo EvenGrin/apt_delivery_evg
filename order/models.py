@@ -65,16 +65,18 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
-    # def clean(self):
-    #     if self.status.id == 3 and not self.result:
-    #         raise ValidationError({'result': 'Обязательное поле при статусе "Отменён"'})
-    #     if self.status.id > 3 and self.deliver is None:
-    #         raise ValidationError({'deliver': 'Укажите курьера'})
+    def clean(self):
+        # if self.status.id == 3 and not self.result:
+        #     raise ValidationError({'result': 'Обязательное поле при статусе "Отменён"'})
+        # if self.status.id > 3 and self.deliver is None:
+        #     raise ValidationError({'deliver': 'Укажите курьера'})
+        if self.cab.id == 0 and self.deliver:
+            raise ValidationError({'deliver':'К самовыносу курьер не указывается'})
 
 
 
     def __str__(self):
-        return f'покупатель: {self.user},\n дата: {str(self.date_create).split(".")[0]}'
+        return f'№: {self.id},\n покупатель: {self.user},\n дата: {str(self.date_create).split(".")[0]}'
 
 
 class OrderMeal(models.Model):
