@@ -33,23 +33,6 @@ class Meal(models.Model):
         return self.name
 
 
-class MenuDay(models.Model):
-    DAYS_OF_WEEK = (
-        (0, 'Понедельник'),
-        (1, 'Вторник'),
-        (2, 'Среда'),
-        (3, 'Четверг'),
-        (4, 'Пятница'),
-    )
-    week_day = models.IntegerField(choices=DAYS_OF_WEEK, default=0)
-    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Меню на день'
-        verbose_name_plural = 'Меню на день'
-
-    def __str__(self):
-        return f'{self.DAYS_OF_WEEK[self.week_day][1]}'
 
 
 

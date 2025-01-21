@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q
 
-from home.models import Category, Meal, MenuDay
+from home.models import Category, Meal
 from order.models import Order, OrderMeal
 
 
@@ -24,5 +24,3 @@ class MealView(admin.ModelAdmin):
 class CategoryView(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name__iregex',)  # Case-insensitive search directly
-
-admin.site.register(MenuDay)
