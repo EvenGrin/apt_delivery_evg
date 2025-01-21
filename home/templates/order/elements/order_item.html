@@ -33,6 +33,12 @@
                 </table>
                 {% if 'order_list' in request.path %}
                 <button class="take_order btn btn-primary" data-id="{{order.id}}">Взять</button>
+                {% elif 'change_status' in request.path %}
+                {% if order.status.id == 4 %}
+                <button class="in_way btn btn-primary" data-id="{{order.id}}">Изменить на в пути</button>
+                {%  elif order.status.id == 6 %}
+                <button class="delivered btn btn-primary" data-id="{{order.id}}">Измекнить на доставлен</button>
+                {% endif %}
                 {% endif %}
 
                 {% else %}

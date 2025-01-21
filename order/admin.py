@@ -11,7 +11,8 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Status)
 class StatusAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id', 'name',)
+    ordering = ('id',)
 
 
 @admin.register(OrderMeal)
