@@ -32,10 +32,10 @@ def update_status(request):
     order_id = request.GET['order_id']
     if Order.objects.filter(id=order_id, status=4):
         order = Order.objects.filter(id=order_id).update(status=6)
-        return JsonResponse({'class_add': 'delivered', 'class_remove': 'in_way', 'html': 'Изменить на джоставлен'})
+        return JsonResponse({'class_add': 'delivered, btn-outline-success', 'class_remove': 'in_way, btn-primary', 'html': 'Изменить на доставлен'})
     elif Order.objects.filter(id=order_id, status=6):
         order = Order.objects.filter(id=order_id).update(status=7)
-        return JsonResponse({'class_add': 'btn-outline', 'class_remove': 'delivered', 'html': 'Изменен'})
+        return JsonResponse({'class_add': 'btn-outline-success', 'class_remove': 'delivered, btn-primary', 'html': 'Изменен на доставлен'})
 
 
 @login_required

@@ -12,7 +12,7 @@ $(document).ready(function () {
     $(document).on("click", ".in_way, .delivered", function (e) {
     $.get("/deliver/update_status/", { order_id:  $(this).data("id")}, (data) => {
             console.log($(this))
-            $(this).html(data.message).addClass(data.class_add).removeClass(data.class_remove)
+            $(this).html(data.html).addClass(data.class_add).removeClass(data.class_remove)
         });
     });
 

@@ -88,5 +88,9 @@ class OrderMeal(models.Model):
         verbose_name = 'Заказ блюд'
         verbose_name_plural = 'Заказы блюд'
 
+    @property
+    def total_price(self):
+        return self.meal.price * self.amount
+
     def __str__(self):
         return f'{self.order}'
