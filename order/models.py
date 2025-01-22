@@ -51,6 +51,8 @@ class Order(models.Model):
             total += item.meal.price * item.amount
         return total
 
+    total_amount.fget.short_description = 'Сумма заказа'
+
     @property
     def amount(self):
         return OrderMeal.objects.filter(order=self.pk).aggregate(Sum('amount'))['amount__sum']
