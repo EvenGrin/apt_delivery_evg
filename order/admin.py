@@ -1,14 +1,11 @@
-import datetime
-
 from django.contrib import admin
-from django.db.models import Q, Sum
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery
 from django.db.models.functions import TruncDay
 from django.shortcuts import render
 from django.urls import path
 from django.utils import timezone
-
+from datetime import datetime, timezone
 from home.models import Meal
-from log_reg.models import User
 from order.models import Order, Status, OrderMeal
 
 
@@ -58,9 +55,9 @@ class OrderAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         custom_urls = [
             path('sales_report/', self.admin_site.admin_view(self.sales_report_view), name='sales_report'),
-            # path('users_report/', self.admin_site.admin_view(self.user_report_view), name='user_report'),
-            # path('couriers_report/', self.admin_site.admin_view(self.courier_report_view), name='courier_report'),
-            # path('frequency_report/', self.admin_site.admin_view(self.order_frequency_view), name='frequency_report'),
+            path('users_report/', self.admin_site.admin_view(self.user_report_view), name='user_report'),
+            path('couriers_report/', self.admin_site.admin_view(self.courier_report_view), name='courier_report'),
+            path('frequency_report/', self.admin_site.admin_view(self.order_frequency_view), name='frequency_report'),
         ]
         return custom_urls + urls
 
@@ -82,17 +79,22 @@ class OrderAdmin(admin.ModelAdmin):
         if start_date and end_date:
             orders = orders.filter(order_date__range=(start_date, end_date))
 
+        subquery = OrderMeal.objects.filter(order=OuterRef('pk')).annotate(
+            total_price=ExpressionWrapper(F('meal__price') * F('amount'), output_field=DecimalField())
+        ).values('order').annotate(total_amount=Sum('total_price')).values('total_amount')
+
         # Суммарные продажи по дням
-        sales_by_day = (
-            orders.annotate(day=TruncDay('order_date'))
-            .values('day')
-            .annotate(total_sales=Sum('total_amount'))
-            .order_by('day')
-        )
+        sales_by_day = orders.annotate(
+            day=TruncDay('order_date'),
+            total_amount=Subquery(subquery),
+        ).values('day').annotate(total_sales=Sum('total_amount')).order_by('day')
 
         # Продажи по категориям
+        meal_ids = OrderMeal.objects.filter(order__in=orders).values_list('meal_id', flat=True)
+
+        # 2. Сгруппируем meals по категории и посчитаем total_sales
         sales_by_category = (
-            Meal.objects.filter(order__in=orders)
+            Meal.objects.filter(id__in=meal_ids)
             .values('category__name')
             .annotate(total_sales=Sum('price'))
             .order_by('-total_sales')
@@ -100,7 +102,7 @@ class OrderAdmin(admin.ModelAdmin):
 
         # Продажи по блюдам
         sales_by_dish = (
-            Meal.objects.filter(order__in=orders)
+            Meal.objects.filter(id__in=meal_ids)
             .values('name')
             .annotate(total_sales=Sum('price'))
             .order_by('-total_sales')
@@ -113,6 +115,55 @@ class OrderAdmin(admin.ModelAdmin):
             'title': 'Отчет по продажам'
         }
         return render(request, 'admin/sales_report.html', context)
+
+    def user_report_view(self, request):
+        user_type = request.GET.get('user_type', 'all')  # Default to 'all'
+
+        if user_type == 'clients':
+            users = Order.objects.values('user').distinct().annotate(count=Count('user'))
+            user_data = users.order_by('-count')
+        elif user_type == 'couriers':
+            users = Order.objects.filter(deliver__isnull=False).values('deliver').distinct().annotate(
+                count=Count('deliver'))
+            user_data = users.order_by('-count')
+        else:  # 'all'
+            all_clients = Order.objects.values('user').distinct().annotate(count=Count('user'))
+            all_couriers = Order.objects.filter(deliver__isnull=False).values('deliver').distinct().annotate(
+                count=Count('deliver'))
+            user_data = {
+                'clients': all_clients.order_by('-count'),
+                'couriers': all_couriers.order_by('-count'),
+            }
+
+        context = {'user_data': user_data, 'user_type': user_type, 'title': 'Отчет по пользователям'}
+        return render(request, 'admin/user_report.html', context)
+
+    def courier_report_view(self, request):
+        subquery = OrderMeal.objects.filter(order=OuterRef('pk')).annotate(
+            total_price=ExpressionWrapper(F('meal__price') * F('amount'), output_field=DecimalField())
+        ).values('order').annotate(total_amount=Sum('total_price')).values('total_amount')
+        couriers = (
+            Order.objects.filter(deliver__isnull=False)
+            .values('deliver')
+            .annotate(
+                order_count=Count('deliver'),
+                avg_amount=Sum(Subquery(subquery)) / Count('deliver'),
+            )
+            .order_by('-order_count')
+        )
+
+        context = {'couriers': couriers, 'title': 'Отчет по курьерам'}
+        return render(request, 'admin/courier_report.html', context)
+
+    def order_frequency_view(self, request):
+        frequency = (
+            Order.objects.values('user')
+            .annotate(order_count=Count('user'))
+            .order_by('-order_count')
+        )
+        context = {'frequency': frequency, 'title': 'Анализ частоты заказов'}
+        return render(request, 'admin/frequency_report.html', context)
+
 
 @admin.register(Status)
 class StatusAdmin(admin.ModelAdmin):

@@ -1,0 +1,86 @@
+    {% extends 'admin/base_site.html' %}
+    
+    {% block content %}
+         <form method="get">
+            <label for="user_type">Тип пользователя:</label>
+            <select name="user_type" id="user_type">
+                <option value="all" {% if user_type == 'all' %}selected{% endif %}>Все</option>
+                <option value="clients" {% if user_type == 'clients' %}selected{% endif %}>Клиенты</option>
+                <option value="couriers" {% if user_type == 'couriers' %}selected{% endif %}>Курьеры</option>
+            </select>
+            <button type="submit">Фильтровать</button>
+       </form>
+       
+       {% if user_type == 'all' %}
+       <h2>Клиенты:</h2>
+          <table>
+              <thead>
+                 <tr>
+                    <th>Пользователь</th>
+                     <th>Количество заказов</th>
+                 </tr>
+              </thead>
+              <tbody>
+                {% for item in user_data.clients %}
+                      <tr>
+                         <td>{{ item.user }}</td>
+                          <td>{{ item.count }}</td>
+                     </tr>
+                 {% endfor %}
+              </tbody>
+           </table>
+          <h2>Курьеры:</h2>
+              <table>
+                 <thead>
+                    <tr>
+                        <th>Курьер</th>
+                        <th>Количество заказов</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in user_data.couriers %}
+                        <tr>
+                           <td>{{ item.deliver }}</td>
+                            <td>{{ item.count }}</td>
+                         </tr>
+                   {% endfor %}
+               </tbody>
+           </table>
+    {% elif user_type == 'clients' %}
+        <h2>Клиенты:</h2>
+            <table>
+                <thead>
+                    <tr>
+                       <th>Пользователь</th>
+                        <th>Количество заказов</th>
+                    </tr>
+                </thead>
+               <tbody>
+                    {% for item in user_data %}
+                        <tr>
+                           <td>{{ item.user }}</td>
+                            <td>{{ item.count }}</td>
+                        </tr>
+                    {% endfor %}
+               </tbody>
+            </table>
+     {% elif user_type == 'couriers' %}
+         <h2>Курьеры:</h2>
+            <table>
+                <thead>
+                   <tr>
+                       <th>Курьер</th>
+                        <th>Количество заказов</th>
+                    </tr>
+               </thead>
+               <tbody>
+                   {% for item in user_data %}
+                       <tr>
+                           <td>{{ item.deliver }}</td>
+                           <td>{{ item.count }}</td>
+                        </tr>
+                   {% endfor %}
+               </tbody>
+           </table>
+    {% endif %}
+    {% endblock %}

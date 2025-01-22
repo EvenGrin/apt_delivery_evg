@@ -1,0 +1,22 @@
+    {% extends 'admin/base_site.html' %}
+    
+    {% block content %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Курьер</th>
+                    <th>Количество заказов</th>
+                     <th>Средний чек</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in couriers %}
+                    <tr>
+                       <td>{{ item.deliver }}</td>
+                        <td>{{ item.order_count }}</td>
+                        <td>{{ item.avg_amount }}</td>
+                   </tr>
+               {% endfor %}
+            </tbody>
+        </table>
+    {% endblock %}

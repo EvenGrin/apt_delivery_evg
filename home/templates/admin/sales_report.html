@@ -1,65 +1,64 @@
-    {% extends 'admin/base_site.html' %}
-    
-    {% block content %}
-    <h1>{{ title }}</h1>
-      <form method="get">
-        <label for="start_date">Начальная дата:</label>
-        <input type="date" id="start_date" name="start_date">
-         <label for="end_date">Конечная дата:</label>
-        <input type="date" id="end_date" name="end_date">
-        <button type="submit">Фильтровать</button>
-     </form>
-        <h2>Продажи по дням:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Дата</th>
-                    <th>Сумма продаж</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in sales_by_day %}
-                    <tr>
-                        <td>{{ item.day }}</td>
-                        <td>{{ item.total_sales }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% extends 'admin/base_site.html' %}
 
-        <h2>Продажи по категориям:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Категория</th>
-                    <th>Сумма продаж</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in sales_by_category %}
-                    <tr>
-                        <td>{{ item.category__name }}</td>
-                        <td>{{ item.total_sales }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% block content %}
+<form method="get">
+    <label for="start_date">Начальная дата:</label>
+    <input type="date" id="start_date" name="start_date">
+    <label for="end_date">Конечная дата:</label>
+    <input type="date" id="end_date" name="end_date">
+    <button type="submit">Фильтровать</button>
+</form>
+<h2>Продажи по дням:</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Дата</th>
+        <th>Сумма продаж</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in sales_by_day %}
+    <tr>
+        <td>{{ item.day }}</td>
+        <td>{{ item.total_sales }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
-        <h2>Продажи по блюдам:</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Блюдо</th>
-                    <th>Сумма продаж</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in sales_by_dish %}
-                    <tr>
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.total_sales }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endblock %}
+<h2>Продажи по категориям:</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Категория</th>
+        <th>Сумма продаж</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in sales_by_category %}
+    <tr>
+        <td>{{ item.category__name }}</td>
+        <td>{{ item.total_sales }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>Продажи по блюдам:</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Блюдо</th>
+        <th>Сумма продаж</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in sales_by_dish %}
+    <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.total_sales }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,20 @@
+    {% extends 'admin/base_site.html' %}
+    
+    {% block content %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Пользователь</th>
+                     <th>Количество заказов</th>
+                </tr>
+            </thead>
+           <tbody>
+               {% for item in frequency %}
+                  <tr>
+                      <td>{{item.user}}</td>
+                      <td>{{item.order_count}}</td>
+                   </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+    {% endblock %}
