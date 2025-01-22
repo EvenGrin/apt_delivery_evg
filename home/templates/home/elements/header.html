@@ -4,10 +4,12 @@
             <a class="navbar-brand" href="/">АптДоставка</a>
             <div class="collapse navbar-collapse justify-content-end" id="navbarText">
                 <ul class="navbar-nav mb-2 mb-lg-0">
+                    {% if request.user.groups.all.0.name != "deliver" %}
                     <li class="nav-item ">
                         <a class="nav-link text-white d-flex align-items-center justify-content-center"
                            aria-current="page" href="{% url 'home' %}">Главная</a>
                     </li>
+                    {% endif %}
                     {% if request.user.is_authenticated %}
                     {% if request.user.groups.all.0.name != "deliver" %}
                     <li class="nav-item">
@@ -75,6 +77,12 @@
                             <li class="d-lg-none">
                                 <a class="dropdown-item d-flex align-items-center"
                                    href="/admin">АдминПанель</a>
+                            </li>
+                            {% elif request.user.groups.all.0.name == "deliver" %}
+                            <li class="d-lg-none">
+                                <a class="dropdown-item d-flex align-items-center"
+                                   href="{% url 'deliver'%}">Доставка
+                                    <span class="material-icons">directions_run</span></a>
                             </li>
                             {% endif %}
                             {% endif %}

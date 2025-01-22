@@ -67,7 +67,7 @@
                             {% elif order.status.id == 2 or order.status.id == 7 or order.status.id == 5 %}btn-success
                             {%elif order.status.id == 3%}btn-danger
                             {% else %}btn-outline-primary{%endif%}">
-                                <span>Статус: </span>{{ order.status }}
+                                Статус: <span data-id="{{order.id}}"> {{ order.status }} </span>
                             </div>
                             <div class="btn btn-outline-primary">
                                 <span>Блюд:</span>

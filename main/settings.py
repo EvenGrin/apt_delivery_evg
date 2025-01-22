@@ -51,7 +51,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'main.middleware.RedirectIfAuthenticatedMiddleware',
+    'main.middleware.RedirectIfAuthenticatedMiddleware',
+]
+
+REDIRECT_AUTHENTICATED_EXCLUDE = [
+    '/logout/',
 ]
 
 
