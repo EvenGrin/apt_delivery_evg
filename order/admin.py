@@ -128,7 +128,7 @@ class OrderAdmin(admin.ModelAdmin):
         # Продажи по блюдам
         sales_by_dish = (
             Meal.objects.filter(id__in=meal_ids)
-            .values('name')
+            .values('name', 'category__name')
             .annotate(total_sales=Sum('price'))
             .order_by('-total_sales')
         )
