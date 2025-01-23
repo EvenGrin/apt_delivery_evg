@@ -1,22 +1,34 @@
-    {% extends 'admin/base_site.html' %}
-    
-    {% block content %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Курьер</th>
-                    <th>Количество заказов</th>
-                     <th>Средний чек</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in couriers %}
-                    <tr>
-                       <td>{{ item.deliver }}</td>
-                        <td>{{ item.order_count }}</td>
-                        <td>{{ item.avg_amount }}</td>
-                   </tr>
-               {% endfor %}
-            </tbody>
-        </table>
-    {% endblock %}
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+{% if custom_links %}
+
+<div style="display:flex;">
+    {% for link in custom_links %}
+    <a href="{{ link.url }}" style="padding: 0.3em 0.6em; border: 1px solid #e6e6e6;
+         border-radius: 0.25em; margin-right: 0.4em; background-color: #fafafa;">
+        {{ link.label }}
+    </a>
+    {% endfor %}
+</div>
+
+{% endif %}
+<table>
+    <thead>
+    <tr>
+        <th>Курьер</th>
+        <th>Количество заказов</th>
+        <th>Средний чек</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in couriers %}
+    <tr>
+        <td>{{ item.deliver }}</td>
+        <td>{{ item.order_count }}</td>
+        <td>{{ item.avg_amount }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

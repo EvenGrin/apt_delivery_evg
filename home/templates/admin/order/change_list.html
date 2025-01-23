@@ -1,0 +1,16 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+{% block object-tools-items %}
+{{ block.super }}
+{% if custom_links %}
+  <li>
+    <div style="display:flex;">
+    {% for link in custom_links %}
+       <a href="{{ link.url }}">
+          {{ link.label }}
+       </a>
+    {% endfor %}
+    </div>
+  </li>
+{% endif %}
+{% endblock %}

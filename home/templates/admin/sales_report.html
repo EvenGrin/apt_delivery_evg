@@ -1,97 +1,114 @@
-    {% extends 'admin/base_site.html' %}
-    {% block extrahead %}
-       {{ block.super }}
-         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" />
+{% extends 'admin/base_site.html' %}
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+{% endblock %}
 
-    {% endblock %}
-    {% block content %}
-        <form method="get">
-        <label for="start_date">Начальная дата:</label>
-        <input type="date" id="start_date" name="start_date">
-         <label for="end_date">Конечная дата:</label>
-        <input type="date" id="end_date" name="end_date">
-         <button type="submit">Фильтровать</button>
-       </form>
+{% block content %}
+{% if custom_links %}
 
-        <h2>Продажи по дням:</h2>
+    <div style="display:flex;">
+    {% for link in custom_links %}
+       <a href="{{ link.url }}" style="padding: 0.3em 0.6em; border: 1px solid #e6e6e6;
+         border-radius: 0.25em; margin-right: 0.4em; background-color: #fafafa;">
+          {{ link.label }}
+       </a>
+    {% endfor %}
+    </div>
 
-        <canvas id="salesChart" style="margin-bottom: 30px; width: 60%; height: 50%;"></canvas>
+{% endif %}
+<form method="get">
+    <label for="start_date">Начальная дата:</label>
+    <input type="date" id="start_date" name="start_date">
+    <label for="end_date">Конечная дата:</label>
+    <input type="date" id="end_date" name="end_date">
+    <button type="submit">Фильтровать</button>
+</form>
 
-        <h2>Продажи по категориям:</h2>
-        <canvas id="categoryChart" style="margin-bottom: 30px; width: 60%; height: 50%;"></canvas>
+<h2>Продажи по дням:</h2>
+
+<canvas id="salesChart" style="margin-bottom: 30px; width: 60%; height: 50%;"></canvas>
+
+<h2>Продажи по категориям:</h2>
+<canvas id="categoryChart" style="margin-bottom: 30px; width: 60%; height: 50%;"></canvas>
 
 
-        <h2>Продажи по блюдам:</h2>
-       <canvas id="dishChart" width="400" height="200"></canvas>
+<h2>Продажи по блюдам:</h2>
+<canvas id="dishChart" width="400" height="200"></canvas>
 
-    <script>
-        const salesData = {{ sales_by_day|safe }};
-        const categoryData = {{ sales_by_category|safe }};
-        const dishData = {{ sales_by_dish|safe }};
-        
-        const ctxSales = document.getElementById('salesChart').getContext('2d');
-        const salesChart = new Chart(ctxSales, {
-            type: 'line',
+<script>
+    const salesData = {{ sales_by_day|safe }};
+    const categoryData = {{ sales_by_category|safe }};
+    const dishData = {{ sales_by_dish|safe }};
+
+    const ctxSales = document.getElementById('salesChart').getContext('2d');
+    moment.locale('ru');
+    const salesChart = new Chart(ctxSales, {
+        type: 'line',
+        data: {
+            labels: salesData.map(item => item.date),
+            datasets: [{
+                label: 'Продажи по дням',
+                data: salesData.map(item => item.total_sales),
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+         options: {
+            scales: {
+                xAxes: [
+                {
+                    type: 'time',
+                    time: {
+                    tooltipFormat: 'll',
+                    unit: 'day',
+                        displayFormats: {
+                            day: 'll'
+                        }
+                    }
+                }
+            ],
+                 y: {
+                   beginAtZero: true
+                 }
+            }
+        }
+    });
+
+
+     const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+        const categoryChart = new Chart(ctxCategory, {
+            type: 'pie',
             data: {
-                labels: salesData.map(item => item.date),
+                 labels: categoryData.map(item => item.category__name),
                 datasets: [{
-                    label: 'Продажи по дням',
-                    data: salesData.map(item => item.total_sales),
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
+                    label: 'Продажи по категориям',
+                    data: categoryData.map(item => item.total_sales),
+                    backgroundColor: [
+                      'rgba(255, 99, 132, 0.2)',
+                              'rgba(255, 159, 64, 0.2)',
+                      'rgba(255, 205, 86, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(54, 162, 235, 0.2)',
+                     'rgba(153, 102, 255, 0.2)',
+                    'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                      'rgb(255, 99, 132)',
+                      'rgb(255, 159, 64)',
+                      'rgb(255, 205, 86)',
+                       'rgb(75, 192, 192)',
+                      'rgb(54, 162, 235)',
+                      'rgb(153, 102, 255)',
+                       'rgb(201, 203, 207)'
+                    ],
+                    borderWidth: 1
                 }]
             },
-             options: {
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            tooltipFormat: 'dd-MMM-yyyy',
-                            displayFormats: {
-                                day: 'yyyy-MM-dd'
-                            }
-                        }
-                    },
-                     y: {
-                       beginAtZero: true
-                     }
-                }
-            }
-        });
-
-
-         const ctxCategory = document.getElementById('categoryChart').getContext('2d');
-            const categoryChart = new Chart(ctxCategory, {
-                type: 'pie',
-                data: {
-                     labels: categoryData.map(item => item.category__name),
-                    datasets: [{
-                        label: 'Продажи по категориям',
-                        data: categoryData.map(item => item.total_sales),
-                        backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                                  'rgba(255, 159, 64, 0.2)',
-                          'rgba(255, 205, 86, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                         'rgba(153, 102, 255, 0.2)',
-                        'rgba(201, 203, 207, 0.2)'
-                        ],
-                        borderColor: [
-                          'rgb(255, 99, 132)',
-                          'rgb(255, 159, 64)',
-                          'rgb(255, 205, 86)',
-                           'rgb(75, 192, 192)',
-                          'rgb(54, 162, 235)',
-                          'rgb(153, 102, 255)',
-                           'rgb(201, 203, 207)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
 <!--                  options: {-->
 <!--                        scales: {-->
 <!--                            y: {-->
@@ -99,44 +116,44 @@
 <!--                              }-->
 <!--                         }-->
 <!--                    }-->
-            });
+        });
 
-      const ctxDish = document.getElementById('dishChart').getContext('2d');
-            const dishChart = new Chart(ctxDish, {
-                type: 'bar',
-                data: {
-                     labels: dishData.map(item => item.name),
-                    datasets: [{
-                        label: 'Продажи по блюдам',
-                        data: dishData.map(item => item.total_sales),
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(255, 159, 64, 0.2)',
-                            'rgba(255, 205, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                           'rgba(153, 102, 255, 0.2)',
-                           'rgba(201, 203, 207, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgb(255, 99, 132)',
-                            'rgb(255, 159, 64)',
-                           'rgb(255, 205, 86)',
-                            'rgb(75, 192, 192)',
-                            'rgb(54, 162, 235)',
-                            'rgb(153, 102, 255)',
-                            'rgb(201, 203, 207)'
-                         ],
-                        borderWidth: 1
-                   }]
-                },
-                  options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                             }
-                        }
+  const ctxDish = document.getElementById('dishChart').getContext('2d');
+        const dishChart = new Chart(ctxDish, {
+            type: 'bar',
+            data: {
+                 labels: dishData.map(item => item.name),
+                datasets: [{
+                    label: 'Продажи по блюдам',
+                    data: dishData.map(item => item.total_sales),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                       'rgba(153, 102, 255, 0.2)',
+                       'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                       'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                     ],
+                    borderWidth: 1
+               }]
+            },
+              options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                         }
                     }
-            });
-    </script>
-    {% endblock %}
+                }
+        });
+</script>
+{% endblock %}

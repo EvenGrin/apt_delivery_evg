@@ -63,17 +63,27 @@ class OrderAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
-    def changelist_view(self, request, extra_context=None):
-        extra_context = extra_context or {}
-        # Создадим словарь со ссылками
-        report_links = {
-            'sales_report': reverse('admin:sales_report'),
-            'user_report': reverse('admin:user_report'),
-            'courier_report': reverse('admin:courier_report'),
-            'frequency_report': reverse('admin:frequency_report'),
-        }
-        extra_context['report_links'] = report_links
+    def get_app_links(self, request):
+        app_list = admin.site.get_app_list(request)
+        links = []
+        for app in app_list:
+            app_label = app['app_label']
+            links.append({'url': reverse('admin:app_list', kwargs={'app_label': app_label}), 'label': app['name']})
+        return links
 
+    def get_admin_links(self, obj=None):
+        links = []
+        links.append({'url': reverse('admin:sales_report'), 'label': 'Отчет по продажам'})
+        links.append({'url': reverse('admin:user_report'), 'label': 'Отчет по пользователям'})
+        links.append({'url': reverse('admin:courier_report'), 'label': 'Отчет по курьерам'})
+        links.append({'url': reverse('admin:frequency_report'), 'label': 'Отчет по частоте заказов'})
+        return links
+
+    def changelist_view(self, request, extra_context=None):
+        if not extra_context:
+            extra_context = {}
+        extra_context['custom_links'] = self.get_admin_links()
+        extra_context['app_links'] = self.get_app_links(request)
         return super().changelist_view(request, extra_context=extra_context)
 
     def sales_report_view(self, request):
@@ -126,8 +136,9 @@ class OrderAdmin(admin.ModelAdmin):
         context = {
             'sales_by_day': json.dumps(list(sales_by_day), default=str),
             'sales_by_category': json.dumps(list(sales_by_category)),
-            'sales_by_dish': json.dumps(list(sales_by_dish)),
-            'title': 'Отчет по продажам'
+            'sales_by_dish': json.dumps(list(sales_by_dish)), 'title': 'Отчет по продажам',
+            'custom_links': self.get_admin_links(),
+            'app_links': self.get_app_links(request)
         }
         return render(request, 'admin/sales_report.html', context)
 
@@ -153,7 +164,9 @@ class OrderAdmin(admin.ModelAdmin):
         context = {
             'user_data': user_data,
             'user_type': user_type,
-            'title': 'Отчет по пользователям'
+            'title': 'Отчет по пользователям',
+            'custom_links': self.get_admin_links(),
+            'app_links': self.get_app_links(request)
         }
         return render(request, 'admin/user_report.html', context)
 
@@ -171,7 +184,11 @@ class OrderAdmin(admin.ModelAdmin):
             .order_by('-order_count')
         )
 
-        context = {'couriers': couriers, 'title': 'Отчет по курьерам'}
+        context = {
+            'couriers': couriers,
+            'title': 'Отчет по курьерам',
+            'custom_links': self.get_admin_links(),
+            'app_links': self.get_app_links(request)}
         return render(request, 'admin/courier_report.html', context)
 
     def order_frequency_view(self, request):
@@ -180,7 +197,12 @@ class OrderAdmin(admin.ModelAdmin):
             .annotate(order_count=Count('user'))
             .order_by('-order_count')
         )
-        context = {'frequency': frequency, 'title': 'Анализ частоты заказов'}
+        context = {
+            'frequency': frequency,
+            'title': 'Анализ частоты заказов',
+            'custom_links': self.get_admin_links(),
+            'app_links': self.get_app_links(request)
+        }
         return render(request, 'admin/frequency_report.html', context)
 
 
