@@ -1,8 +1,10 @@
+import json
+
 from django.contrib import admin
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery
 from django.db.models.functions import TruncDay
 from django.shortcuts import render
-from django.urls import path
+from django.urls import path, reverse
 from django.utils import timezone
 from datetime import datetime, timezone
 from home.models import Meal
@@ -61,6 +63,19 @@ class OrderAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        # Создадим словарь со ссылками
+        report_links = {
+            'sales_report': reverse('admin:sales_report'),
+            'user_report': reverse('admin:user_report'),
+            'courier_report': reverse('admin:courier_report'),
+            'frequency_report': reverse('admin:frequency_report'),
+        }
+        extra_context['report_links'] = report_links
+
+        return super().changelist_view(request, extra_context=extra_context)
+
     def sales_report_view(self, request):
         start_date_str = request.GET.get('start_date')
         end_date_str = request.GET.get('end_date')
@@ -85,9 +100,9 @@ class OrderAdmin(admin.ModelAdmin):
 
         # Суммарные продажи по дням
         sales_by_day = orders.annotate(
-            day=TruncDay('order_date'),
+            date=TruncDay('order_date'),
             total_amount=Subquery(subquery),
-        ).values('day').annotate(total_sales=Sum('total_amount')).order_by('day')
+        ).values('date').annotate(total_sales=Sum('total_amount')).order_by('date')
 
         # Продажи по категориям
         meal_ids = OrderMeal.objects.filter(order__in=orders).values_list('meal_id', flat=True)
@@ -109,9 +124,9 @@ class OrderAdmin(admin.ModelAdmin):
         )
 
         context = {
-            'sales_by_day': sales_by_day,
-            'sales_by_category': sales_by_category,
-            'sales_by_dish': sales_by_dish,
+            'sales_by_day': json.dumps(list(sales_by_day), default=str),
+            'sales_by_category': json.dumps(list(sales_by_category)),
+            'sales_by_dish': json.dumps(list(sales_by_dish)),
             'title': 'Отчет по продажам'
         }
         return render(request, 'admin/sales_report.html', context)
@@ -120,7 +135,7 @@ class OrderAdmin(admin.ModelAdmin):
         user_type = request.GET.get('user_type', 'all')  # Default to 'all'
 
         if user_type == 'clients':
-            users = Order.objects.values('user').distinct().annotate(count=Count('user'))
+            users = Order.objects.valuesZ('user').distinct().annotate(count=Count('user'))
             user_data = users.order_by('-count')
         elif user_type == 'couriers':
             users = Order.objects.filter(deliver__isnull=False).values('deliver').distinct().annotate(
@@ -135,7 +150,11 @@ class OrderAdmin(admin.ModelAdmin):
                 'couriers': all_couriers.order_by('-count'),
             }
 
-        context = {'user_data': user_data, 'user_type': user_type, 'title': 'Отчет по пользователям'}
+        context = {
+            'user_data': user_data,
+            'user_type': user_type,
+            'title': 'Отчет по пользователям'
+        }
         return render(request, 'admin/user_report.html', context)
 
     def courier_report_view(self, request):
