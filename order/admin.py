@@ -145,21 +145,15 @@ class OrderAdmin(admin.ModelAdmin):
     def user_report_view(self, request):
         user_type = request.GET.get('user_type', 'all')  # Default to 'all'
 
-        if user_type == 'clients':
-            users = Order.objects.valuesZ('user').distinct().annotate(count=Count('user'))
-            user_data = users.order_by('-count')
-        elif user_type == 'couriers':
-            users = Order.objects.filter(deliver__isnull=False).values('deliver').distinct().annotate(
-                count=Count('deliver'))
-            user_data = users.order_by('-count')
-        else:  # 'all'
-            all_clients = Order.objects.values('user').distinct().annotate(count=Count('user'))
-            all_couriers = Order.objects.filter(deliver__isnull=False).values('deliver').distinct().annotate(
-                count=Count('deliver'))
-            user_data = {
-                'clients': all_clients.order_by('-count'),
-                'couriers': all_couriers.order_by('-count'),
-            }
+
+        all_clients = Order.objects.values('user__username').distinct().annotate(count=Count('user'))
+        all_couriers = Order.objects.filter(deliver__isnull=False).values('deliver__username').distinct().annotate(
+            count=Count('deliver'))
+        user_data = {
+            'clients': list(all_clients.order_by('-count')),
+            'couriers': list(all_couriers.order_by('-count')),
+        }
+        print(user_data)
 
         context = {
             'user_data': user_data,
