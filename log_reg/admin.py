@@ -13,7 +13,7 @@ from log_reg.models import User
 @admin.register(User)
 class UsersAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'last_name', 'first_name', 'patronymic')
-
+    list_filter = UserAdmin.list_filter
     def changelist_view(self, request, extra_context=None):
         # Aggregate new subscribers per day
         chart_data = (

@@ -1,7 +1,9 @@
 import json
+from decimal import Decimal
+
 from django.contrib import admin
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery, Value
-from django.db.models.functions import TruncDay, Concat
+from django.db.models.functions import TruncDay, Concat, Cast
 from django.shortcuts import render
 from django.urls import path, reverse
 from django.utils import timezone
@@ -19,7 +21,7 @@ class OrderMealInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('date_create', 'order_date', 'user', 'deliver', 'cab', 'status', 'result', 'amount', 'total_amount')
     list_filter = ('status', 'date_create', 'order_date', 'user', 'deliver', 'cab')
-    list_editable = ('deliver', 'status')
+    list_editable = ('cab', 'user', 'deliver', 'status')
     inlines = [OrderMealInline]
     list_per_page = 10
 
@@ -145,21 +147,13 @@ class OrderAdmin(admin.ModelAdmin):
         user_type = request.GET.get('user_type', 'all')  # Default to 'all'
         all_clients = Order.objects.values('user__id').distinct().annotate(
             user__username=Concat(
-                'user__first_name', Value(' '),
                 'user__last_name', Value(' '),
+                'user__first_name', Value(' '),
                 'user__patronymic'
             ),
             count=Count('user'))
-        all_couriers = Order.objects.filter(deliver__isnull=False).values('deliver__id').distinct().annotate(
-            deliver__username=Concat(
-                'deliver__first_name', Value(' '),
-                'deliver__last_name', Value(' '),
-                'deliver__patronymic'
-            ),
-            count=Count('deliver'))
         user_data = {
             'clients': list(all_clients.order_by('-count')),
-            'couriers': list(all_couriers.order_by('-count')),
         }
         print(user_data)
 
@@ -176,23 +170,32 @@ class OrderAdmin(admin.ModelAdmin):
         subquery = OrderMeal.objects.filter(order=OuterRef('pk')).annotate(
             total_price=ExpressionWrapper(F('meal__price') * F('amount'), output_field=DecimalField())
         ).values('order').annotate(total_amount=Sum('total_price')).values('total_amount')
+
+        def decimal_default(obj):
+            if isinstance(obj, Decimal):
+                return float(obj)
+            raise TypeError
+
         couriers = (
             Order.objects.filter(deliver__isnull=False)
             .values('deliver')
             .annotate(
-                order_count=Count('deliver'),
-                avg_amount=Sum(Subquery(subquery)) / Count('deliver'),
+                deliver__username=Concat(
+                    'deliver__last_name', Value(' '),
+                    'deliver__first_name', Value(' '),
+                    'deliver__patronymic'
+                ),
+                count=Count('deliver'),
             )
-            .order_by('-order_count')
+            .order_by('-count')
         )
 
         context = {
-            'couriers': couriers,
+            'couriers': list(couriers),
             'title': 'Отчет по курьерам',
             'custom_links': self.get_admin_links(),
             'app_links': self.get_app_links(request)}
         return render(request, 'admin/courier_report.html', context)
-
 
     def order_frequency_view(self, request):
         frequency = (

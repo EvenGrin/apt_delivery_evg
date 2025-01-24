@@ -9,6 +9,6 @@ class LoginValidator(RegexValidator):
 
 @deconstructible
 class NameValidator(RegexValidator):
-    regex = r"^[а-яА-Я -]+\Z"
+    regex = r"^[а-яА-ЯёЁ -]+\Z"
     message = 'Разрешенные символы (кириллица, пробел и тире).'
     flags = 0
