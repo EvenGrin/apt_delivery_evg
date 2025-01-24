@@ -1,6 +1,6 @@
 {% extends 'admin/base_site.html' %}{% load static %}{% block extrahead %} {{ block.super }}
-<link rel="stylesheet" href="{% static 'order/css/Chart.min.css' %}" />
-<link rel="stylesheet" href="{% static 'home/css/bootstrap.css' %}" />
+<link rel="stylesheet" href="{% static 'order/css/Chart.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'home/css/bootstrap.css' %}"/>
 
 <script src="{% static 'order/dist/Chart.bundle.min.js'%}"></script>
 <script src="{% static 'order/dist/moment-with-locales.js'%}"></script>
@@ -23,11 +23,14 @@
 
 {% endif %}
 
-
-<h2>Клиенты:</h2>
-<canvas id="clientsChart" style="margin-bottom: 30px; width: 60%; height: 50%"></canvas>
-<h2>Курьеры:</h2>
-<canvas id="couriersChart" style="margin-bottom: 30px; width: 60%; height: 50%"></canvas>
+<div class="mb-5">
+    <h2>Клиенты:</h2>
+    <canvas id="clientsChart" style="margin-bottom: 30px; width: 60%; height: 50%"></canvas>
+</div>
+<div class="mb-5">
+    <h2>Курьеры:</h2>
+    <canvas id="couriersChart" style="margin-bottom: 30px; width: 60%; height: 50%"></canvas>
+</div>
 
 <script>
     const clientsData = {{ user_data.clients| safe }};
@@ -35,7 +38,7 @@
 
     const ctxClients = document.getElementById('clientsChart').getContext('2d');
     const clientsChart = new Chart(ctxClients, {
-        type: 'bar',
+        type: 'horizontalBar',
         data: {
             labels: clientsData.map(item => item.user__username),
             datasets: [
@@ -77,7 +80,7 @@
 
     const ctxCouriers = document.getElementById('couriersChart').getContext('2d');
     const couriersChart = new Chart(ctxCouriers, {
-        type: 'bar',
+        type: 'horizontalBar',
         data: {
             labels: couriersData.map(item => item.deliver__username),
             datasets: [{
@@ -106,6 +109,7 @@
         },
         options: {
             scales: {
+
                 y: {
                     beginAtZero: true
                 }
