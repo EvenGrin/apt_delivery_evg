@@ -1,8 +1,7 @@
 import json
-
 from django.contrib import admin
-from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery
-from django.db.models.functions import TruncDay
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery, Value
+from django.db.models.functions import TruncDay, Concat
 from django.shortcuts import render
 from django.urls import path, reverse
 from django.utils import timezone
@@ -144,10 +143,19 @@ class OrderAdmin(admin.ModelAdmin):
 
     def user_report_view(self, request):
         user_type = request.GET.get('user_type', 'all')  # Default to 'all'
-
-
-        all_clients = Order.objects.values('user__username').distinct().annotate(count=Count('user'))
-        all_couriers = Order.objects.filter(deliver__isnull=False).values('deliver__username').distinct().annotate(
+        all_clients = Order.objects.values('user__id').distinct().annotate(
+            user__username=Concat(
+                'user__first_name', Value(' '),
+                'user__last_name', Value(' '),
+                'user__patronymic'
+            ),
+            count=Count('user'))
+        all_couriers = Order.objects.filter(deliver__isnull=False).values('deliver__id').distinct().annotate(
+            deliver__username=Concat(
+                'deliver__first_name', Value(' '),
+                'deliver__last_name', Value(' '),
+                'deliver__patronymic'
+            ),
             count=Count('deliver'))
         user_data = {
             'clients': list(all_clients.order_by('-count')),

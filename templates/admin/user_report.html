@@ -1,6 +1,6 @@
 {% extends 'admin/base_site.html' %}{% load static %}{% block extrahead %} {{ block.super }}
-<link rel="stylesheet" href="{% static 'order/css/Chart.min.css' %}"/>
-<link rel="stylesheet" href="{% static 'home/css/bootstrap.css' %}"/>
+<link rel="stylesheet" href="{% static 'order/css/Chart.min.css' %}" />
+<link rel="stylesheet" href="{% static 'home/css/bootstrap.css' %}" />
 
 <script src="{% static 'order/dist/Chart.bundle.min.js'%}"></script>
 <script src="{% static 'order/dist/moment-with-locales.js'%}"></script>
@@ -30,84 +30,88 @@
 <canvas id="couriersChart" style="margin-bottom: 30px; width: 60%; height: 50%"></canvas>
 
 <script>
-    const clientsData = {{ user_data.clients|safe }};
-   const couriersData = {{ user_data.couriers|safe }};
+    const clientsData = {{ user_data.clients| safe }};
+    const couriersData = {{ user_data.couriers| safe }};
 
-   const ctxClients = document.getElementById('clientsChart').getContext('2d');
-     const clientsChart = new Chart(ctxClients, {
-         type: 'bar',
-          data: {
-             labels: clientsData.map(item => item.user__username),
-             datasets: [{
-                label: 'Количество заказов',
-                 data: clientsData.map(item => item.count),
-                 backgroundColor: [
-                     'rgba(255, 99, 132, 0.2)',
-                      'rgba(255, 159, 64, 0.2)',
-                     'rgba(255, 205, 86, 0.2)',
-                     'rgba(75, 192, 192, 0.2)',
-                     'rgba(54, 162, 235, 0.2)',
-                     'rgba(153, 102, 255, 0.2)',
-                      'rgba(201, 203, 207, 0.2)'
-                  ],
-                borderColor: [
-                   'rgb(255, 99, 132)',
-                    'rgb(255, 159, 64)',
-                   'rgb(255, 205, 86)',
-                     'rgb(75, 192, 192)',
-                     'rgb(54, 162, 235)',
-                     'rgb(153, 102, 255)',
-                     'rgb(201, 203, 207)'
-                 ],
-                borderWidth: 1
-            }]
-         },
-           options: {
-                  scales: {
-                     y: { beginAtZero: true
-                     }
-                 }
-             }
-     });
-
-
- const ctxCouriers = document.getElementById('couriersChart').getContext('2d');
-     const couriersChart = new Chart(ctxCouriers, {
-         type: 'bar',
-         data: {
-             labels: couriersData.map(item => item.deliver__username),
-             datasets: [{
-                 label: 'Количество заказов',
-                 data: couriersData.map(item => item.count),
+    const ctxClients = document.getElementById('clientsChart').getContext('2d');
+    const clientsChart = new Chart(ctxClients, {
+        type: 'bar',
+        data: {
+            labels: clientsData.map(item => item.user__username),
+            datasets: [
+                {
+                    label: 'Количество заказов пользователей',
+                    data: clientsData.map(item => item.count),
                     backgroundColor: [
-                      'rgba(255, 99, 132, 0.2)',
-                       'rgba(255, 159, 64, 0.2)',
-                       'rgba(255, 205, 86, 0.2)',
-                       'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
-                       'rgba(153, 102, 255, 0.2)',
-                      'rgba(201, 203, 207, 0.2)'
-                 ],
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(201, 203, 207, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)',
+                        'rgb(153, 102, 255)',
+                        'rgb(201, 203, 207)'
+                    ],
+                    borderWidth: 1
+                },
+            ],
+
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+
+    const ctxCouriers = document.getElementById('couriersChart').getContext('2d');
+    const couriersChart = new Chart(ctxCouriers, {
+        type: 'bar',
+        data: {
+            labels: couriersData.map(item => item.deliver__username),
+            datasets: [{
+                label: 'Количество заказов у курьеров',
+                data: couriersData.map(item => item.count),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(255, 205, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(201, 203, 207, 0.2)'
+                ],
                 borderColor: [
-                     'rgb(255, 99, 132)',
-                     'rgb(255, 159, 64)',
-                     'rgb(255, 205, 86)',
-                     'rgb(75, 192, 192)',
+                    'rgb(255, 99, 132)',
+                    'rgb(255, 159, 64)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)',
                     'rgb(54, 162, 235)',
                     'rgb(153, 102, 255)',
-                     'rgb(201, 203, 207)'
-                 ],
-                 borderWidth: 1
-             }]
+                    'rgb(201, 203, 207)'
+                ],
+                borderWidth: 1
+            }]
         },
-           options: {
-                 scales: {
-                     y: {
-                         beginAtZero: true
-                    }
-                 }
-             }
-     });
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 </script>
 
 
