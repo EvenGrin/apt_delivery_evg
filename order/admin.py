@@ -193,6 +193,7 @@ class OrderAdmin(admin.ModelAdmin):
             'app_links': self.get_app_links(request)}
         return render(request, 'admin/courier_report.html', context)
 
+
     def order_frequency_view(self, request):
         frequency = (
             Order.objects.values('user')
