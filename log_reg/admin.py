@@ -14,8 +14,10 @@ from log_reg.models import User
 class UsersAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'last_name', 'first_name', 'patronymic')
     list_filter = UserAdmin.list_filter
+    fieldsets = list(UserAdmin.fieldsets)
+    fieldsets[1] = (fieldsets[1][0], {'fields': ('last_name', 'first_name', 'patronymic', 'email')})
     def changelist_view(self, request, extra_context=None):
-        # Aggregate new subscribers per day
+        # Количество новых пользователей в день
         chart_data = (
             User.objects.annotate(date=TruncDay("date_joined"))
             .values("date")
@@ -23,7 +25,7 @@ class UsersAdmin(admin.ModelAdmin):
             .order_by("-date")
         )
 
-        # Serialize and attach the chart data to the template context
+        # Сериализуйте и прикрепите данные диаграммы к контексту шаблона
         as_json = json.dumps(list(chart_data), cls=DjangoJSONEncoder)
         extra_context = extra_context or {"chart_data": as_json}
 
@@ -35,12 +37,12 @@ class UsersAdmin(admin.ModelAdmin):
         extra_urls = [
             path("chart_data/", self.admin_site.admin_view(self.chart_data_endpoint))
         ]
-        # NOTE! Our custom urls have to go before the default urls, because they
-        # default ones match anything.
+        # Наши пользовательские URL-адреса должны располагаться перед URL-адресами по умолчанию,
+        # потому что они соответствуют всем параметрам по умолчанию
         return extra_urls + urls
 
-    # JSON endpoint for generating chart data that is used for dynamic loading
-    # via JS.
+    # Конечная точка JSON для генерации данных диаграммы,
+    # которые используются для динамической загрузки  с помощью JS.
     def chart_data_endpoint(self, request):
         chart_data = self.chart_data()
         return JsonResponse(list(chart_data), safe=False)
@@ -52,4 +54,3 @@ class UsersAdmin(admin.ModelAdmin):
             .annotate(y=Count("id"))
             .order_by("-date")
         )
-# admin.site.register(User, UserAdmin)
