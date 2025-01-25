@@ -14,4 +14,4 @@ class User(AbstractUser):
     patronymic = models.CharField('Отчество', max_length=150, blank=True, validators=[NameValidator()])
 
     def __str__(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        return "%s %s %s" % (self.last_name, self.first_name, self.patronymic, )

@@ -5,7 +5,7 @@ from datetime import date, datetime
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.utils import timezone
 from datetime import timedelta
 from cart.models import Cabinet
@@ -27,7 +27,7 @@ def get_default_created_at():
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', limit_choices_to=Q(is_superuser=False) & Q(is_staff=False) & Q(groups__isnull=True),)
     date_create = models.DateTimeField(verbose_name='Дата заказа', auto_now_add=True)
     order_date = models.DateTimeField(default=get_default_created_at, verbose_name='Дата и время получения заказа'
     )

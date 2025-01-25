@@ -1,13 +1,16 @@
-{% extends 'admin/base_site.html' %}{% load static %}{% block extrahead %} {{ block.super }}
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% block extrahead %}
+{{ block.super }}
 <link rel="stylesheet" href="{% static 'order/css/Chart.min.css' %}"/>
-<link rel="stylesheet" href="{% static 'home/css/bootstrap.css' %}"/>
-
+<link rel="stylesheet" href="{% static 'admin/css/forms.css' %}"/>
+<link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}"/>
 <script src="{% static 'order/dist/Chart.bundle.min.js'%}"></script>
 <script src="{% static 'order/dist/moment-with-locales.js'%}"></script>
 <script src="{% static 'order/dist/chartjs-adapter-moment.js'%}"></script>
 {% endblock %} {% block content %} {% if custom_links %}
 
-<div class="d-flex flex-wrap">
+<div style="margin-bottom:0.6rem">
     {% for link in custom_links %}
     <a href="{{ link.url }}" style="
       padding: 0.3em 0.6em;
@@ -22,17 +25,21 @@
 </div>
 
 {% endif %}
-<form method="get" class="row g-3 border rounded py-2">
-    <div class="col-md-6">
-        <label for="start_date" class="form-label">Начальная дата:</label>
-        <input type="date" id="start_date" name="start_date" class="form-control"/>
+<form method="get" class="module aligned">
+    <div class="form-row">
+        <div>
+            <label for="start_date" class="required">Начальная дата:</label>
+            <input type="date" id="start_date" name="start_date" class="vTextField"/>
+        </div>
     </div>
-    <div class="col-md-6">
-        <label for="end_date" class="form-label">Конечная дата:</label>
-        <input type="date" id="end_date" name="end_date" class="form-control"/>
+    <div class="form-row">
+        <div>
+            <label for="end_date" class="required">Конечная дата:</label>
+            <input type="date" id="end_date" name="end_date" class="vTextField"/>
+        </div>
     </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">Фильтровать</button>
+    <div class="submit-row">
+        <input type="submit" class="btn btn-primary" value="Фильтровать">
     </div>
 </form>
 
@@ -53,10 +60,9 @@
 
 <script>
     const salesData = {{ sales_by_day| safe }};
+    const orderData = {{ sales_by_create_day| safe }};
     const categoryData = {{ sales_by_category| safe }};
     const dishData = {{ sales_by_dish| safe }};
-    console.log(categoryData, dishData)
-    const ctxSales = document.getElementById('salesChart').getContext('2d');
     moment.locale('ru');
 
 
@@ -115,7 +121,7 @@
     // Генерируем палитру цветов на основе категорий
     const categoryColors = generateColors(uniqueCategories);
 
-
+    const ctxSales = document.getElementById('salesChart').getContext('2d');
     const salesChart = new Chart(ctxSales, {
       type: 'line',
       data: {
@@ -126,6 +132,13 @@
           fill: false,
           borderColor: 'rgb(75, 192, 192)',
           tension: 0.1
+        },{
+          label: 'Создано заказов по дням',
+          data: orderData.map(item => item.order_count),
+          fill: false,
+          borderColor: 'rgb(255, 99, 132)', // Другой цвет для заказов
+          tension: 0.1,
+          yAxisID: 'y-axis-1' // Указываем, что этот датасет использовать ось y1 (если будет нужна отдельная ось)
         }]
       },
       options: {
@@ -142,9 +155,30 @@
               }
             }
           ],
-          y: {
-            beginAtZero: true
+          yAxes: [{
+          id: 'y-axis-0',
+          position: 'left',
+          scaleLabel: {
+              display: true,
+              labelString: 'Сумма продаж'
+          },
+          ticks: {
+             beginAtZero: true
           }
+        }, {
+          id: 'y-axis-1',
+          position: 'right',
+            scaleLabel: {
+              display: true,
+              labelString: 'Количество заказов'
+          },
+          ticks: {
+              beginAtZero: true
+           },
+          gridLines: {
+            drawOnChartArea: false
+          }
+        }]
         }
       }
     });

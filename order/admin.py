@@ -1,9 +1,10 @@
 import json
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from django.contrib import admin
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery, Value
-from django.db.models.functions import TruncDay, Concat, Cast
+from django.db.models.functions import TruncDay, Concat
 from django.shortcuts import render
 from django.urls import path, reverse
 from django.utils import timezone
@@ -60,9 +61,9 @@ class OrderAdmin(admin.ModelAdmin):
             path('sales_report/', self.admin_site.admin_view(self.sales_report_view), name='sales_report'),
             path('users_report/', self.admin_site.admin_view(self.user_report_view), name='user_report'),
             path('couriers_report/', self.admin_site.admin_view(self.courier_report_view), name='courier_report'),
-            path('frequency_report/', self.admin_site.admin_view(self.order_frequency_view), name='frequency_report'),
         ]
         return custom_urls + urls
+
 
     def get_app_links(self, request):
         app_list = admin.site.get_app_list(request)
@@ -77,7 +78,6 @@ class OrderAdmin(admin.ModelAdmin):
         links.append({'url': reverse('admin:sales_report'), 'label': 'Отчет по продажам'})
         links.append({'url': reverse('admin:user_report'), 'label': 'Отчет по пользователям'})
         links.append({'url': reverse('admin:courier_report'), 'label': 'Отчет по курьерам'})
-        links.append({'url': reverse('admin:frequency_report'), 'label': 'Отчет по частоте заказов'})
         return links
 
     def changelist_view(self, request, extra_context=None):
@@ -115,6 +115,11 @@ class OrderAdmin(admin.ModelAdmin):
             total_amount=Subquery(subquery),
         ).values('date').annotate(total_sales=Sum('total_amount')).order_by('date')
 
+        sales_by_create_day = orders.annotate(
+            date=TruncDay('date_create'),
+            total_amount=Subquery(subquery),
+        ).values('date').annotate(order_count=Count('id')).order_by('date')
+
         # Продажи по категориям
         meal_ids = OrderMeal.objects.filter(order__in=orders).values_list('meal_id', flat=True)
 
@@ -136,10 +141,12 @@ class OrderAdmin(admin.ModelAdmin):
 
         context = {
             'sales_by_day': json.dumps(list(sales_by_day), default=str),
+            'sales_by_create_day': json.dumps(list(sales_by_create_day), default=str),
             'sales_by_category': json.dumps(list(sales_by_category)),
             'sales_by_dish': json.dumps(list(sales_by_dish)), 'title': 'Отчет по продажам',
             'custom_links': self.get_admin_links(),
-            'app_links': self.get_app_links(request)
+            'app_links': self.get_app_links(request),
+            **admin.site.each_context(request)
         }
         return render(request, 'admin/sales_report.html', context)
 
@@ -162,7 +169,8 @@ class OrderAdmin(admin.ModelAdmin):
             'user_type': user_type,
             'title': 'Отчет по пользователям',
             'custom_links': self.get_admin_links(),
-            'app_links': self.get_app_links(request)
+            'app_links': self.get_app_links(request),
+            **admin.site.each_context(request)
         }
         return render(request, 'admin/user_report.html', context)
 
@@ -171,10 +179,6 @@ class OrderAdmin(admin.ModelAdmin):
             total_price=ExpressionWrapper(F('meal__price') * F('amount'), output_field=DecimalField())
         ).values('order').annotate(total_amount=Sum('total_price')).values('total_amount')
 
-        def decimal_default(obj):
-            if isinstance(obj, Decimal):
-                return float(obj)
-            raise TypeError
 
         couriers = (
             Order.objects.filter(deliver__isnull=False)
@@ -194,22 +198,11 @@ class OrderAdmin(admin.ModelAdmin):
             'couriers': list(couriers),
             'title': 'Отчет по курьерам',
             'custom_links': self.get_admin_links(),
-            'app_links': self.get_app_links(request)}
+            'app_links': self.get_app_links(request),
+            **admin.site.each_context(request)
+        }
         return render(request, 'admin/courier_report.html', context)
 
-    def order_frequency_view(self, request):
-        frequency = (
-            Order.objects.values('user')
-            .annotate(order_count=Count('user'))
-            .order_by('-order_count')
-        )
-        context = {
-            'frequency': frequency,
-            'title': 'Анализ частоты заказов',
-            'custom_links': self.get_admin_links(),
-            'app_links': self.get_app_links(request)
-        }
-        return render(request, 'admin/frequency_report.html', context)
 
 
 @admin.register(Status)

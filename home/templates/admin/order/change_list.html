@@ -1,16 +1,24 @@
 {% extends "admin/change_list.html" %}
 {% load static %}
-{% block object-tools-items %}
+{% block extrahead %}
 {{ block.super }}
+{% endblock %}
+{% block content %}
+
 {% if custom_links %}
-  <li>
-    <div style="display:flex;">
+<div style="display: flex; flex-wrap: wrap;">
     {% for link in custom_links %}
-       <a href="{{ link.url }}">
-          {{ link.label }}
-       </a>
+    <a href="{{ link.url }}" style="
+      padding: 0.3em 0.6em;
+      border: 1px solid #e6e6e6;
+      border-radius: 0.25em;
+      margin-right: 0.4em;
+      background-color: #fafafa;
+    ">
+        {{ link.label }}
+    </a>
     {% endfor %}
-    </div>
-  </li>
+</div>
 {% endif %}
+{{ block.super }}
 {% endblock %}

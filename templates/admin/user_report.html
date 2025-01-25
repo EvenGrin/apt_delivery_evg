@@ -1,12 +1,12 @@
 {% extends 'admin/base_site.html' %}{% load static %}{% block extrahead %} {{ block.super }}
 <link rel="stylesheet" href="{% static 'order/css/Chart.min.css' %}"/>
-<link rel="stylesheet" href="{% static 'home/css/bootstrap.css' %}"/>
 
 <script src="{% static 'order/dist/Chart.bundle.min.js'%}"></script>
 <script src="{% static 'order/dist/moment-with-locales.js'%}"></script>
 <script src="{% static 'order/dist/chartjs-adapter-moment.js'%}"></script>
-{% endblock %} {% block content %} {% if custom_links %}
+{% endblock %} {% block content %}
 
+{% if custom_links %}
 <div class="d-flex flex-wrap">
     {% for link in custom_links %}
     <a href="{{ link.url }}" style="
@@ -20,7 +20,6 @@
     </a>
     {% endfor %}
 </div>
-
 {% endif %}
 
 <div class="mb-5">

@@ -10,7 +10,7 @@ class MealView(admin.ModelAdmin):
     list_display = ('name', 'category', 'price', 'out', 'image', 'quantity', 'sold_meal_count')
     list_filter = ('category',)
     search_fields = ('name__iregex',)  # Case-insensitive search directly
-
+    list_editable = ('quantity',)
     def sold_meal_count(self, obj):
         result = OrderMeal.objects.filter(meal=obj).count()
         return result
