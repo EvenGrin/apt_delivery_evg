@@ -4,8 +4,7 @@
 {{ block.super }}
 {% endblock %}
 {% block content %}
-
-{% if custom_links %}
+{% if custom_links and user.is_superuser %}
 <div style="display: flex; flex-wrap: wrap;">
     {% for link in custom_links %}
     <a href="{{ link.url }}" style="

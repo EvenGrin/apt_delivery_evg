@@ -14,7 +14,7 @@ class CreateOrderForm(forms.ModelForm):
         self.user = user  # Сохраняем пользователя, чтобы получить его пароль
 
     order_date = forms.DateTimeField(
-        initial=lambda: (timezone.localtime() + timedelta(minutes=10)).strftime('%Y-%m-%d %H:%M'),
+        initial=lambda: (timezone.localtime() + timedelta(minutes=3)).strftime('%Y-%m-%d %H:%M'),
         label='Дата и время получения заказа',
         widget=DateTimeInput(attrs={'type': 'datetime-local'})
     )

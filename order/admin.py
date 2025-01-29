@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 
 from django.contrib import admin
-from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery, Value
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery, Value, Q
 from django.db.models.functions import TruncDay, Concat
 from django.shortcuts import render
 from django.urls import path, reverse
@@ -22,9 +22,20 @@ class OrderMealInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('date_create', 'order_date', 'user', 'deliver', 'cab', 'status', 'result', 'amount', 'total_amount')
     list_filter = ('status', 'date_create', 'order_date', 'user', 'deliver', 'cab')
-    list_editable = ('cab', 'user', 'deliver', 'status')
+    list_editable = ('deliver', 'status', 'result')
     inlines = [OrderMealInline]
     list_per_page = 10
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return []
+
+        if request.user.groups.filter(name='operator').exists():
+            readonly_fields = ['user', 'cab', 'date_create', 'order_date', 'total_amount']
+            return readonly_fields
+
+        return self.readonly_fields
+
 
     def get_urls(self):
         urls = super().get_urls()

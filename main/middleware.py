@@ -10,7 +10,6 @@ class RedirectIfAuthenticatedMiddleware(MiddlewareMixin):
     @staticmethod
     def process_request(request):
         excluded_paths = getattr(settings, 'REDIRECT_AUTHENTICATED_EXCLUDE', [])
-        print(excluded_paths)
         if request.user.is_authenticated:
             user = request.user
             if request.path not in excluded_paths:

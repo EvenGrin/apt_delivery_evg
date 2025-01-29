@@ -23,7 +23,7 @@ class Status(models.Model):
         return self.name
 
 def get_default_created_at():
-   return timezone.now() + timedelta(minutes=10)
+   return timezone.now() + timedelta(minutes=3)
 
 
 class Order(models.Model):
@@ -68,8 +68,8 @@ class Order(models.Model):
         verbose_name_plural = 'Заказы'
 
     def clean(self):
-        # if self.status.id == 3 and not self.result:
-        #     raise ValidationError({'result': 'Обязательное поле при статусе "Отменён"'})
+        if self.status.id == 3 and not self.result:
+            raise ValidationError({'result': 'Обязательное поле при статусе "Отменён"'})
         # if self.status.id > 3 and self.deliver is None:
         #     raise ValidationError({'deliver': 'Укажите курьера'})
         if self.cab.id == 0 and self.deliver:
