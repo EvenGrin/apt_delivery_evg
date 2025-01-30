@@ -11,7 +11,7 @@ $(document).ready(function () {
   });
 
   $(document).on("click", ".cart_remove", function (e) {
-    console.log($(this).closest(".card"));
+//    console.log($(this).closest(".card"));
     $.get("/remove_from_cart/", { meal_id: $(this).data("id") }, () => {
       if ($(this).closest(".card")) {
         $("#head div").remove();

@@ -144,7 +144,7 @@ class OrderAdmin(admin.ModelAdmin):
         user_data = {
             'clients': list(all_clients.order_by('-count')),
         }
-        print(user_data)
+        # print(user_data)
 
         context = {
             'user_data': user_data,
