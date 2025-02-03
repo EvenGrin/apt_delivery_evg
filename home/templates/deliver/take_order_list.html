@@ -1,0 +1,31 @@
+{% extends 'home/base.html' %}
+{% load static %}
+{% block title %}Главная{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-between flex-wrap align-items-center">
+    <h2 class=" ps-0  px-3 py-2">Доставка заказов</h2>
+
+    <div class="d-flex justify-content-end z-1">
+        <button class="view_all btn btn-primary position-fixed " style="top:80px;">Показать все</button>
+    </div>
+</div>
+<p>У вас <span id="count">{{count}}</span> заказов</p>
+<p>Вы можете взять не более 5 заказов со статусом новый, подтвержден и собран</p>
+<div class="d-flex flex-wrap align-items-center justify-content-between  z-1 rounded-2 overflow-hidden     mb-4"
+     style="top: 80px;">
+    <div class="btn-group overflow-x-auto dragscroll flex-row ">
+        <a href="{% url 'deliver_orders' %}"
+           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if 'deliver_orders' in request.path %}disabled{% endif %}">
+            Ваши заказы
+        </a>
+        <a href="{% url 'deliver' %}"
+           class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if 'order_list' in request.path %}disabled{% endif %}">
+            Взять заказ
+        </a>
+
+    </div>
+</div>
+{% include 'order/elements/order_item.html'%}
+<script src="{% static 'order/js/order_view_close.js' %}"></script>
+<script src="{% static 'deliver/js/script.js' %}"></script>
+{% endblock %}

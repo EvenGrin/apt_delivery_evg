@@ -20,7 +20,7 @@ class OrderMealInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('date_create', 'order_date', 'user', 'deliver', 'cab', 'status', 'result', 'amount', 'total_amount')
+    list_display = ('id', 'date_create', 'order_date', 'user', 'deliver', 'cab', 'status', 'result', 'amount', 'total_amount')
     list_filter = ('status', 'date_create', 'order_date', 'user', 'deliver', 'cab')
     list_editable = ('deliver', 'status', 'result')
     inlines = [OrderMealInline]
@@ -97,10 +97,6 @@ class OrderAdmin(admin.ModelAdmin):
             total_amount=Subquery(subquery),
         ).values('date').annotate(total_sales=Sum('total_amount')).order_by('date')
 
-        sales_by_create_day = orders.annotate(
-            date=TruncDay('date_create'),
-            total_amount=Subquery(subquery),
-        ).values('date').annotate(order_count=Count('id')).order_by('date')
 
         # Продажи по категориям
         meal_ids = OrderMeal.objects.filter(order__in=orders).values_list('meal_id', flat=True)
@@ -123,7 +119,6 @@ class OrderAdmin(admin.ModelAdmin):
 
         context = {
             'sales_by_day': json.dumps(list(sales_by_day), default=str),
-            'sales_by_create_day': json.dumps(list(sales_by_create_day), default=str),
             'sales_by_category': json.dumps(list(sales_by_category)),
             'sales_by_dish': json.dumps(list(sales_by_dish)), 'title': 'Отчет по продажам',
             'custom_links': self.get_admin_links(),
@@ -144,7 +139,7 @@ class OrderAdmin(admin.ModelAdmin):
         user_data = {
             'clients': list(all_clients.order_by('-count')),
         }
-        print(user_data)
+        # print(user_data)
 
         context = {
             'user_data': user_data,

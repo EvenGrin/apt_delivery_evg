@@ -10,7 +10,6 @@
     </div>
 </div>
 <p>У вас <span id="count">{{count}}</span> заказов</p>
-{% if 'deliver_orders' in request.path %}
 <div class="d-flex flex-wrap align-items-center justify-content-between  z-1 rounded-2 overflow-hidden     mb-4"
      style="top: 80px;">
     <div class="mb-1">Сортировать по</div>
@@ -45,7 +44,6 @@
         {% endfor %}
     </div>
 </div>
-{% endif %}
 <div class="d-flex flex-wrap align-items-center justify-content-between  z-1 rounded-2 overflow-hidden     mb-4"
      style="top: 80px;">
     <div class="btn-group overflow-x-auto dragscroll flex-row ">

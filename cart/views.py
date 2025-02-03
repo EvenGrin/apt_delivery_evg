@@ -143,7 +143,7 @@ def remove_from_cart(request):
     if request.method == 'GET':
         meal_id = request.GET.get('meal_id')
         Cart.objects.all().filter(user=request.user, meal=meal_id).delete()
-        print('удаление из корзины'+ meal_id)
+        # print('удаление из корзины'+ meal_id)
         return JsonResponse(get_cart_data(request.user))
 
 
