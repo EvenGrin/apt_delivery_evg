@@ -8,8 +8,10 @@
 <script src="{% static 'order/dist/Chart.bundle.min.js'%}"></script>
 <script src="{% static 'order/dist/moment-with-locales.js'%}"></script>
 <script src="{% static 'order/dist/chartjs-adapter-moment.js'%}"></script>
-{% endblock %} {% block content %} {% if custom_links %}
-
+{% endblock %}
+{% block content %}
+{{get_urls}}
+{% if custom_links %}
 <div style="margin-bottom:0.6rem">
     {% for link in custom_links %}
     <a href="{{ link.url }}" style="
@@ -29,16 +31,17 @@
     <div class="form-row">
         <div>
             <label for="start_date" class="required">Начальная дата:</label>
-            <input type="date" id="start_date" name="start_date" class="vTextField"/>
+            <input type="date" id="start_date" name="start_date" class="vTextField" value="{{start_date|date:'Y-m-d'}}"/>
         </div>
     </div>
     <div class="form-row">
         <div>
             <label for="end_date" class="required">Конечная дата:</label>
-            <input type="date" id="end_date" name="end_date" class="vTextField"/>
+            <input type="date" id="end_date" name="end_date" class="vTextField" value="{{end_date|date:'Y-m-d'}}"/>
         </div>
     </div>
     <div class="submit-row">
+        <a href="/admin/order/order/sales_report">Сбросить</a>
         <input type="submit" class="btn btn-primary" value="Фильтровать">
     </div>
 </form>
@@ -55,7 +58,8 @@
     <h2>Продажи по блюдам:</h2>
     <canvas id="dishChart" width="400" height="200"></canvas>
 </div>
-
+{% endblock %}
+{% block footer %}
 
 <script>
     const salesData = {{ sales_by_day| safe }};
@@ -226,4 +230,5 @@
       }
     });
 </script>
-{% endblock %}
+
+{% endblock  %}

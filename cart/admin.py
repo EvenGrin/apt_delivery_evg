@@ -5,8 +5,10 @@ from cart.models import Cart, Cabinet
 class CartView(admin.ModelAdmin):
     list_display = ('user', 'meal', 'quantity',)
 
+
 @admin.register(Cabinet)
 class CabView(admin.ModelAdmin):
+    ordering = ('-num',)
     list_display = ('num', 'name',)
-
+    search_fields = ('num', 'name__iregex')
 

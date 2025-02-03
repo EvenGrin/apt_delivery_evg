@@ -31,7 +31,7 @@ def update_status(request):
         order = Order.objects.filter(id=order_id).update(status=6)
         status = Order.objects.values('status__id', 'status__name').get(id=order_id)
         return JsonResponse({'class_add': 'delivered, btn-outline-success', 'class_remove': 'in_way, btn-primary',
-                             'html': 'Изменить на в пути', 'status': status})
+                             'html': 'Изменен на в пути', 'status': status})
     elif Order.objects.filter(id=order_id, status=6):
         order = Order.objects.filter(id=order_id).update(status=7)
         status = Order.objects.values('status__id', 'status__name').get(id=order_id)

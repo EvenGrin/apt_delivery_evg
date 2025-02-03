@@ -1,14 +1,14 @@
 import json
 from datetime import datetime, timezone
-from decimal import Decimal
 
 from django.contrib import admin
-from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery, Value, Q
-from django.db.models.functions import TruncDay, Concat
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery, Value, Max, Min
+from django.db.models.functions import TruncDay, Concat, Greatest
 from django.shortcuts import render
 from django.urls import path, reverse
 from django.utils import timezone
-from datetime import datetime, timezone
+
 from home.models import Meal
 from order.models import Order, Status, OrderMeal
 
@@ -16,14 +16,17 @@ from order.models import Order, Status, OrderMeal
 class OrderMealInline(admin.TabularInline):
     model = OrderMeal
     extra = 0
+    readonly_fields = [field.name for field in OrderMeal._meta.get_fields()]
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'date_create', 'order_date', 'user', 'deliver', 'cab', 'status', 'result', 'amount', 'total_amount')
+    list_display = (
+    'id', 'date_create', 'order_date', 'user', 'deliver', 'cab', 'status', 'result', 'amount', 'total_amount')
     list_filter = ('status', 'date_create', 'order_date', 'user', 'deliver', 'cab')
     list_editable = ('deliver', 'status', 'result')
     inlines = [OrderMealInline]
+    search_fields = ('id__iexact',)
     list_per_page = 10
 
     def get_readonly_fields(self, request, obj=None):
@@ -36,7 +39,6 @@ class OrderAdmin(admin.ModelAdmin):
 
         return self.readonly_fields
 
-
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -45,7 +47,6 @@ class OrderAdmin(admin.ModelAdmin):
             path('couriers_report/', self.admin_site.admin_view(self.courier_report_view), name='courier_report'),
         ]
         return custom_urls + urls
-
 
     def get_app_links(self, request):
         app_list = admin.site.get_app_list(request)
@@ -69,6 +70,7 @@ class OrderAdmin(admin.ModelAdmin):
         extra_context['app_links'] = self.get_app_links(request)
         return super().changelist_view(request, extra_context=extra_context)
 
+    # отчет по продажам
     def sales_report_view(self, request):
         start_date_str = request.GET.get('start_date')
         end_date_str = request.GET.get('end_date')
@@ -97,7 +99,6 @@ class OrderAdmin(admin.ModelAdmin):
             total_amount=Subquery(subquery),
         ).values('date').annotate(total_sales=Sum('total_amount')).order_by('date')
 
-
         # Продажи по категориям
         meal_ids = OrderMeal.objects.filter(order__in=orders).values_list('meal_id', flat=True)
 
@@ -116,13 +117,14 @@ class OrderAdmin(admin.ModelAdmin):
             .annotate(total_sales=Sum('price'))
             .order_by('-total_sales')
         )
-
         context = {
             'sales_by_day': json.dumps(list(sales_by_day), default=str),
             'sales_by_category': json.dumps(list(sales_by_category)),
             'sales_by_dish': json.dumps(list(sales_by_dish)), 'title': 'Отчет по продажам',
             'custom_links': self.get_admin_links(),
             'app_links': self.get_app_links(request),
+            'start_date': start_date if start_date else orders.aggregate(date=Min('order_date'))['date'],
+            'end_date': end_date if end_date else orders.aggregate(date=Max('order_date'))['date'],
             **admin.site.each_context(request)
         }
         return render(request, 'admin/sales_report.html', context)
@@ -156,7 +158,6 @@ class OrderAdmin(admin.ModelAdmin):
             total_price=ExpressionWrapper(F('meal__price') * F('amount'), output_field=DecimalField())
         ).values('order').annotate(total_amount=Sum('total_price')).values('total_amount')
 
-
         couriers = (
             Order.objects.filter(deliver__isnull=False)
             .values('deliver')
@@ -181,7 +182,6 @@ class OrderAdmin(admin.ModelAdmin):
         return render(request, 'admin/courier_report.html', context)
 
 
-
 @admin.register(Status)
 class StatusAdmin(admin.ModelAdmin):
     list_display = ('id', 'name',)
@@ -190,5 +190,7 @@ class StatusAdmin(admin.ModelAdmin):
 
 @admin.register(OrderMeal)
 class OrderMealView(admin.ModelAdmin):
-    list_display = ('order', 'meal', 'amount',)
+    list_display = ('order_id', 'order', 'meal', 'amount',)
     list_filter = ('order_id',)
+    search_fields = ('order_id__id__iexact',)
+    list_per_page = 10
