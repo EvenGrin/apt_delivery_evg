@@ -46,7 +46,6 @@
 <div class="mb-5">
     <h2>Продажи по дням:</h2>
     <canvas id="salesChart" style="margin-bottom: 30px; width: 60%; height: 50%"></canvas>
-
 </div>
 <div class="mb-5">
     <h2>Продажи по категориям:</h2>
@@ -60,7 +59,6 @@
 
 <script>
     const salesData = {{ sales_by_day| safe }};
-    const orderData = {{ sales_by_create_day| safe }};
     const categoryData = {{ sales_by_category| safe }};
     const dishData = {{ sales_by_dish| safe }};
     moment.locale('ru');
@@ -132,13 +130,6 @@
           fill: false,
           borderColor: 'rgb(75, 192, 192)',
           tension: 0.1
-        },{
-          label: 'Создано заказов по дням',
-          data: orderData.map(item => item.order_count),
-          fill: false,
-          borderColor: 'rgb(255, 99, 132)', // Другой цвет для заказов
-          tension: 0.1,
-          yAxisID: 'y-axis-1' // Указываем, что этот датасет использовать ось y1 (если будет нужна отдельная ось)
         }]
       },
       options: {

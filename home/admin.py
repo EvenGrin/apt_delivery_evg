@@ -11,6 +11,7 @@ class MealView(admin.ModelAdmin):
     list_filter = ('category',)
     search_fields = ('name__iregex',)
     list_editable = ('quantity',)
+    list_per_page = 10
     def sold_meal_count(self, obj):
         result = OrderMeal.objects.filter(meal=obj).count()
         return result

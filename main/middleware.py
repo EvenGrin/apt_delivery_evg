@@ -1,4 +1,5 @@
 # middleware.py
+import re
 
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -10,9 +11,13 @@ class RedirectIfAuthenticatedMiddleware(MiddlewareMixin):
     @staticmethod
     def process_request(request):
         excluded_paths = getattr(settings, 'REDIRECT_AUTHENTICATED_EXCLUDE', [])
+
         if request.user.is_authenticated:
             user = request.user
-            if request.path not in excluded_paths:
+            if not any(
+                    (re.match(pattern, request.path) if pattern.startswith('^') else (request.path == pattern))
+                    for pattern in excluded_paths
+            ):
                 if request.path.startswith('/accounts/login') or request.path.startswith('/accounts/registration'):
                     return redirect(reverse('home'))
                 if user.is_superuser:
