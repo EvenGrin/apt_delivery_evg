@@ -129,7 +129,7 @@
       data: {
         labels: salesData.map(item => item.date),
         datasets: [{
-          label: 'Продажи по дням',
+          label: 'Продажи по дням в руб.',
           data: salesData.map(item => item.total_sales),
           fill: false,
           borderColor: 'rgb(75, 192, 192)',
@@ -184,7 +184,7 @@
       data: {
         labels: categoryData.map(item => item.category__name),
         datasets: [{
-          label: 'Продажи по категориям',
+          label: 'Продажи по категориям в руб.',
           data: categoryData.map(item => item.total_sales),
           backgroundColor: categoryData.map(item => categoryColors[item.category__name].backgroundColor),
           borderColor: categoryData.map(item => categoryColors[item.category__name].borderColor),
@@ -205,7 +205,7 @@
       data: {
         labels: dishData.map(item => item.name),
         datasets: [{
-          label: 'Продажи по блюдам',
+          label: 'Продажи по блюдам в руб.',
           data: dishData.map(item => item.total_sales),
           backgroundColor: dishData.map(item => {
             const category = categoryData.find(cat => cat.category__name === item.category__name)?.category__name;

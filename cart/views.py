@@ -103,7 +103,7 @@ def update_cart_item(request, action):
                 'quantity': 'Больше не в корзине'
             })
 
-        cart_item.quantity += quantity_change;
+        cart_item.quantity += quantity_change
 
     if cart_item.quantity > 0:
         cart_item.save()
