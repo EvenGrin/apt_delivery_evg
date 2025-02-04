@@ -11,4 +11,5 @@ class CabView(admin.ModelAdmin):
     ordering = ('-num',)
     list_display = ('num', 'name',)
     search_fields = ('num', 'name__iregex')
+    list_per_page = 10
 
