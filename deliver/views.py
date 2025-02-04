@@ -12,7 +12,7 @@ limit = 10  # ограничение количества взятия зака�
 @login_required
 def take_order(request):
     order_id = request.GET['order_id']
-    count = Order.objects.filter(status__in=[1, 2, 4], deliver=request.user).count()
+    count = Order.objects.filter(status__in=[4], deliver=request.user).count()
     # print(count)
     if (Order.objects.filter(id=order_id, cab=0)):
         return JsonResponse({'message': 'Нельзя взять заказы с самовыносом', 'count': count})
@@ -46,10 +46,10 @@ def take_order_list(request, order='-date_create', filter=0):
     context = {}
     context['order'] = order
     context['filter'] = filter
-    count = Order.objects.filter(status__in=[1, 2, 4], deliver=request.user).count()
+    count = Order.objects.filter(status__in=[4], deliver=request.user).count()
     context['count'] = 'взято '+str(count)
     # заказы, которые не самовынос, без курьера, со статусом новый подтвержден, собран
-    context['orders'] = Order.objects.filter(~Q(cab=0), status__in=[1, 2, 4], deliver=None).order_by(
+    context['orders'] = Order.objects.filter(~Q(cab=0), status__in=[4], deliver=None).order_by(
         order)  # Фильтруем заказы
     return render(request, 'deliver/take_order_list.html', context)
 

@@ -56,7 +56,7 @@ MIDDLEWARE = [
 
 REDIRECT_AUTHENTICATED_EXCLUDE = [
     '/logout/',
-    '^media/(?P<path>.*)$',
+    '/media/',
 ]
 
 

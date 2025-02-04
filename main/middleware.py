@@ -15,7 +15,7 @@ class RedirectIfAuthenticatedMiddleware(MiddlewareMixin):
         if request.user.is_authenticated:
             user = request.user
             if not any(
-                    (re.match(pattern, request.path) if pattern.startswith('^') else (request.path == pattern))
+                    request.path.startswith(pattern)
                     for pattern in excluded_paths
             ):
                 if request.path.startswith('/accounts/login') or request.path.startswith('/accounts/registration'):
