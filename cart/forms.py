@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django import forms
 from django.forms import DateTimeInput
 
@@ -13,16 +13,42 @@ class CreateOrderForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.user = user  # Сохраняем пользователя, чтобы получить его пароль
 
-    order_date = forms.DateTimeField(
-        initial=lambda: (timezone.localtime() + timedelta(minutes=3)).strftime('%Y-%m-%d %H:%M'),
-        label='Дата и время получения заказа',
-        widget=DateTimeInput(attrs={'type': 'datetime-local'})
+    # order_date = forms.DateTimeField(
+    #     initial=lambda: (timezone.localtime() + timedelta(minutes=3)).strftime('%Y-%m-%d %H:%M'),
+    #     label='Дата и время получения заказа',
+    #     widget=DateTimeInput(attrs={'type': 'datetime-local'})
+    # )
+    # def clean_order_date(self):
+    #     order_date = self.cleaned_data['order_date']
+    #     if order_date < timezone.now():
+    #         raise forms.ValidationError("Дата и время не могут быть в прошлом")
+    #     return order_date
+
+    order_date = forms.DateField(
+        initial=(timezone.localdate()).strftime('%Y-%m-%d'),
+        label='Дата получения заказа',
+        widget=forms.DateInput(attrs={'type': 'date', 'readonly': True}),  # Readonly, чтобы не меняли
     )
-    def clean_order_date(self):
-        order_date = self.cleaned_data['order_date']
-        if order_date < timezone.now():
-            raise forms.ValidationError("Дата и время не могут быть в прошлом")
-        return order_date
+    order_time = forms.TimeField(
+        initial=lambda: (timezone.localtime() + timedelta(minutes=3)).strftime('%H:%M'),
+        label='Время получения заказа',
+        widget=forms.TimeInput(attrs={'type': 'time'})
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        order_date = cleaned_data.get('order_date')
+        order_time = cleaned_data.get('order_time')
+
+        if order_date and order_time:
+            if order_time < timezone.now().time():
+                raise forms.ValidationError("Дата и время не могут быть в прошлом")
+            else:
+                cleaned_data['order_datetime'] = timezone.make_aware(datetime.combine(order_date, order_time))
+        else:
+            raise ValidationError("Введите и дату, и время.")
+
+        return cleaned_data
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
@@ -38,4 +64,4 @@ class CreateOrderForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('order_date', 'password',)
+        fields = ('order_date', 'order_time', 'password',)

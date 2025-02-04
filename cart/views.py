@@ -20,10 +20,11 @@ def make_order(request):
         cab = request.POST["cab"]
         form = CreateOrderForm(user=request.user, data=request.POST)
         meals = Cart.objects.all().filter(user=request.user)
+
         if form.is_valid() and meals:
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
-            order.order_date = request.POST['order_date']
+            order.order_date = form.cleaned_data['order_datetime']
             order.save()
             for p in meals:
                 op = OrderMeal(order=order, meal=p.meal, amount=p.quantity)
