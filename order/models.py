@@ -29,10 +29,10 @@ def get_default_created_at():
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь', limit_choices_to=Q(is_superuser=False) & Q(is_staff=False) & Q(groups__isnull=True),)
     date_create = models.DateTimeField(verbose_name='Дата заказа', auto_now_add=True)
-    order_date = models.DateTimeField(default=get_default_created_at, verbose_name='Дата и время получения заказа'
-    )
+    order_date = models.DateTimeField(default=get_default_created_at, verbose_name='Дата и время получения заказа')
     status = models.ForeignKey('Status', on_delete=models.CASCADE, verbose_name='Статус', default=1)
     result = models.CharField(max_length=50, verbose_name='Причина отказа', blank=True, null=True)
+    user_comment = models.TextField(blank=True, verbose_name='Комментарий пользователя к заказу', help_text='Не обязательное поле')
     cab = models.ForeignKey(Cabinet, on_delete=models.CASCADE, verbose_name='Кабинет', default=1)
     deliver = models.ForeignKey(
         User,

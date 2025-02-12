@@ -1,9 +1,9 @@
+from datetime import timedelta, datetime
+
+from django import forms
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from datetime import timedelta, datetime
-from django import forms
-from django.forms import DateTimeInput
 
 from .models import User
 
@@ -23,7 +23,11 @@ class CreateOrderForm(forms.ModelForm):
     #     if order_date < timezone.now():
     #         raise forms.ValidationError("Дата и время не могут быть в прошлом")
     #     return order_date
-
+    user_comment = forms.CharField(
+        widget=forms.Textarea,
+        label='Комментарий к заказу',
+        help_text='Не обязательное поле'
+    )
     order_date = forms.DateField(
         initial=(timezone.localdate()).strftime('%Y-%m-%d'),
         label='Дата получения заказа',

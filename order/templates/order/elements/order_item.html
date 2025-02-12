@@ -46,6 +46,9 @@
                     <p class="fs-3">{{order.cab}}</p>
                 </div>
                 {% endif%}
+                {% if order.user_comment %}
+                <p>Комментарий: {{order.user_comment}}</p>
+                {% endif %}
                 {% if order.result %}
                 <p>
                     Причина отмены:{{order.result}}

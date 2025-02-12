@@ -4,6 +4,14 @@
 {% block body %}
 {% include 'home/elements/aside.html' %}
 <section data-bs-spy="scroll" data-bs-smooth-scroll="true" class="row" tabindex="0">
+    <form id="changelist-search" method="get">
+        <div><!-- DIV needed for valid HTML -->
+            <label for="searchbar"><img src="{% static 'admin/img/search.svg' %}" alt="Search"></label>
+            <input type="text" size="40" name="q" value="" id="searchbar" autofocus="">
+            <input type="submit" value="Найти">
+
+        </div>
+    </form>
     {% for category in categories %}
     <div id="cat_{{category.id}}" class="pb-5">
         <div>
@@ -11,13 +19,13 @@
         </div>
         <div class="row row-cols-1 row-cols-md-2  row-cols-xl-3 g-3">
             {% with meals=category.ordered_meals%}
-                {% for meal in meals %}
-                        {% include 'home/elements/meals_cards.html' %}
-                {% empty %}
-                    <div class="col w-100">
-                        {% include 'home/elements/danger.html' with text="Ничего не найдено"%}
-                    </div>
-                {% endfor %}
+            {% for meal in meals %}
+            {% include 'home/elements/meals_cards.html' %}
+            {% empty %}
+            <div class="col w-100">
+                {% include 'home/elements/danger.html' with text="Ничего не найдено"%}
+            </div>
+            {% endfor %}
             {% endwith %}
         </div>
     </div>

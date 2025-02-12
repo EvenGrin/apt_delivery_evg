@@ -25,12 +25,13 @@ def make_order(request):
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
             order.order_date = form.cleaned_data['order_datetime']
+            order.user_comment = form.cleaned_data['user_comment']
             order.save()
             for p in meals:
                 op = OrderMeal(order=order, meal=p.meal, amount=p.quantity)
                 op.save()
                 p.delete()
-            return redirect(reverse('cart'))
+            return redirect(reverse('order'))
 
     else:
         form = CreateOrderForm(user=request.user)
