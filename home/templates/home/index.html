@@ -2,7 +2,9 @@
 {% load static %}
 {% block title %}Главная{% endblock %}
 {% block body %}
+{% if not search %}
 {% include 'home/elements/aside.html' %}
+{% endif %}
 <section data-bs-spy="scroll" data-bs-smooth-scroll="true" class="row" tabindex="0">
     <form id="changelist-search" method="get">
         <div><!-- DIV needed for valid HTML -->
@@ -12,6 +14,22 @@
 
         </div>
     </form>
+    {% if search %}
+    <div>
+    <div>
+        <h2>Найдено {{search_count}} по: {{search}}</h2>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2  row-cols-xl-3 g-3">
+        {% for meal in search_result %}
+        {% include 'home/elements/meals_cards.html' %}
+        {% empty %}
+        <div class="col w-100">
+            {% include 'home/elements/danger.html' with text="Ничего не найдено"%}
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+    {% else %}
     {% for category in categories %}
     <div id="cat_{{category.id}}" class="pb-5">
         <div>
@@ -30,6 +48,7 @@
         </div>
     </div>
     {% endfor %}
+    {% endif%}
 </section>
 <!--<script src="{% static 'home/js/ajax/pagintion.js'%}"></script>-->
 <script src="{% static 'home/js/script.js' %}"></script>
