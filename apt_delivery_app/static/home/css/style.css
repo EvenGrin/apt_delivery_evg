@@ -1,0 +1,12 @@
+body{
+  background-image: url('../images/fon/fon.png');
+  background-size: 100%;
+  background-attachment: fixed;
+}
+.table td.meals_photo {
+  width: 10%;
+}
+
+.table tbody tr {
+  cursor: pointer;
+}

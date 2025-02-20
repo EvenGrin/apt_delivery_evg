@@ -36,11 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'home',
-    'cart',
-    'order',
-    'log_reg',
-    'deliver',
+    # 'home',
+    # 'cart',
+    # 'order',
+    # 'log_reg',
+    # 'deliver',
+    'apt_delivery_app',
 ]
 
 MIDDLEWARE = [
@@ -129,7 +130,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-AUTH_USER_MODEL = 'log_reg.User'
+# AUTH_USER_MODEL = 'log_reg.User'
+AUTH_USER_MODEL = 'apt_delivery_app.User'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 # Default primary key field type
