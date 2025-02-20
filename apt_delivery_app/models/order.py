@@ -39,6 +39,7 @@ class Order(models.Model):
     )
     user_comment = models.TextField(
         blank=True,
+        null= True,
         verbose_name='Комментарий пользователя к заказу',
 
                                     help_text='Не обязательное поле'

@@ -35,7 +35,8 @@ class CreateOrderForm(forms.ModelForm):
     user_comment = forms.CharField(
         widget=forms.Textarea,
         label='Комментарий к заказу',
-        help_text='Не обязательное поле'
+        help_text='Не обязательное поле',
+        required = False
     )
     order_date = forms.DateField(
         initial=(timezone.localdate()).strftime('%Y-%m-%d'),
@@ -45,7 +46,8 @@ class CreateOrderForm(forms.ModelForm):
     order_time = forms.TimeField(
         initial=lambda: (timezone.localtime() + timedelta(minutes=3)).strftime('%H:%M'),
         label='Время получения заказа',
-        widget=forms.TimeInput(attrs={'type': 'time'})
+        widget=forms.TimeInput(attrs={'type': 'time'}),
+
     )
 
     def clean(self):

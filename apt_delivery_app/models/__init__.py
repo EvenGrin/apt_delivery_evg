@@ -6,5 +6,6 @@ from .status import *
 from .user import *
 from .order import *
 from .ordermeal import *
+from .menu import *
 
 
