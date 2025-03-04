@@ -10,12 +10,10 @@ class Menu(models.Model):
         default=datetime.date.today() + datetime.timedelta(days=1),
         verbose_name='Дата'
     )
-    meal = models.ForeignKey(
+    meal = models.ManyToManyField(
         Meal,
-        on_delete=models.CASCADE,
         verbose_name='Блюдо',
     )
     class Meta:
-        unique_together = ('date', 'meal')
         verbose_name = 'Меню'
         verbose_name_plural = 'Меню'

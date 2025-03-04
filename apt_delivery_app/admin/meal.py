@@ -1,6 +1,8 @@
+from datetime import date
+
 from django.contrib import admin
 
-from apt_delivery_app.models import Meal, OrderMeal, Category
+from apt_delivery_app.models import Meal, OrderMeal, Category, Menu
 
 
 @admin.register(Meal)
@@ -15,6 +17,15 @@ class MealView(admin.ModelAdmin):
         return result
     sold_meal_count.short_description = "Количество заказанных"
 
+    actions = ['create_menu']
+    @admin.action(description="Добавить в меню на сегодня")
+    def create_menu(self, request, queryset):
+        menu =Menu.objects.filter(date=date.today())
+        if menu:
+            for i in queryset:
+                menu[0].meal.add(i.id)
+        else:
+            Menu.objects.create(date=date.today()).meal.set(queryset)
 
 
 @admin.register(Category)
