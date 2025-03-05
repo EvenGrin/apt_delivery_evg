@@ -1,6 +1,6 @@
 from django.db import models
-from .meal import Meal
-from .user import User
+from .m_meal import Meal
+from .m_user import User
 
 
 class Cart(models.Model):

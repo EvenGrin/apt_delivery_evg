@@ -6,6 +6,7 @@
 {% include 'home/elements/aside.html' %}
 {% endif %}
 <section data-bs-spy="scroll" data-bs-smooth-scroll="true" class="row" tabindex="0">
+    <h1>Меню на {% now "SHORT_DATE_FORMAT" %}</h1>
     <form id="changelist-search" method="get">
         <div><!-- DIV needed for valid HTML -->
             <label for="searchbar"><img src="{% static 'admin/img/search.svg' %}" alt="Search"></label>
@@ -16,27 +17,11 @@
     </form>
     {% if search %}
     <div>
-    <div>
-        <h2>Найдено {{search_count}} по: {{search}}</h2>
-    </div>
-    <div class="row row-cols-1 row-cols-md-2  row-cols-xl-3 g-3">
-        {% for meal in search_result %}
-        {% include 'home/elements/meals_cards.html' %}
-        {% empty %}
-        <div class="col w-100">
-            {% include 'home/elements/danger.html' with text="Ничего не найдено"%}
-        </div>
-        {% endfor %}
-    </div>
-    </div>
-    {% else %}
-    {% for category in categories %}
-    <div id="cat_{{category.id}}" class="pb-5">
         <div>
-            <h2>{{category.name}}</h2>
+            <h2>Найдено {{search_count}} по: {{search}}</h2>
         </div>
         <div class="row row-cols-1 row-cols-md-2  row-cols-xl-3 g-3">
-            {% for meal in category.ordered_meals %}
+            {% for meal in search_result %}
             {% include 'home/elements/meals_cards.html' %}
             {% empty %}
             <div class="col w-100">
@@ -45,6 +30,24 @@
             {% endfor %}
         </div>
     </div>
+    {% else %}
+    {% for category, meals in categorized_meals.items %}
+    <div id="cat_{{category.id}}" class="pb-5">
+        <div>
+            <h2>{{category.name}}</h2>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2  row-cols-xl-3 g-3">
+            {% for meal in meals %}
+            {% include 'home/elements/meals_cards.html' %}
+            {% empty %}
+            <div class="col w-100">
+                {% include 'home/elements/danger.html' with text="Ничего не найдено"%}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    {% include 'home/elements/danger.html' with text="Нет меню на эту дату" %}
     {% endfor %}
     {% endif%}
 </section>

@@ -1,7 +1,7 @@
 from django.db import models
 
-from .meal import Meal
-from .order import Order
+from .m_meal import Meal
+from .m_order import Order
 
 
 class OrderMeal(models.Model):

@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from .models import User
+from .models import User, Order
 
 
 class RegisterForm(UserCreationForm):
@@ -80,3 +80,9 @@ class CreateOrderForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('order_date', 'order_time', 'password',)
+
+
+class ChangeOrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ('cab', 'user_comment', 'order_date',)

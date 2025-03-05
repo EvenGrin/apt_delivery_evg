@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 #
     path('', views.meal_list, name="home"),
+    path('menu', views.menu, name='menu'),
 #
     path("accounts/", include("django.contrib.auth.urls")),
     path('accounts/registration', views.register_view, name='registration'),
@@ -29,6 +30,7 @@ urlpatterns = [
 #
     path('order', views.order, name="order"),
     path('order/<str:order>/<int:filter>', views.order, name="order"),
+    path('change_order/<int:order_id>', views.change_order, name='change_order')
 #
 
 ]

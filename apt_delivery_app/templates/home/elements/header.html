@@ -9,6 +9,10 @@
                         <a class="nav-link text-white d-flex align-items-center justify-content-center"
                            aria-current="page" href="{% url 'home' %}">Главная</a>
                     </li>
+                    <li class="nav-item ">
+                        <a class="nav-link text-white d-flex align-items-center justify-content-center"
+                           aria-current="page" href="{% url 'menu' %}">Меню</a>
+                    </li>
                     {% endif %}
                     {% if request.user.is_authenticated %}
                     {% if request.user.groups.all.0.name != "deliver" %}

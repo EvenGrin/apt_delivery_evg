@@ -5,8 +5,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, Sum
 
-from .cabinet import Cabinet
-from .user import User
+from .m_cabinet import Cabinet
+from .m_user import User
 
 def get_default_created_at():
    return timezone.now() + timedelta(minutes=3)

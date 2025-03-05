@@ -1,11 +1,11 @@
-from .cabinet import *
-from .cart import *
-from .category import *
-from .meal import *
-from .status import *
-from .user import *
-from .order import *
-from .ordermeal import *
-from .menu import *
+from .m_cabinet import *
+from .m_cart import *
+from .m_category import *
+from .m_meal import *
+from .m_status import *
+from .m_user import *
+from .m_order import *
+from .m_ordermeal import *
+from .m_menu import *
 
 

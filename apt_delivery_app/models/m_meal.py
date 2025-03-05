@@ -1,6 +1,6 @@
 from django.db import models
 
-from .category import Category
+from .m_category import Category
 
 
 class Meal(models.Model):
