@@ -6,6 +6,7 @@
             <div>
                 <h5 class="meal-name card-title name_meal">{{ meal.name }}</h5>
                 <p class="meal-category card-text name_cat">{{ meal.category.name }}</p>
+                <p>Выход: {{meal.out}}</p>
             </div>
             <div class="meal-price fs-3 fw-semibold">{{meal.price}}р</div>
             {% if request.user.is_authenticated %}

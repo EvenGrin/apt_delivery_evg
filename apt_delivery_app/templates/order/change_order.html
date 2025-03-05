@@ -1,9 +1,17 @@
 {% extends 'home/base.html' %}
+{% load static %}
 {% block title %}Изменение заказа{% endblock %}
 {% block content %}
 <form method="post">
     {% csrf_token %}
-    {{form.as_p}}
-    <button type="submit">Изменить</button>
+    <h1>Заказ №{{order.id}}</h1>
+    {{ form.as_p }}
+    <hr>
+    <h2>Блюда в заказе</h2>
+    {{formset.as_p}}
+    <div class="d-flex justify-content-end">
+        <button type="submit">Изменить</button>
+    </div>
 </form>
+<script src="{% static 'log_reg/js/register.js'%}"></script>
 {% endblock %}

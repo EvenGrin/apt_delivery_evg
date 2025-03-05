@@ -1,11 +1,14 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.urls import path, include
 
 from apt_delivery_app import views
 
 urlpatterns = [
+    path('favicon.ico', lambda _ : redirect('static/home/images/logo.png', permanent=True)),
+#
     path('admin/', admin.site.urls),
 #
     path('', views.meal_list, name="home"),
@@ -30,7 +33,7 @@ urlpatterns = [
 #
     path('order', views.order, name="order"),
     path('order/<str:order>/<int:filter>', views.order, name="order"),
-    path('change_order/<int:order_id>', views.change_order, name='change_order')
+    path('order/<int:pk>/edit', views.change_order, name='change_order')
 #
 
 ]

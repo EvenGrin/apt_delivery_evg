@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
+from django.forms import inlineformset_factory
+from django.shortcuts import render, get_object_or_404, redirect
 
-from apt_delivery_app.forms import ChangeOrderForm
-from apt_delivery_app.models import Order, Status, Cart
+from apt_delivery_app.forms import ChangeOrderForm, ChangeOrderMealForm
+from apt_delivery_app.models import Order, Status, Cart, OrderMeal
 
 
 @login_required
@@ -20,17 +21,30 @@ def order(request, order='-date_create', filter=0):
 
 
 @login_required
-def change_order(request, order_id=0):
+def change_order(request, pk=0):
+    # Получаем объект заказа или возвращаем 404, если он не найден
+    order = get_object_or_404(Order, pk=pk)
+
     if request.method == "POST":
-        print(request.POST)
-        form = ChangeOrderForm(request.POST)
-        if form.is_valid():
-            pass
+        # Создаем формы с данными из POST-запроса
+        form = ChangeOrderForm(request.POST, instance=order)
+        OrderMealFormSet = inlineformset_factory(Order, OrderMeal, form=ChangeOrderMealForm, extra=1)
+        formset = OrderMealFormSet(request.POST, instance=order)
+
+        if form.is_valid() and formset.is_valid():
+            # Сохраняем изменения в заказе
+            order = form.save()
+            formset.save()  # Сохраняем изменения в блюдах заказа
+            return redirect('order')  # Перенаправление после успешного сохранения
     else:
-        get = get_object_or_404(Order, id=order_id)
-        form = ChangeOrderForm(instance=get)
-        print()
+        # Если метод GET, создаем формы с текущими данными заказа
+        form = ChangeOrderForm(instance=order)
+        OrderMealFormSet = inlineformset_factory(Order, OrderMeal, form=ChangeOrderMealForm, extra=1)
+        formset = OrderMealFormSet(instance=order)
+
     context = {
-        'form': form
+        'form': form,
+        'formset': formset,
+        'order': order,
     }
     return render(request, 'order/change_order.html', context=context)

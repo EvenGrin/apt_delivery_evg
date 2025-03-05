@@ -46,7 +46,7 @@
                     <p class="fs-4">{{order.cab}}</p>
                 </div>
                 {% if order.status.cod == 'new' %}
-                <a href="{% url 'change_order' order_id=order.id %}" class="btn btn-danger">Изменить</a>
+                <a href="{% url 'change_order' order.pk %}" class="btn btn-danger">Изменить</a>
                 {% endif %}
                 {% endif%}
                 {% if order.user_comment %}

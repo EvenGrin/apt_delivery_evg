@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
 
@@ -90,6 +91,9 @@ class Order(models.Model):
         #     raise ValidationError({'deliver': 'Укажите курьера'})
         if self.cab.id == 0 and self.deliver:
             raise ValidationError({'deliver': 'К самовыносу курьер не указывается'})
+
+    def get_absolute_url(self): # Тут мы создали новый метод
+        return reverse('order')
 
     def __str__(self):
         return f'№: {self.id},\n покупатель: {self.user},\n дата: {str(self.date_create).split(".")[0]}'
