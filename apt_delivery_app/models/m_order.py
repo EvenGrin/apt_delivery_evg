@@ -10,7 +10,8 @@ from .m_cabinet import Cabinet
 from .m_user import User
 
 def get_default_created_at():
-   return timezone.now() + timedelta(minutes=3)
+    print(timezone.now(), 'с модели')
+    return timezone.localtime() + timedelta(minutes=3)
 
 class Order(models.Model):
     user = models.ForeignKey(
@@ -23,7 +24,7 @@ class Order(models.Model):
         verbose_name='Дата заказа',
         auto_now_add=True
     )
-    order_date = models.DateTimeField(
+    order_date = models.TimeField(
         default=get_default_created_at,
         verbose_name='Дата и время получения заказа'
     )

@@ -7,14 +7,6 @@
 {% endif %}
 <section data-bs-spy="scroll" data-bs-smooth-scroll="true" class="row" tabindex="0">
     <h1>Меню на {% now "SHORT_DATE_FORMAT" %}</h1>
-    <form id="changelist-search" method="get">
-        <div><!-- DIV needed for valid HTML -->
-            <label for="searchbar"><img src="{% static 'admin/img/search.svg' %}" alt="Search"></label>
-            <input type="text" size="40" name="q" value="" id="searchbar" autofocus="">
-            <input type="submit" value="Найти">
-
-        </div>
-    </form>
     {% if search %}
     <div>
         <div>

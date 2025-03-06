@@ -34,7 +34,8 @@ if (form) {
 
   const errorlist = form.querySelectorAll('.errorlist');
   errorlist.forEach(error => {
-    error.classList.add('text-danger');
+    error.classList.add('text-danger', 'm-0', 'mt-3');
   });
+  form.querySelector('.helptext').classList.add('small')
 }
 

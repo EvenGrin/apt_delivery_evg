@@ -21,7 +21,7 @@ def make_order(request):
         if form.is_valid() and meals:
             order = Order(user=request.user)
             order.cab = Cabinet.objects.get(pk=cab)
-            order.order_date = form.cleaned_data['order_datetime']
+            order.order_date = form.cleaned_data['order_date']
             order.user_comment = form.cleaned_data['user_comment']
             order.save()
             for p in meals:

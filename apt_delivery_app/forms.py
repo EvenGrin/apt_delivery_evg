@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import timedelta, time
 
 from django import forms
 from django.contrib.auth import authenticate
@@ -38,30 +38,25 @@ class CreateOrderForm(forms.ModelForm):
         help_text='Не обязательное поле',
         required = False
     )
-    order_date = forms.DateField(
-        initial=(timezone.localdate()).strftime('%Y-%m-%d'),
-        label='Дата получения заказа',
-        widget=forms.DateInput(attrs={'type': 'date', 'readonly': True}),  # Readonly, чтобы не меняли
-    )
-    order_time = forms.TimeField(
+    order_date = forms.TimeField(
         initial=lambda: (timezone.localtime() + timedelta(minutes=3)).strftime('%H:%M'),
         label='Время получения заказа',
         widget=forms.TimeInput(attrs={'type': 'time'}),
-
+        help_text='Время указывается не раньше текущей'
     )
 
     def clean(self):
         cleaned_data = super().clean()
         order_date = cleaned_data.get('order_date')
-        order_time = cleaned_data.get('order_time')
-
-        if order_date and order_time:
-            if order_time < timezone.now().time():
-                raise forms.ValidationError("Дата и время не могут быть в прошлом")
+        print(order_date, timezone.localtime().time())
+        if order_date:
+            # print(time(8, 00) < order_date < time(15, 00))
+            if order_date < timezone.localtime().time():
+                raise forms.ValidationError("Время не могут быть в прошлом")
             else:
-                cleaned_data['order_datetime'] = timezone.make_aware(datetime.combine(order_date, order_time))
+                cleaned_data['order_date'] = order_date
         else:
-            raise ValidationError("Введите и дату, и время.")
+            raise ValidationError("Введите время.")
 
         return cleaned_data
 
@@ -79,7 +74,7 @@ class CreateOrderForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('order_date', 'order_time', 'password',)
+        fields = ('order_date', 'password',)
 
 
 class ChangeOrderForm(forms.ModelForm):
