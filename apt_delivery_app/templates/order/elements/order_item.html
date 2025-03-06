@@ -1,9 +1,10 @@
 {% load humanize %}
-<div class="accordion row">
+<div class="accordion row" id="order_accordion">
     {% for order in orders%}
     <div>
         <div class="bg-white rounded-2 overflow-hidden shadow-sm mb-3">
             <div class="border rounded-top px-3 py-2">
+                <!-- для доставщика -->
                 {% if request.user.groups.all.0.name == "deliver" %}
                 <table class="table fs-6">
                     <thead>
@@ -38,16 +39,13 @@
                 <button class="delivered btn btn-primary" data-id="{{order.id}}">Изменить на доставлен</button>
                 {% endif %}
                 {% endif %}
-
+                <!-- конец для доставщика -->
                 {% else %}
                 <div class="d-flex justify-content-between flex-wrap align-items-center">
                     <p class="fs-4 "><span>Заказ</span> №
                         {{ order.id }} на {{ order.order_date }}</p>
                     <p class="fs-4">{{order.cab}}</p>
                 </div>
-                {% if order.status.cod == 'new' %}
-                <a href="{% url 'change_order' order.pk %}" class="btn btn-danger">Изменить</a>
-                {% endif %}
                 {% endif%}
                 {% if order.user_comment %}
                 <p>Комментарий: {{order.user_comment}}</p>
@@ -60,13 +58,16 @@
             </div>
             <div class="accordion-item ">
                 <div class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#order_{{ order.id }}" aria-expanded="false"
+                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#order_{{ order.id }}"
+                            aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
                             aria-controls="order_{{ order.id }}">
                         <div class="order_view btn-group order_info  bg-white"
                              data-id="{{ order.id }}">
                             <div class="btn btn-outline-primary">
-                                <span>Создан: </span>{{ order.date_create|naturalday}}
+                                <span>Создан: </span>{{order.date_create|naturalday}}
                             </div>
                             <div class="btn
                             {% if order.status.id  == 1%} btn-primary
@@ -81,14 +82,13 @@
                             </div>
                             <div class="btn btn-outline-primary">
                                 <span>Сумма:</span>
-                                {{ order.total_amount }}р
+                                {{order.total_amount}}р
                             </div>
                         </div>
                     </button>
                 </div>
-                <div id="order_{{ order.id }}" class="accordion-collapse collapse">
+                <div id="order_{{ order.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
                     <div class="accordion-body cart" data-id="{{ order.id }}">
-
                         {% for meal in order.meals %}
                         {% include 'order/elements/order_item_meals.html'%}
                         {% endfor %}

@@ -15,7 +15,7 @@ from apt_delivery_app.models import Cart, Order, Cabinet, OrderMeal, Meal
 def make_order(request):
     if request.method == 'POST':
         cab = request.POST["cab"]
-        form = CreateOrderForm(user=request.user, data=request.POST)
+        form = CreateOrderForm(request.POST)
         meals = Cart.objects.all().filter(user=request.user)
 
         if form.is_valid() and meals:
@@ -31,7 +31,7 @@ def make_order(request):
             return redirect(reverse('order'))
 
     else:
-        form = CreateOrderForm(user=request.user)
+        form = CreateOrderForm()
     return form
 
 
