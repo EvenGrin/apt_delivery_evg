@@ -1,12 +1,15 @@
 import json
 from datetime import datetime, timezone
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Sum, F, ExpressionWrapper, DecimalField, Count, OuterRef, Subquery, Value, Max, Min
 from django.db.models.functions import TruncDay, Concat, Greatest
+from django import forms
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import path, reverse
+from django.utils.translation import ngettext
 
 from apt_delivery_app.models import OrderMeal, Order, Meal, Status
 
@@ -20,12 +23,42 @@ class OrderMealInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
-    'id', 'date_create', 'order_date', 'user', 'deliver', 'cab', 'status', 'result', 'amount', 'total_amount')
-    list_filter = ('status', 'date_create', 'order_date', 'user', 'deliver', 'cab')
+        'id', 'date_create', 'order_date', 'user', 'deliver', 'cab', 'status', 'result', 'amount', 'total_amount')
+    list_filter = ('status', 'user', 'deliver', 'cab')
     list_editable = ('deliver', 'status', 'result')
+    date_hierarchy = 'date_create'
     inlines = [OrderMealInline]
     search_fields = ('id__iexact',)
     list_per_page = 10
+
+    # изменить статус разом
+    actions = ["make_delivered"]
+
+    actions = ['add_tag']
+
+    class AddTagForm(forms.Form):
+        _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
+        tag = forms.ModelChoiceField(Status.objects)
+
+    def add_tag(self, request, queryset):
+        form = None
+
+        if 'apply' in request.POST:
+            form = self.AddTagForm(request.POST)
+
+            if form.is_valid():
+                tag = form.cleaned_data['tag']
+
+                updated = queryset.update(status=Status.objects.get(name = tag))
+                self.message_user(request, "Successfully added tag %s to %d article." % (tag, updated))
+                return HttpResponseRedirect(request.get_full_path())
+
+        if not form:
+            form = self.AddTagForm(initial={'_selected_action': queryset.values_list('id', flat=True)})
+
+        return render(request, 'admin/add_tag.html', {'articles': queryset, 'tag_form': form, })
+
+    add_tag.short_description = "изменить статус"
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser:
@@ -83,9 +116,9 @@ class OrderAdmin(admin.ModelAdmin):
             except ValueError:
                 pass
 
-        orders = Order.objects.all()
+        orders = Order.objects.all().filter(status__code='delivered')
         if start_date and end_date:
-            orders = orders.filter(order_date__range=(start_date, end_date))
+            orders = orders.filter(date_create__range=(start_date, end_date))
 
         subquery = OrderMeal.objects.filter(order=OuterRef('pk')).annotate(
             total_price=ExpressionWrapper(F('meal__price') * F('amount'), output_field=DecimalField())
@@ -93,7 +126,7 @@ class OrderAdmin(admin.ModelAdmin):
 
         # Суммарные продажи по дням
         sales_by_day = orders.annotate(
-            date=TruncDay('order_date'),
+            date=TruncDay('date_create'),
             total_amount=Subquery(subquery),
         ).values('date').annotate(total_sales=Sum('total_amount')).order_by('date')
 
@@ -121,8 +154,8 @@ class OrderAdmin(admin.ModelAdmin):
             'sales_by_dish': json.dumps(list(sales_by_dish)), 'title': 'Отчет по продажам',
             'custom_links': self.get_admin_links(),
             'app_links': self.get_app_links(request),
-            'start_date': start_date if start_date else orders.aggregate(date=Min('order_date'))['date'],
-            'end_date': end_date if end_date else orders.aggregate(date=Max('order_date'))['date'],
+            'start_date': start_date if start_date else orders.aggregate(date=Min('date_create'))['date'],
+            'end_date': end_date if end_date else orders.aggregate(date=Max('date_create'))['date'],
             **admin.site.each_context(request)
         }
         return render(request, 'admin/sales_report.html', context)
@@ -182,7 +215,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Status)
 class StatusAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name',)
+    list_display = ('id', 'name', 'code')
     ordering = ('id',)
 
 

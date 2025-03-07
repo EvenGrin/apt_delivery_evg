@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<p>Select tag to apply:</p>
+
+<form action="" method="post">
+{% csrf_token %}
+    {{ tag_form }}
+
+    <p>The tag will be applied to:</p>
+
+    <ul>{{ articles|unordered_list }}</ul>
+
+    <input type="hidden" name="action" value="add_tag" />
+    <input type="submit" name="apply" value="Apply tag" />
+</form>
+
+{% endblock %}

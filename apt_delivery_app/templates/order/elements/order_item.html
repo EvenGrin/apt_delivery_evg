@@ -64,7 +64,7 @@
                             data-bs-target="#order_{{ order.id }}"
                             aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
                             aria-controls="order_{{ order.id }}">
-                        <div class="order_view btn-group order_info  bg-white"
+                        <div class="order_view btn-group order_info  bg-white d-flex flex-wrap"
                              data-id="{{ order.id }}">
                             <div class="btn btn-outline-primary">
                                 <span>Создан: </span>{{order.date_create|naturalday}}
@@ -89,9 +89,13 @@
                 </div>
                 <div id="order_{{ order.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
                     <div class="accordion-body cart" data-id="{{ order.id }}">
+                        {% if order.status.code == 'new' %}
+                        {% include 'cart/elements/cart_items.html' with carts=meals%}
+                        {% else %}
                         {% for meal in order.meals %}
                         {% include 'order/elements/order_item_meals.html'%}
                         {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
