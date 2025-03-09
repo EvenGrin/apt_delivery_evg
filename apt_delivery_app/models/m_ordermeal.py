@@ -17,5 +17,14 @@ class OrderMeal(models.Model):
     def total_price(self):
         return self.meal.price * self.amount
 
+    @property
+    def total_amount(self):
+        return self.meal.price * self.amount
+
+    @property
+    def quantity(self):
+        return self.amount
+
+
     def __str__(self):
         return f'{self.order}'

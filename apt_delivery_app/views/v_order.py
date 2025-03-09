@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 from apt_delivery_app.forms import ChangeOrderForm, ChangeOrderMealForm
 from apt_delivery_app.models import Order, Status, Cart, OrderMeal
@@ -48,3 +50,7 @@ def change_order(request, pk=0):
         'order': order,
     }
     return render(request, 'order/change_order.html', context=context)
+
+
+def sub_from_order(request):
+    pass

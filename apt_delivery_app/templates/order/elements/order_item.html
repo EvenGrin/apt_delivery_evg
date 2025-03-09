@@ -90,7 +90,7 @@
                 <div id="order_{{ order.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
                     <div class="accordion-body cart" data-id="{{ order.id }}">
                         {% if order.status.code == 'new' %}
-                        {% include 'cart/elements/cart_items.html' with carts=meals%}
+                        {% include 'cart/elements/cart_items.html' with carts=order.meals %}
                         {% else %}
                         {% for meal in order.meals %}
                         {% include 'order/elements/order_item_meals.html'%}
