@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 from django.forms import inlineformset_factory
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from apt_delivery_app.forms import ChangeOrderForm, ChangeOrderMealForm
-from apt_delivery_app.models import Order, Status, Cart, OrderMeal
+from apt_delivery_app.models import Order, Status, Cart, OrderMeal, Meal
 
 
 @login_required
@@ -52,5 +53,65 @@ def change_order(request, pk=0):
     return render(request, 'order/change_order.html', context=context)
 
 
+def get_cart_data(user):
+    total = sum(item.meal.price * item.quantity for item in Cart.objects.filter(user=user))
+    amount = Cart.objects.filter(user=user).aggregate(Sum('quantity'))['quantity__sum'] or 0
+    cart_count = Cart.objects.filter(user=user).count()
+    return {
+        'total_price': total,
+        'amount': amount,
+        'cart_count': cart_count
+    }
+
+
+@login_required
+def update_order_item(request, action):
+    meal_id = request.POST.get('meal_id')
+    meal = Meal.objects.get(pk=meal_id)
+    order_id = request.POST.get('order_id')
+    order_item = OrderMeal.objects.get(order=order_id, meal=meal_id)
+    quantity_change = 1 if action == 'add' else -1 if action == 'sub' else 0
+
+    if action == 'add':
+        if order_item.amount >= meal.quantity:
+            return JsonResponse({
+                'success': True,
+                # 'cart_count': Cart.objects.filter(user=request.user).count(),
+                'quantity': 'Больше нельзя'
+            })
+        order_item.amount += quantity_change
+
+    if action == 'sub':
+        if order_item.amount == 0:
+            return JsonResponse({
+                'success': True,
+                # 'cart_count': Cart.objects.filter(user=request.user).count(),
+                'quantity': 'Больше не в корзине'
+            })
+        order_item.amount += quantity_change
+
+    if order_item.amount > 0:
+        order_item.save()
+    else:
+        order_item.delete()
+
+    cart_data = get_cart_data(request.user)
+    return JsonResponse({
+        'success': True,
+        'quantity': order_item.amount,
+        'total_amount': order_item.total_amount if hasattr(order_item, 'total_amount') else None,
+        **cart_data
+    })
+
+
+@csrf_exempt
+@login_required
+def add_to_order(request):
+    print(123)
+    return update_order_item(request, 'add')
+
+@csrf_exempt
+@login_required
 def sub_from_order(request):
-    pass
+    print('sub_from_cart')
+    return update_order_item(request, 'sub')

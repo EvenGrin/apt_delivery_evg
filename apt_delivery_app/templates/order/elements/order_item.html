@@ -64,9 +64,14 @@
                             data-bs-target="#order_{{ order.id }}"
                             aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
                             aria-controls="order_{{ order.id }}">
-                        <div class="order_view btn-group order_info  bg-white d-flex flex-wrap"
+                        <div class="d-flex justify-content-between flex-wrap align-items-center w-100">
+
+
+                        <p class="fs-4 "><span>Заказ</span> №
+                        {{ order.id }} на {{ order.order_date }}</p>
+                        <div class="order_view btn-group p-0 m-0 order_info  bg-white d-flex flex-wrap"
                              data-id="{{ order.id }}">
-                            <div class="btn btn-outline-primary">
+                            <div class="btn btn-outline-primary" style="box-sizing: border-box;">
                                 <span>Создан: </span>{{order.date_create|naturalday}}
                             </div>
                             <div class="btn
@@ -84,6 +89,8 @@
                                 <span>Сумма:</span>
                                 {{order.total_amount}}р
                             </div>
+                        </div>
+                        <p class="fs-4">{{order.cab}}</p>
                         </div>
                     </button>
                 </div>
