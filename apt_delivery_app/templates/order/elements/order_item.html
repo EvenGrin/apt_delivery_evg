@@ -64,37 +64,48 @@
                             data-bs-target="#order_{{ order.id }}"
                             aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
                             aria-controls="order_{{ order.id }}">
-                        <div class="d-flex justify-content-between flex-wrap align-items-center w-100">
+                        <div class="row justify-content-center align-items-center w-100">
 
 
-                        <p class="fs-4 "><span>Заказ</span> №
-                        {{ order.id }} на {{ order.order_date }}</p>
-                        <div class="order_view btn-group p-0 m-0 order_info  bg-white d-flex flex-wrap"
-                             data-id="{{ order.id }}">
-                            <div class="btn btn-outline-primary" style="box-sizing: border-box;">
-                                <span>Создан: </span>{{order.date_create|naturalday}}
-                            </div>
-                            <div class="btn
+                            <span class="col-auto fs-4 ">Заказ №
+                                {{ order.id }} на {{order.date_create|naturalday}}</span>
+                            <div class="col">
+
+
+                                <div class="row order_view btn-group p-0 m-0 order_info  bg-white"
+                                     data-id="{{ order.id }}">
+                                    <div class="col-auto btn
                             {% if order.status.id  == 1%} btn-primary
                             {% elif order.status.id == 2 or order.status.id == 7 or order.status.id == 5 %}btn-success
                             {%elif order.status.id == 3%}btn-danger
                             {% else %}btn-outline-primary{%endif%}">
-                                Статус: <span data-id="{{order.id}}"> {{ order.status }} </span>
+                                        Статус: <span data-id="{{order.id}}"> {{ order.status }} </span>
+                                    </div>
+                                    <div class="col-auto btn btn-outline-primary">
+                                        <span>Блюд:</span>
+                                        {{ order.amount }}
+                                    </div>
+                                    <div class=" col-auto btn btn-outline-primary">
+                                        <span>Сумма:</span>
+                                        {{order.total_amount}}р
+                                    </div>
+                                </div>
                             </div>
-                            <div class="btn btn-outline-primary">
-                                <span>Блюд:</span>
-                                {{ order.amount }}
-                            </div>
-                            <div class="btn btn-outline-primary">
-                                <span>Сумма:</span>
-                                {{order.total_amount}}р
-                            </div>
-                        </div>
-                        <p class="fs-4">{{order.cab}}</p>
+                            <span class="col-auto fs-4">
+                                <div class="row row-cols-1 text-end">
+                                    <div class="col ">
+                                        {{order.cab}}
+                                    </div>
+                                    <div class="col">
+                                        на {{ order.order_date }}
+                                    </div>
+                                </div>
+                            </span>
                         </div>
                     </button>
                 </div>
-                <div id="order_{{ order.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
+                <div id="order_{{ order.id }}"
+                     class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
                     <div class="accordion-body cart" data-id="{{ order.id }}">
                         {% if order.status.code == 'new' %}
                         {% include 'cart/elements/cart_items.html' with carts=order.meals %}
