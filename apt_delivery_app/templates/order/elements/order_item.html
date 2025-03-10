@@ -55,9 +55,33 @@
                     Причина отмены:{{order.result}}
                 </p>
                 {% endif %}
+                <form action="" method="post" data-order-id="{{order.id}}" class="row">
+                    {% csrf_token %}
+                    <div class="col">
+                        <label>Время получения заказа:</label>
+                        <input class="form-control" type="time" value="{{order.order_date }}" name="order_date">
+                    </div>
+                    <div class="col">
+                        <label>Комментарий к заказу:</label>
+                        <textarea class="form-control">{{order.user_comment}}</textarea>
+                    </div>
+                    <div class="col">
+                        <label>Место доставки:</label>
+                        <select name="cab" id="cab" class="form-select">
+                            {% for cab in cabs %}
+                            <option value="{{ cab.id }}">{{ cab.num }} | {{ cab.name }}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Применить изменения</button>
+                    </div>
+                </form>
             </div>
             <div class="accordion-item ">
                 <div class="accordion-header">
+
                     <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}"
                             type="button"
                             data-bs-toggle="collapse"
@@ -87,10 +111,11 @@
                         </div>
                     </button>
                 </div>
-                <div id="order_{{ order.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
+                <div id="order_{{ order.id }}"
+                     class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
                     <div class="accordion-body cart" data-id="{{ order.id }}">
                         {% if order.status.code == 'new' %}
-                        {% include 'cart/elements/cart_items.html' with carts=meals%}
+                        {% include 'cart/elements/cart_items.html' with carts=order.meals%}
                         {% else %}
                         {% for meal in order.meals %}
                         {% include 'order/elements/order_item_meals.html'%}

@@ -3,7 +3,8 @@ from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 
 from apt_delivery_app.forms import ChangeOrderForm, ChangeOrderMealForm
-from apt_delivery_app.models import Order, Status, Cart, OrderMeal
+from apt_delivery_app.models import Order, Status, Cart, OrderMeal, Cabinet
+from apt_delivery_app.views import sort_cabs
 
 
 @login_required
@@ -17,6 +18,7 @@ def order(request, order='-date_create', filter=0):
     if filter:
         orders = orders.filter(status__id=filter)
     context['orders'] = orders
+    context['cabs'] = sorted(Cabinet.objects.all(), key=sort_cabs)
     return render(request, 'order/index.html', context)
 
 

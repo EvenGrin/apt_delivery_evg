@@ -41,5 +41,13 @@
 {% include 'order/elements/order_item.html'%}
 
 <script src="{% static 'order/js/order_view_close.js' %}"></script>
-
+<script>
+    $(document).ready(function () {
+        $(document).submit((ev)=>{
+            ev.preventDefault()
+            console.log($(ev.target).data('order-id'))
+            console.log($(ev.target).serialize())
+        })
+    })
+</script>
 {% endblock %}

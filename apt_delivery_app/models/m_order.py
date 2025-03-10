@@ -10,7 +10,7 @@ from .m_cabinet import Cabinet
 from .m_user import User
 
 def get_default_created_at():
-    print(timezone.now(), 'с модели')
+    # print(timezone.now(), 'с модели')
     return timezone.localtime() + timedelta(minutes=3)
 
 class Order(models.Model):
