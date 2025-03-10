@@ -59,7 +59,7 @@
                     {% csrf_token %}
                     <div class="col">
                         <label>Время получения заказа:</label>
-                        <input class="form-control" type="time" value="{{order.order_date }}" name="order_date">
+                        <input class="form-control" type="time" value="{{order.order_date|date:'H:i' }}" name="order_date">
                     </div>
                     <div class="col">
                         <label>Комментарий к заказу:</label>
