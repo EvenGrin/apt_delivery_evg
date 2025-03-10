@@ -55,10 +55,7 @@ def sort_cabs(cabinet):
 @login_required
 def cart(request):
     context = get_cart_data(request.user)
-    cabs = Cabinet.objects.all()
-    sorted_cabs = sorted(cabs, key=sort_cabs)
-
-    context['cabs'] = sorted_cabs
+    context['cabs'] = sorted(Cabinet.objects.all(), key=sort_cabs)
     context['carts'] = Cart.objects.filter(user=request.user)
     #
     if request.method == 'POST':

@@ -55,9 +55,33 @@
                     Причина отмены:{{order.result}}
                 </p>
                 {% endif %}
+                <form action="" method="post" data-order-id="{{order.id}}" class="row">
+                    {% csrf_token %}
+                    <div class="col">
+                        <label>Время получения заказа:</label>
+                        <input class="form-control" type="time" value="{{order.order_date }}" name="order_date">
+                    </div>
+                    <div class="col">
+                        <label>Комментарий к заказу:</label>
+                        <textarea class="form-control" name="user_comment">{{order.user_comment}}</textarea>
+                    </div>
+                    <div class="col">
+                        <label>Место доставки:</label>
+                        <select name="cab" id="cab" class="form-select">
+                            {% for cab in cabs %}
+                            <option value="{{ cab.id }}">{{ cab.num }} | {{ cab.name }}</option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Применить изменения</button>
+                    </div>
+                </form>
             </div>
             <div class="accordion-item ">
                 <div class="accordion-header">
+
                     <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}"
                             type="button"
                             data-bs-toggle="collapse"
