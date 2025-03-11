@@ -71,12 +71,13 @@
                         <ul class="dropdown-menu position-absolute dropdown-menu-end">
                             {% if request.user.is_authenticated %}
                             {% if user.is_superuser %}
-                            <li class="d-lg-none">
+                            <li class="">
                                 <a class="dropdown-item d-flex align-items-center"
+                                   target="_blank"
                                    href="/admin">АдминПанель</a>
                             </li>
                             {% elif request.user.groups.all.0.name == "deliver" %}
-                            <li class="d-lg-none">
+                            <li class="">
                                 <a class="dropdown-item d-flex align-items-center"
                                    href="{% url 'deliver'%}">Доставка
                                     <span class="material-icons">directions_run</span></a>

@@ -60,9 +60,9 @@
 {% endblock %}
 {% block extra_body %}
 <script>
-    let url_add="{% url 'add_to_order' %}"
-    let url_sub="{% url 'sub_from_order' %}"
-    let url_remove="{% url 'remove_from_cart' %}"
+    let url_add = "{% url 'add_to_order' %}"
+    let url_sub = "{% url 'sub_from_order' %}"
+    let url_remove = "{% url 'remove_from_cart' %}"
 
 </script>
 <script src="{% static 'order/js/order_view_close.js' %}"></script>
@@ -71,19 +71,26 @@
 <script>
     $(document).ready(function () {
         $(document).submit((ev) => {
-
-            const toastTrigger = $('#liveToastBtn')
-            const toastLiveExample = $('#liveToast')
-            if (toastTrigger) {
-                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-                toastTrigger.on('click', () => {
-                    toastBootstrap.show()
-                })
-            }
             ev.preventDefault()
-            console.log($(ev.target).data('order-id'))
-            console.log($(ev.target).serialize())
+            $('.change_order').on('click', () => {
+                console.log(0)
+                // toastBootstrap.show()
+            })
         })
+        const toastTrigger = $('.order_change')
+        const toastLiveExample = $('#liveToast')
+        // if (toastTrigger) {
+        //     const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+        //     toastTrigger.on('click', () => {
+        //         console.log(0)
+        //         $.post(
+        //             "{% url 'change_order' %}",
+        //         )
+        //         // toastBootstrap.show()
+        //     })
+        // }
     })
+
+
 </script>
 {% endblock %}
