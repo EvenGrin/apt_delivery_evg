@@ -1,9 +1,12 @@
+import json
+
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from django.db.models import Sum
 from django.forms import inlineformset_factory
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from apt_delivery_app.forms import ChangeOrderForm, ChangeOrderMealForm
 from apt_delivery_app.models import Order, Status, Cart, OrderMeal, Cabinet
@@ -25,34 +28,23 @@ def order(request, order='-date_create', filter=0):
     return render(request, 'order/index.html', context)
 
 
+@csrf_protect
 @login_required
-def change_order(request, pk=0):
-    # Получаем объект заказа или возвращаем 404, если он не найден
-    order = get_object_or_404(Order, pk=pk)
-
+def order_update(request):
+    post = request.POST
     if request.method == "POST":
-        # Создаем формы с данными из POST-запроса
-        form = ChangeOrderForm(request.POST, instance=order)
-        OrderMealFormSet = inlineformset_factory(Order, OrderMeal, form=ChangeOrderMealForm, extra=1)
-        formset = OrderMealFormSet(request.POST, instance=order)
-
-        if form.is_valid() and formset.is_valid():
-            # Сохраняем изменения в заказе
-            order = form.save()
-            formset.save()  # Сохраняем изменения в блюдах заказа
-            return redirect('order')  # Перенаправление после успешного сохранения
-    else:
-        # Если метод GET, создаем формы с текущими данными заказа
-        form = ChangeOrderForm(instance=order)
-        OrderMealFormSet = inlineformset_factory(Order, OrderMeal, form=ChangeOrderMealForm, extra=1)
-        formset = OrderMealFormSet(instance=order)
-
-    context = {
-        'form': form,
-        'formset': formset,
-        'order': order,
+        order = Order.objects.get(pk=request.POST.get('pk'))
+        order.user_comment = post.get('user_comment')
+        order.order_date = post.get('order_date')
+        order.cab = Cabinet.objects.get(pk=post.get('cab'))
+        order.save()
+    data = {
+        'user_comment': order.user_comment,
+        'order_date': order.order_date,
+        'cab': order.cab,
     }
-    return render(request, 'order/change_order.html', context=context)
+    return HttpResponse(data)
+    # return render(request, 'order/order_update.html', context=context)
 
 
 def get_cart_data(user):
@@ -111,6 +103,7 @@ def update_order_item(request, action):
 def add_to_order(request):
     print(123)
     return update_order_item(request, 'add')
+
 
 @csrf_exempt
 @login_required

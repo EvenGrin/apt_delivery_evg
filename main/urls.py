@@ -33,8 +33,8 @@ urlpatterns = [
 #
     path('order', views.order, name="order"),
     path('order/<str:order>/<int:filter>', views.order, name="order"),
-    path('order/<int:pk>/edit', views.change_order, name='change_order'),
-    path('order/edit', views.change_order, name='change_order'),
+    path('order/<int:pk>/edit', views.order_update, name='order_update'),
+    path('order/edit', views.order_update, name='order_update'),
     path('add-to-order/', views.add_to_order, name='add_to_order'),
     path('sub-from-order/', views.sub_from_order, name='sub_from_order'),
 #

@@ -72,19 +72,30 @@
     $(document).ready(function () {
         $(document).submit((ev) => {
             ev.preventDefault()
-            $('.change_order').on('click', () => {
-                console.log(0)
-                // toastBootstrap.show()
-            })
+            pk = $(ev.target).data('order-id')
+            $.ajax({
+                url: "{% url 'order_update' %}",
+                method: 'POST',
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                data: $(ev.target).serialize()+ '&pk=' + pk,
+                success: (data) => {
+                    console.log(data)
+                    console.log($(ev.target).find('textarea[name="user_comment"]').html(data.user_comment))
+                }
+            }
+
+
+
+            )
         })
-        const toastTrigger = $('.order_change')
+        const toastTrigger = $('.order_update')
         const toastLiveExample = $('#liveToast')
         // if (toastTrigger) {
         //     const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
         //     toastTrigger.on('click', () => {
         //         console.log(0)
         //         $.post(
-        //             "{% url 'change_order' %}",
+        //             "{% url 'order_update' %}",
         //         )
         //         // toastBootstrap.show()
         //     })
