@@ -1,7 +1,10 @@
 # Create your views here.
 import re
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
@@ -15,24 +18,57 @@ from apt_delivery_app.models import Cart, Order, Cabinet, OrderMeal, Meal
 @login_required
 def make_order(request):
     if request.method == 'POST':
-        cab = request.POST["cab"]
+        cab_pk = request.POST.get("cab")  # Получаем идентификатор кабинета
         form = CreateOrderForm(request.POST)
-        meals = Cart.objects.all().filter(user=request.user)
 
-        if form.is_valid() and meals:
-            order = Order(user=request.user)
-            order.cab = Cabinet.objects.get(pk=cab)
-            order.order_date = form.cleaned_data['order_date']
-            order.user_comment = form.cleaned_data['user_comment']
-            order.save()
-            for p in meals:
-                op = OrderMeal(order=order, meal=p.meal, amount=p.quantity)
-                op.save()
-                p.delete()
-            return redirect(reverse('order'))
+        if form.is_valid():
+            cart_items = Cart.objects.filter(user=request.user)  # Получаем элементы корзины пользователя
+
+            if not cart_items:
+                messages.error(request,"Корзина пуста! Пожалуйста, добавьте блюда.")  # Сообщение об ошибке, если корзина пустая
+                print(messages.error)
+                return redirect(reverse('cart'))  # Перенаправление на страницу корзины
+
+            try:
+                with transaction.atomic():  # Начинаем транзакцию для атомарности операций
+                    order = Order(user=request.user)
+                    order.cab = Cabinet.objects.get(pk=cab_pk)
+                    order.order_date = form.cleaned_data['order_date']
+                    order.user_comment = form.cleaned_data['user_comment']
+                    order.save()
+
+                    for cart_item in cart_items:
+                        meal = cart_item.meal
+                        required_amount = cart_item.quantity
+
+                        if meal.quantity < required_amount:
+                            raise ValidationError(
+                                f"Недостаточно товара '{meal.name}'. Доступно: {meal.quantity}, требуется: {required_amount}")
+
+                        OrderMeal.objects.create(
+                            order=order,
+                            meal=meal,
+                            amount=required_amount
+                        )
+
+                        meal.quantity -= required_amount
+                        meal.save()
+
+                        cart_item.delete()  # Удаляем элемент из корзины после успешного создания заказа
+
+                return redirect(reverse('order'))  # Переходим на страницу заказов, если всё прошло успешно
+            except ValidationError as e:
+                messages.error(request,
+                               f"Ошибка при оформлении заказа: {e}")  # Сообщение об ошибке при нехватке товаров
+                return redirect(reverse('cart'))  # Перенаправление обратно в корзину для коррекции заказа
+            except Exception as e:
+                messages.error(request,
+                               f"Произошла ошибка при обработке заказа: {e}")  # Обработка других возможных исключений
+                return redirect(reverse('cart'))  # Перенаправление обратно в корзину
 
     else:
         form = CreateOrderForm()
+
     return form
 
 

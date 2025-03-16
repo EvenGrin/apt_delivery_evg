@@ -43,7 +43,7 @@
     {% endfor %}
     {% endif%}
 </section>
-<!--<script src="{% static 'home/js/ajax/pagintion.js'%}"></script>-->
+<!--<script src="{% static 'js/home/ajax/pagintion.js'%}"></script>-->
 
 {% endblock %}
 {% block extra_body %}
@@ -52,6 +52,6 @@
     let url_sub='{% url 'sub_from_cart' %}'
     let url_remove='{% url 'remove_from_cart' %}'
 </script>
-<script src="{% static 'home/js/add_sub_remove.js' %}">
+<script src="{% static 'js/home/add_sub_remove.js' %}">
 </script>
 {% endblock %}

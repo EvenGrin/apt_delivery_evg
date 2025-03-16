@@ -1,9 +1,9 @@
 {% extends 'admin/base_site.html' %}{% load static %}{% block extrahead %} {{ block.super }}
-<link rel="stylesheet" href="{% static 'order/css/Chart.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/order/Chart.min.css' %}"/>
 
-<script src="{% static 'order/dist/Chart.bundle.min.js'%}"></script>
-<script src="{% static 'order/dist/moment-with-locales.js'%}"></script>
-<script src="{% static 'order/dist/chartjs-adapter-moment.js'%}"></script>
+<script src="{% static 'js/order/dist/Chart.bundle.min.js'%}"></script>
+<script src="{% static 'js/order/dist/moment-with-locales.js'%}"></script>
+<script src="{% static 'js/order/dist/chartjs-adapter-moment.js'%}"></script>
 {% endblock %} {% block content %}
 
 {% if custom_links %}

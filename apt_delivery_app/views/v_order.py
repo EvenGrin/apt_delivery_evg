@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from apt_delivery_app.forms import ChangeOrderForm, ChangeOrderMealForm
-from apt_delivery_app.models import Order, Status, Cart, OrderMeal, Cabinet
+from apt_delivery_app.models import Order, Status, Cart, OrderMeal, Cabinet, Meal
 from apt_delivery_app.views import sort_cabs
 
 

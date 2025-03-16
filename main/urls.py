@@ -7,7 +7,7 @@ from django.urls import path, include
 from apt_delivery_app import views
 
 urlpatterns = [
-    path('favicon.ico', lambda _ : redirect('static/home/images/logo.png', permanent=True)),
+    path('favicon.ico', lambda _ : redirect('static/images/logo.png', permanent=True)),
 #
     path('admin/', admin.site.urls),
 #

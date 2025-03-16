@@ -3,7 +3,7 @@
 {% block title %}Заказы{% endblock %}
 {% block content %}
 <button type="button" class="btn btn-primary" id="liveToastBtn">Показать лайв тосты</button>
-
+<!-- возможно создам уведомления -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
@@ -65,8 +65,8 @@
     let url_remove = "{% url 'remove_from_cart' %}"
 
 </script>
-<script src="{% static 'order/js/order_view_close.js' %}"></script>
-<script src="{% static 'home/js/add_sub_remove.js' %}">
+<script src="{% static 'js/order/order_view_close.js' %}"></script>
+<script src="{% static 'js/home/add_sub_remove.js' %}">
 </script>
 <script>
     $(document).ready(function () {

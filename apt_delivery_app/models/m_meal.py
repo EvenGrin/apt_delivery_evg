@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from .m_category import Category
 
@@ -29,6 +30,12 @@ class Meal(models.Model):
         default=3,
         verbose_name="Количество"
     )
+    @property
+    def in_menu(self):
+        from .m_menu import Menu
+        today = timezone.now().date()
+        menus = Menu.objects.filter(date=today, meal=self)
+        return menus.exists()
 
     class Meta:
         verbose_name = 'Блюдо'
@@ -36,3 +43,5 @@ class Meal(models.Model):
 
     def __str__(self):
         return self.name
+
+

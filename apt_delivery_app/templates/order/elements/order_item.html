@@ -40,12 +40,6 @@
                 {% endif %}
                 {% endif %}
                 <!-- конец для доставщика -->
-                {% else %}
-                <div class="d-flex justify-content-between flex-wrap align-items-center">
-                    <p class="fs-4 "><span>Заказ</span> №
-                        {{ order.id }} на {{ order.order_date }}</p>
-                    <p class="fs-4">{{order.cab}}</p>
-                </div>
                 {% endif%}
                 {% if order.user_comment %}
                 <p>Комментарий: {{order.user_comment}}</p>
@@ -55,29 +49,7 @@
                     Причина отмены:{{order.result}}
                 </p>
                 {% endif %}
-                <form action="" method="post" data-order-id="{{order.id}}" class="row">
-                    {% csrf_token %}
-                    <div class="col">
-                        <label>Время получения заказа:</label>
-                        <input class="form-control" type="time" value="{{order.order_date|date:'H:i' }}" name="order_date">
-                    </div>
-                    <div class="col">
-                        <label>Комментарий к заказу:</label>
-                        <textarea class="form-control" name="user_comment">{{order.user_comment}}</textarea>
-                    </div>
-                    <div class="col">
-                        <label>Место доставки:</label>
-                        <select name="cab" id="cab" class="form-select">
-                            {% for cab in cabs %}
-                            <option value="{{ cab.id }}">{{ cab.num }} | {{ cab.name }}</option>
-                            {% endfor %}
 
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary order_update" data-order-id="{{order.id}}">Применить изменения</button>
-                    </div>
-                </form>
             </div>
             <div class="accordion-item ">
                 <div class="accordion-header">
@@ -132,6 +104,35 @@
                      class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
                     <div class="accordion-body cart" data-id="{{ order.id }}">
                         {% if order.status.code == 'new' %}
+                        <form action="" method="post" data-order-id="{{order.id}}" class="row row-cols-1 gap-3 mb-3">
+                            {% csrf_token %}
+                            <div class="col-auto">
+                                <label>Время получения заказа:</label>
+                                <input class="form-control" type="time" value="{{order.order_date|date:'H:i' }}"
+                                       name="order_date">
+                            </div>
+                            <div class="col-auto">
+                                <label>Место доставки:</label>
+                                <select name="cab" id="cab" class="form-select">
+                                    {% for cab in cabs %}
+                                    <option value="{{ cab.id }}" {% if order.cab.id == cab.id %}selected{% endif %}>
+                                        {{ cab.num }} | {{ cab.name }}
+                                    </option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label>Комментарий к заказу:</label>
+                                <textarea class="form-control" name="user_comment">{{order.user_comment}}</textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary order_update" data-order-id="{{order.id}}">
+                                    Применить изменения
+                                </button>
+                            </div>
+                        </form>
                         {% include 'cart/elements/cart_items.html' with carts=order.meals %}
                         {% else %}
                         {% for meal in order.meals %}
