@@ -1,52 +1,63 @@
 from datetime import date
 
-from django.db.models import Prefetch, Exists
+from django.db.models import Prefetch, Exists, OuterRef, Case, When, Q, Value, CharField
 from django.shortcuts import render
 from django.utils import timezone
 
 from apt_delivery_app.models import Meal, Category, Cart, Menu
 
 
+def search_queryset(queryset, search_string):
+    # Разделяем строку поиска на отдельные слова
+    search_words = search_string.split()
+
+    # Формируем сложный запрос с использованием оператора OR для каждого слова
+    query = Q()
+    for word in search_words:
+        query |= Q(name__iregex=word) | Q(category__name__iregex=word)
+
+    # Применяем сформированный запрос к queryset
+    search_result = queryset.filter(query)
+
+    return search_result
+
+
 def meal_list(request):
     global search
     context = {}
-    # Получение текущей даты
-    today = timezone.now().date()
+    # Аннотируем блюда наличием в меню
+    # Проверяем наличие блюда в меню на сегодня
+    menu_exists_subquery = Meal.objects.filter(pk=OuterRef('pk')).filter(menu__date=timezone.now().date())
 
-    # Получение всех блюд
-    all_meals = Meal.objects.all()
+    # Проверяем, закончилось ли блюдо (если remaining_portions == 0)
+    finished_subquery = Meal.objects.filter(pk=OuterRef('pk')).filter(quantity=0)
 
-    # Получение всех блюд, присутствующих в меню на сегодня
-    try:
-        menu_today = Menu.objects.get(date=today)
-    except Menu.DoesNotExist:
-        menu_today = None
+    # Формируем аннотации для трех состояний
+    queryset = Meal.objects.annotate(
+        in_today_menu=Exists(menu_exists_subquery),
+        finished=Exists(finished_subquery),
+        status=Case(
+            When(in_today_menu=True, then=Value("Есть в меню")),
+            When(Q(in_today_menu=True, finished=True), then=Value("Закончилось")),
+            default=Value("Нет в меню"),
+            output_field=CharField(),
+        ),
+    ).order_by('-in_today_menu', 'finished', 'price')
 
-    # Если меню на сегодня существует, получаем все блюда из него
-    if menu_today:
-        meals_in_menu_today = menu_today.meal.all()
-    else:
-        meals_in_menu_today = []
 
-    # Выводим все блюда с указанием наличия в меню
-    # for meal in all_meals:
-    #     print(Menu.objects.filter(date=today))
-        # if meal in meals_in_menu_today:
-        #     print(f"{meal.name}: Есть в меню")
-        # else:
-        #     print(f"{meal.name}: Нет в меню")
     if request.method == "GET":
         context['search'] = request.GET.get('q')
         if context['search']:
-            search_result = Meal.objects.filter(name__iregex=context['search'])
+            search_result = search_queryset(queryset, context['search'])
             context['search_result'] = search_result
             context['search_count'] = search_result.count()
             context['search_count_all'] = Meal.objects.count()
     context['categories'] = Category.objects.all()
+
     category = context['categories'].prefetch_related(
         Prefetch(
             'meal_set',
-            queryset=Meal.objects.order_by('price'),  # Сортировка блюд по возрастанию цены
+            queryset=queryset,  # Сортировка блюд по возрастанию цены
             to_attr='ordered_meals'
         )
     )
@@ -61,15 +72,31 @@ def meal_list(request):
 
 
 def menu(request):
-    menu_list = Menu.objects.filter(date=date.today()).prefetch_related('meal')
-    # for m in menu_list:
-    #     print(m.__dict__)
-    # Создаем словарь для хранения блюд по категориям
-    categorized_meals = {}
+    menu_exists_subquery = Meal.objects.filter(pk=OuterRef('pk')).filter(menu__date=date.today())
 
+    # Проверяем, закончилось ли блюдо (если remaining_portions == 0)
+    finished_subquery = Meal.objects.filter(pk=OuterRef('pk')).filter(quantity=0)
+
+    # Формируем аннотации для трех состояний
+    menu_list = Menu.objects.filter(date=date.today()).prefetch_related(
+        Prefetch(
+            'meal',
+            queryset=Meal.objects.annotate(
+                in_today_menu=Exists(menu_exists_subquery),
+                finished=Exists(finished_subquery),
+                status=Case(
+                    When(Q(in_today_menu=True, finished=True), then=Value("Закончилось")),
+                    When(in_today_menu=True, then=Value("Есть в меню")),
+                    default=Value("Нет в меню"),
+                    output_field=CharField(),
+                ),
+            ).order_by('finished', 'category__id'),
+            to_attr='annotated_meals'
+        )
+    )
+    categorized_meals = {}
     for m in menu_list:
-        meals = m.meal.all().order_by('category__id')
-        for meal in meals:
+        for meal in m.annotated_meals:
             if meal.category not in categorized_meals:
                 categorized_meals[meal.category] = []
             categorized_meals[meal.category].append(meal)

@@ -8,7 +8,8 @@ from apt_delivery_app.models import Meal
 class Menu(models.Model):
     date = models.DateField(
         default=datetime.date.today() + datetime.timedelta(days=1),
-        verbose_name='Дата'
+        verbose_name='Дата',
+        unique=True,
     )
     meal = models.ManyToManyField(
         Meal,

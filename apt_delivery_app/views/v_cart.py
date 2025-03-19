@@ -1,20 +1,24 @@
 # Create your views here.
+import json
 import re
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Sum
+
+from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
+from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 from apt_delivery_app.forms import CreateOrderForm
 from apt_delivery_app.models import Cart, Order, Cabinet, OrderMeal, Meal
 
-
+@csrf_protect
 @login_required
 def make_order(request):
     if request.method == 'POST':
@@ -25,25 +29,55 @@ def make_order(request):
             cart_items = Cart.objects.filter(user=request.user)  # Получаем элементы корзины пользователя
 
             if not cart_items:
-                messages.error(request,"Корзина пуста! Пожалуйста, добавьте блюда.")  # Сообщение об ошибке, если корзина пустая
-                print(messages.error)
-                return redirect(reverse('cart'))  # Перенаправление на страницу корзины
+                messages.error(request, _("Корзина пуста! Пожалуйста, добавьте блюда."))  # Сообщение об ошибке, если корзина пустая
+                response = {'url': '/cart'}
+                return HttpResponse(json.dumps(response), content_type='application/json')
+
+            # Определяем статус каждого блюда в корзине
+            available_meals = []  # Блюда, которые есть в меню и в наличии
+            unavailable_meals = []  # Блюда, которые отсутствуют в меню
+            out_of_stock_meals = []  # Блюда, которые закончились
+
+            for cart_item in cart_items:
+                meal = cart_item.meal
+                required_amount = cart_item.quantity
+
+                if meal.in_menu and meal.quantity >= required_amount:
+                    available_meals.append(cart_item)
+                elif not meal.in_menu:
+                    unavailable_meals.append(cart_item)
+                elif meal.quantity < required_amount:
+                    out_of_stock_meals.append(cart_item)
+
+            # Проверка, есть ли доступные блюда
+            if not available_meals:
+                messages.error(request, _("В корзине нет доступных блюд для оформления заказа."))
+                response = {'url': '/cart'}
+                return HttpResponse(json.dumps(response), content_type='application/json')
+
+            # Проверки на предупреждения
+            if unavailable_meals or out_of_stock_meals:
+                messages.warning(request, _(
+                    "Некоторые блюда не были добавлены в заказ:"
+                    "\n- Блюда, отсутствующие в меню: {}"
+                    "\n- Закончившиеся блюда: {}".format(
+                        ', \n'.join([item.meal.name for item in unavailable_meals]),
+                        ', \n'.join([item.meal.name for item in out_of_stock_meals])
+                    )
+                ))
 
             try:
-                with transaction.atomic():  # Начинаем транзакцию для атомарности операций
+                with transaction.atomic():
                     order = Order(user=request.user)
                     order.cab = Cabinet.objects.get(pk=cab_pk)
                     order.order_date = form.cleaned_data['order_date']
                     order.user_comment = form.cleaned_data['user_comment']
                     order.save()
 
-                    for cart_item in cart_items:
+                    # Добавляем только доступные блюда в заказ
+                    for cart_item in available_meals:
                         meal = cart_item.meal
                         required_amount = cart_item.quantity
-
-                        if meal.quantity < required_amount:
-                            raise ValidationError(
-                                f"Недостаточно товара '{meal.name}'. Доступно: {meal.quantity}, требуется: {required_amount}")
 
                         OrderMeal.objects.create(
                             order=order,
@@ -56,20 +90,22 @@ def make_order(request):
 
                         cart_item.delete()  # Удаляем элемент из корзины после успешного создания заказа
 
-                return redirect(reverse('order'))  # Переходим на страницу заказов, если всё прошло успешно
+                response = {'url': '/order'}
+                return HttpResponse(json.dumps(response), content_type='application/json')
+
             except ValidationError as e:
-                messages.error(request,
-                               f"Ошибка при оформлении заказа: {e}")  # Сообщение об ошибке при нехватке товаров
-                return redirect(reverse('cart'))  # Перенаправление обратно в корзину для коррекции заказа
+                messages.error(request, _("Ошибка при оформлении заказа: {}.".format(e)))
+                response = {'url': '/cart'}
+                return HttpResponse(json.dumps(response), content_type='application/json')
+
             except Exception as e:
-                messages.error(request,
-                               f"Произошла ошибка при обработке заказа: {e}")  # Обработка других возможных исключений
-                return redirect(reverse('cart'))  # Перенаправление обратно в корзину
+                messages.error(request, _("Произошла ошибка при обработке заказа: {}.".format(e)))
+                response = {'url': '/cart'}
+                return HttpResponse(json.dumps(response), content_type='application/json')
 
     else:
         form = CreateOrderForm()
-
-    return form
+    return HttpResponse(form.as_p())
 
 
 def get_cart_data(user):
@@ -93,17 +129,7 @@ def cart(request):
     context = get_cart_data(request.user)
     context['cabs'] = sorted(Cabinet.objects.all(), key=sort_cabs)
     context['carts'] = Cart.objects.filter(user=request.user)
-    #
-    if request.method == 'POST':
-        form = make_order(request)
-        if isinstance(form, HttpResponseRedirect):
-            return form
-        else:
-            context['form'] = form
-    else:
-        form = make_order(request)
-        context['form'] = form
-
+    context['form'] = CreateOrderForm()
     return render(request, 'cart/index.html', context)
 
 

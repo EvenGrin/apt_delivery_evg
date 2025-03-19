@@ -1,11 +1,15 @@
-<div class="modal fade" id="CreateOrderModal" tabindex="-1" aria-labelledby="CreateOrderModalLabel" aria-hidden="true">
+<div class="modal fade" id="CreateOrderModal"
+     data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="CreateOrderModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="CreateOrderModalLabel">Подтверждение паролем</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" class="ajaxForm" novalidate>
+            <form method="POST" class="ajaxForm" action="{% url 'make_order' %}" novalidate>
                 {% csrf_token %}
                 <div class="modal-body my-4 mx-5 d-flex flex-column align-items-center  ajaxForm">
 
@@ -14,14 +18,15 @@
                         <div class="">
                             <select name="cab" id="cab" class="form-select">
                                 {% for cab in cabs %}
-
                                 <option value="{{ cab.id }}">{{ cab.num }} {{ cab.name }}</option>
                                 {% endfor %}
-
                             </select>
                         </div>
                     </div>
-                        {{ form.as_p }}
+                    <div id="formdiv">
+                       {{ form.as_p }}
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>

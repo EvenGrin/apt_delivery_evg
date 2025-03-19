@@ -1,3 +1,4 @@
+window.stylizeForm = function() {
 const form = document.querySelector('form');
 if (form) {
   const p = form.querySelectorAll('p')
@@ -38,4 +39,5 @@ if (form) {
   });
   form.querySelector('.helptext').classList.add('small')
 }
-
+}
+stylizeForm();

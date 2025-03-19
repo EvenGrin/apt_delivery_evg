@@ -20,7 +20,32 @@
     {% if messages %}
     <ul class="list-unstyled messages">
         {% for message in messages %}
-        <li {% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %}>{{ message }}</li>
+        <li {% if message.tags %}
+            class="alert
+                        {% if message.tags == 'error' %}
+                            alert-danger
+                        {% else %}
+                            alert-{{ message.tags }}
+                        {% endif %}
+                            alert-dismissible fade show"
+                {% endif %}
+            role="alert"
+
+        >
+            {% if message.tags == 'error' or message.tags == 'warning' %}
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {% elif message.tags == 'success' %}
+            <i class="bi bi-check-circle-fill"></i>
+            {% elif message.tags == 'info' %}
+            <i class="bi bi-info-circle-fill"></i>
+            {% endif %}
+            <pre>
+                {{ message }}
+            </pre>
+
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </li>
         {% endfor %}
     </ul>
     {% endif %}
