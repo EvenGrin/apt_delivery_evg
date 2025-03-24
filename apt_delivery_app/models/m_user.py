@@ -32,5 +32,11 @@ class User(AbstractUser):
         validators=[NameValidator()]
     )
 
+    def is_deliver(self):
+        return self.groups.filter(name='deliver').exists()
+
+    def is_operator(self):
+        return self.groups.filter(name='operator').exists()
+
     def __str__(self):
         return "%s %s %s" % (self.last_name, self.first_name, self.patronymic,)

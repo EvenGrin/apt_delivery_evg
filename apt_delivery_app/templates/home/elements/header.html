@@ -2,17 +2,19 @@
     <nav class="navbar navbar-expand-lg bg-primary rounded" data-bs-theme="dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">АптДоставка</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvasLg"
-                    aria-controls="navbarOffcanvasLg" aria-label="Toggle navigation">
+            <button aria-controls="navbarOffcanvasLg" aria-label="Toggle navigation" class="navbar-toggler"
+                    data-bs-target="#navbarOffcanvasLg"
+                    data-bs-toggle="offcanvas" type="button">
                 <span class="bi bi-three-dots"></span>
             </button>
-            <div class="offcanvas offcanvas-start bg-primary" tabindex="-1" id="navbarOffcanvasLg"
-                 aria-labelledby="navbarOffcanvasLgLabel" data-bs-theme="dark">
+            <div aria-labelledby="navbarOffcanvasLgLabel" class="offcanvas offcanvas-start bg-primary"
+                 data-bs-theme="dark"
+                 id="navbarOffcanvasLg" tabindex="-1">
                 <div class="offcanvas-header px-4 pb-0">
                     <h5 class="offcanvas-title text-white">
                         АптДоставка
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="offcanvas" type="button"></button>
 
                 </div>
                 <div class="px-4">
@@ -20,33 +22,29 @@
                 </div>
                 <div class="offcanvas-body p-4 pt-2 p-lg-0">
                     <ul class="navbar-nav mb-2 mb-lg-0 ">
-                        {% if request.user.groups.all.0.name != "deliver" %}
                         <li class="nav-item ">
-                            <a class="nav-link text-white d-flex align-items-center"
-                               aria-current="page" href="{% url 'home' %}">Главная</a>
+                            <a aria-current="page"
+                               class="nav-link text-white d-flex align-items-center" href="{% url 'home' %}">Главная</a>
                         </li>
                         <li class="nav-item ">
-                            <a class="nav-link text-white d-flex align-items-center"
-                               aria-current="page" href="{% url 'menu' %}">Меню</a>
+                            <a aria-current="page"
+                               class="nav-link text-white d-flex align-items-center" href="{% url 'menu' %}">Меню</a>
                         </li>
-                        {% endif %}
                         {% if request.user.is_authenticated %}
-                        {% if request.user.groups.all.0.name != "deliver" %}
                         <li class="nav-item">
-                            <a class="nav-link text-white d-flex align-items-center"
-                               aria-current="page" href="{% url 'cart' %}">Корзина
+                            <a aria-current="page"
+                               class="nav-link text-white d-flex align-items-center" href="{% url 'cart' %}">Корзина
                                 <span class="material-icons-outlined">shopping_cart </span>
                                 <span class="badge cart_info text-bg-secondary">{% if cart_count %}{{cart_count}}{% endif %}</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white d-flex align-items-center"
-                               aria-current="page" href="{% url 'order' %}">Заказы
+                            <a aria-current="page"
+                               class="nav-link text-white d-flex align-items-center" href="{% url 'order' %}">Заказы
                                 <span class="material-icons">room_service</span>
                                 <span class="badge order_info text-bg-secondary">{% if order_count %}{{order_count}}{% endif %}</span>
                             </a>
                         </li>
-                        {% endif %}
                         {% endif %}
                     </ul>
                     <hr class="d-lg-none text-white-50">
@@ -61,7 +59,7 @@
                 <ul class="navbar-nav d-flex flex-row align-items-center justify-content-center">
                     {% if request.user.is_authenticated %}
                     <li class="nav-item dropdown">
-                        <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button aria-expanded="false" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
                             {{user.last_name}}
                             {{user.first_name|slice:"1"}}.
                             {%if user.patronymic %}
@@ -73,14 +71,24 @@
                             {% if user.is_superuser %}
                             <li class="">
                                 <a class="dropdown-item d-flex align-items-center"
-                                   target="_blank"
-                                   href="/admin">АдминПанель</a>
+                                   href="/admin"
+                                   target="_blank">
+                                    АдминПанель
+                                    <span class="material-icons"> admin_panel_settings</span>
+                                </a>
                             </li>
-                            {% elif request.user.groups.all.0.name == "deliver" %}
+                            {% elif request.user.is_deliver %}
                             <li class="">
                                 <a class="dropdown-item d-flex align-items-center"
                                    href="{% url 'deliver'%}">Доставка
                                     <span class="material-icons">directions_run</span></a>
+                            </li>
+                            {% elif request.user.is_operator %}
+                            <li class="">
+                                <a class="dropdown-item d-flex align-items-center"
+                                   href="{% url 'deliver'%}">Оператор
+                                    <span class="bi bi-person-workspace"></span>
+                                </a>
                             </li>
                             {% endif %}
                             {% endif %}

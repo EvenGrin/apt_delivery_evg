@@ -3,9 +3,9 @@
     {% for order in orders%}
     <div>
         <div class="bg-white rounded-2 overflow-hidden shadow-sm mb-3">
+            {% if request.user.groups.all.0.name == "deliver" %}
             <div class="border rounded-top px-3 py-2">
                 <!-- для доставщика -->
-                {% if request.user.groups.all.0.name == "deliver" %}
                 <table class="table fs-6">
                     <thead>
                     <tr>
@@ -19,7 +19,7 @@
                     <tbody>
                     <tr>
                         <td>{{ order.id}}</td>
-                        <td>{{order.order_date|date:'H:m'}}</td>
+                        <td>{{order.order_date}}</td>
                         <td>{{order.user}}</td>
                         {% if order.deliver %}
                         <td>{{order.deliver}}</td>
@@ -40,41 +40,27 @@
                 {% endif %}
                 {% endif %}
                 <!-- конец для доставщика -->
-                {% endif%}
-                {% if order.user_comment %}
-                <p>Комментарий: {{order.user_comment}}</p>
-                {% endif %}
-                {% if order.result %}
-                <p>
-                    Причина отмены:{{order.result}}
-                </p>
-                {% endif %}
-
             </div>
+            {% endif%}
             <div class="accordion-item ">
                 <div class="accordion-header">
-
-                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#order_{{ order.id }}"
+                    <button aria-controls="order_{{ order.id }}"
                             aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
-                            aria-controls="order_{{ order.id }}">
+                            class="accordion-button {% if not forloop.first %}collapsed{% endif %}"
+                            data-bs-target="#order_{{ order.id }}"
+                            data-bs-toggle="collapse"
+                            type="button">
                         <div class="row justify-content-center align-items-center w-100">
-
-
                             <span class="col-auto fs-4 ">Заказ №
                                 {{ order.id }} на {{order.date_create|naturalday}}</span>
                             <div class="col">
-
-
                                 <div class="row order_view btn-group p-0 m-0 order_info  bg-white"
                                      data-id="{{ order.id }}">
                                     <div class="col-auto btn
-                            {% if order.status.id  == 1%} btn-primary
-                            {% elif order.status.id == 2 or order.status.id == 7 or order.status.id == 5 %}btn-success
-                            {%elif order.status.id == 3%}btn-danger
-                            {% else %}btn-outline-primary{%endif%}">
+                                                {% if order.status.id  == 1%} btn-primary
+                                                {% elif order.status.id == 2 or order.status.id == 7 or order.status.id == 5 %}btn-success
+                                                {% elif order.status.id == 3%}btn-danger
+                                                {% else %}btn-outline-primary{%endif%}">
                                         Статус: <span data-id="{{order.id}}"> {{ order.status }} </span>
                                     </div>
                                     <div class="col-auto btn btn-outline-primary">
@@ -97,27 +83,50 @@
                                     </div>
                                 </div>
                             </span>
+                            {% if order.deliver%}
+                            <div class="deliver-info col-12">
+                                <div class="row">
+                                    <div class="col">Доставщик: {{order.deliver}}</div>
+                                </div>
+                            </div>
+                            {% endif%}
+                            <div class="col-12">
+                                {% if order.user_comment %}
+                                <p>Ваш комментарий: {{order.user_comment}}</p>
+                                {% endif %}
+                                {% if order.result %}
+                                <p>
+                                    Причина отмены:{{order.result}}
+                                </p>
+                                {% endif %}
+                            </div>
                         </div>
                     </button>
                 </div>
-                <div id="order_{{ order.id }}"
-                     class="accordion-collapse collapse {% if forloop.first %}show{% endif %}">
+                <div class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                     id="order_{{ order.id }}">
                     <div class="accordion-body cart" data-id="{{ order.id }}">
                         {% if order.status.code == 'new' %}
-                        <form action="" method="post" data-order-id="{{order.id}}" class="row row-cols-1 gap-3 mb-3">
+                        <form action="" class="row row-cols-1 gap-3 mb-3" data-order-id="{{order.id}}" method="post">
                             {% csrf_token %}
                             <div class="col-auto">
                                 <label>Время получения заказа:</label>
-                                <input class="form-control" type="time" value="{{order.order_date|date:'H:i' }}"
-                                       name="order_date">
+                                <input class="form-control" name="order_date" type="time"
+                                       value="{{order.order_date|date:'H:i' }}">
                             </div>
                             <div class="col-auto">
                                 <label>Место доставки:</label>
-                                <select name="cab" id="cab" class="form-select">
+                                <select class="form-select" id="cab" name="cab">
                                     {% for cab in cabs %}
-                                    <option value="{{ cab.id }}" {% if order.cab.id == cab.id %}selected{% endif %}>
+                                    {% if order.cab.id == cab.id %}
+                                    <option selected value="{{ cab.id }}">
                                         {{ cab.num }} | {{ cab.name }}
                                     </option>
+                                    {% else %}
+                                    <option value="{{ cab.id }}">
+                                        {{ cab.num }} | {{ cab.name }}
+                                    </option>
+                                    {% endif %}
                                     {% endfor %}
 
                                 </select>
@@ -128,7 +137,7 @@
                             </div>
 
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary order_update" data-order-id="{{order.id}}">
+                                <button class="btn btn-primary order_update" data-order-id="{{order.id}}" type="submit">
                                     Применить изменения
                                 </button>
                             </div>

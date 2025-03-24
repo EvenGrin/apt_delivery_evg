@@ -58,9 +58,9 @@ def make_order(request):
             # Проверки на предупреждения
             if unavailable_meals or out_of_stock_meals:
                 messages.warning(request, _(
-                    "Некоторые блюда не были добавлены в заказ:"
-                    "\n- Блюда, отсутствующие в меню: {}"
-                    "\n- Закончившиеся блюда: {}".format(
+                    "Некоторые блюда не были добавлены в заказ:\n"
+                    "- Блюда, отсутствующие в меню:\n {}"
+                    "- Закончившиеся блюда:\n {}".format(
                         ', \n'.join([item.meal.name for item in unavailable_meals]),
                         ', \n'.join([item.meal.name for item in out_of_stock_meals])
                     )

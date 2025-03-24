@@ -1,24 +1,25 @@
-from django.urls import reverse
-from django.utils import timezone
 from datetime import timedelta
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, Sum
+from django.urls import reverse
+from django.utils import timezone
 
 from .m_cabinet import Cabinet
 from .m_user import User
 
+
 def get_default_created_at():
     # print(timezone.now(), 'с модели')
     return timezone.localtime() + timedelta(minutes=3)
+
 
 class Order(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
-        limit_choices_to=Q(is_superuser=False) & Q(is_staff=False) & Q(groups__isnull=True),
     )
     date_create = models.DateTimeField(
         verbose_name='Дата заказа',
@@ -41,10 +42,10 @@ class Order(models.Model):
     )
     user_comment = models.TextField(
         blank=True,
-        null= True,
+        null=True,
         verbose_name='Комментарий пользователя к заказу',
 
-                                    help_text='Не обязательное поле'
+        help_text='Не обязательное поле'
     )
     cab = models.ForeignKey(
         Cabinet,
@@ -93,7 +94,7 @@ class Order(models.Model):
         if self.cab.id == 0 and self.deliver:
             raise ValidationError({'deliver': 'К самовыносу курьер не указывается'})
 
-    def get_absolute_url(self): # Тут мы создали новый метод
+    def get_absolute_url(self):  # Тут мы создали новый метод
         return reverse('order')
 
     def __str__(self):

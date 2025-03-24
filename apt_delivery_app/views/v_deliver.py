@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from apt_delivery_app.decorators import group_required
 from apt_delivery_app.models import Order, Status
 
 limit = 10  # ограничение количества взятия заказов
@@ -52,7 +53,7 @@ def take_order_list(request, order='-date_create', filter=0):
         order)  # Фильтруем заказы
     return render(request, 'deliver/take_order_list.html', context)
 
-
+@group_required('deliver')
 @login_required
 def deliver_orders(request, order='-date_create', filter=0):
     context = {}
