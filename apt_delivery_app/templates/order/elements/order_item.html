@@ -1,44 +1,35 @@
 {% load humanize %}
+{% comment %}
+{% regroup orders by date_create|date:"SHORT_DATE_FORMAT" as order_list %}
+<ul>
+    {% for date in order_list %}
+    <li>{{ date.grouper }}
+        <ul>
+            {% for order in date.list %}
+            <li>{{ order.id }}:
+                <ul>
+                    {% for meal in order.meals %}
+                    <li>
+                        {{meal.meal}}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% endcomment %}
 <div class="accordion row" id="order_accordion">
     {% for order in orders%}
+    {% ifchanged %}<h3>{{order.date_create|naturalday}}</h3>{% endifchanged %}
     <div>
         <div class="bg-white rounded-2 overflow-hidden shadow-sm mb-3">
-            {% if request.user.groups.all.0.name == "deliver" %}
+            {% if request.user.is_deliver %}
             <div class="border rounded-top px-3 py-2">
-                <!-- для доставщика -->
-                <table class="table fs-6">
-                    <thead>
-                    <tr>
-                        <th scope="col">Номер заказа</th>
-                        <th scope="col">Время получения</th>
-                        <th scope="col">Получатель</th>
-                        <th scope="col">Курьер</th>
-                        <th scope="col">Место доставки</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{{ order.id}}</td>
-                        <td>{{order.order_date}}</td>
-                        <td>{{order.user}}</td>
-                        {% if order.deliver %}
-                        <td>{{order.deliver}}</td>
-                        {% else %}
-                        <td>Курьер не выбран</td>
-                        {% endif %}
-                        <td>{{order.cab}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-                {% if 'order_list' in request.path %}
-                <button class="take_order btn btn-primary" data-id="{{order.id}}">Взять</button>
-                {% elif 'deliver_order' in request.path %}
-                {% if order.status.id == 4 %}
-                <button class="in_way btn btn-primary" data-id="{{order.id}}">Изменить на в пути</button>
-                {% elif order.status.id == 6 %}
-                <button class="delivered btn btn-primary" data-id="{{order.id}}">Изменить на доставлен</button>
-                {% endif %}
-                {% endif %}
+                {% block deliver %}
+                {% endblock %}
                 <!-- конец для доставщика -->
             </div>
             {% endif%}
@@ -106,6 +97,7 @@
                 <div class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
                      id="order_{{ order.id }}">
                     <div class="accordion-body cart" data-id="{{ order.id }}">
+                        {% block order_meal %}
                         {% if order.status.code == 'new' %}
                         <form action="" class="row row-cols-1 gap-3 mb-3" data-order-id="{{order.id}}" method="post">
                             {% csrf_token %}
@@ -148,6 +140,7 @@
                         {% include 'order/elements/order_item_meals.html'%}
                         {% endfor %}
                         {% endif %}
+                        {% endblock %}
                     </div>
                 </div>
             </div>

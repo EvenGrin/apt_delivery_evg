@@ -1,0 +1,44 @@
+{% extends 'order/elements/order_item.html' %}
+{% block deliver %}
+
+<!-- для доставщика -->
+<table class="table table-desktop fs-6">
+    <thead>
+    <tr class="">
+        <th scope="col">Номер заказа</th>
+        <th scope="col">Время получения</th>
+        <th scope="col">Получатель</th>
+        <th scope="col">Курьер</th>
+        <th scope="col">Место доставки</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="">
+        <td>{{ order.id}}</td>
+        <td>{{order.order_date}}</td>
+        <td>{{order.user}}</td>
+        {% if order.deliver %}
+        <td>{{order.deliver}}</td>
+        {% else %}
+        <td>Курьер не выбран</td>
+        {% endif %}
+        <td>{{order.cab}}</td>
+    </tr>
+    </tbody>
+</table>
+
+{% if 'order_list' in request.path %}
+<button class="take_order btn btn-primary" data-id="{{order.id}}">Взять</button>
+{% elif 'deliver_order' in request.path %}
+{% if order.status.id == 4 %}
+<button class="in_way btn btn-primary" data-id="{{order.id}}">Изменить на в пути</button>
+{% elif order.status.id == 6 %}
+<button class="delivered btn btn-primary" data-id="{{order.id}}">Изменить на доставлен</button>
+{% endif %}
+{% endif %}
+{% endblock %}
+{% block order_meal %}
+{% for meal in order.meals %}
+{% include 'order/elements/order_item_meals.html'%}
+{% endfor %}
+{% endblock%}

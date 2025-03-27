@@ -1,6 +1,8 @@
 {% extends 'home/base.html' %}
 {% load static %}
 {% block title %}Главная{% endblock %}
+{% block extra_head %}
+{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap align-items-center">
     <h2 class=" ps-0  px-3 py-2">Доставка заказов</h2>
@@ -25,7 +27,7 @@
 
     </div>
 </div>
-{% include 'order/elements/order_item.html'%}
+{% include 'deliver/elements/deliver_order_item.html'%}
 <script src="{% static 'js/order/order_view_close.js' %}"></script>
 <script src="{% static 'js/deliver/script.js' %}"></script>
 {% endblock %}

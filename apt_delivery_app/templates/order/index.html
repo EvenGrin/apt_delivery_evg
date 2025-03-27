@@ -27,11 +27,11 @@
     style="top: 80px;">
     <div class="mb-1">Сортировать по</div>
     <div class="btn-group overflow-x-auto dragscroll flex-row ">
-        <a href="{% url 'order' order='-date_create' filter=filter %}"
+        <a href="{% url 'order' order_by='-date_create' filter=filter %}"
             class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">
             Дате создания заказа
         </a>
-        <a href="{% url 'order' order='-order_date' filter=filter %}"
+        <a href="{% url 'order' order_by='-order_date' filter=filter %}"
             class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2">
             Дате получения заказа
         </a>
@@ -46,7 +46,7 @@
             Все
         </a>
         {% for status in statuses %}
-        <a href="{% url 'order' order=order filter=status.id %}"
+        <a href="{% url 'order' order_by=order_by filter=status.id %}"
             class="btn btn-primary rounded-0 d-flex px-4 align-items-center justify-content-center px-4 py-2 {% if status.id == filter %}disabled{% endif %}">
             {{ status.name }}
         </a>

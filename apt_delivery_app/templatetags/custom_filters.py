@@ -8,3 +8,7 @@ def get_item(value, arg):
         return value.filter(meal_id=arg).first()
     except AttributeError:
         return None
+
+@register.filter(name='range')
+def in_range(number):
+    return range(number)
