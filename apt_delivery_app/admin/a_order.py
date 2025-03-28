@@ -65,7 +65,7 @@ class OrderAdmin(admin.ModelAdmin):
             return []
 
         if request.user.groups.filter(name='operator').exists():
-            readonly_fields = ['user', 'cab', 'date_create', 'order_date', 'total_amount']
+            readonly_fields = ['user', 'cab', 'date_create', 'order_date', 'total_amount', 'user_comment']
             return readonly_fields
 
         return self.readonly_fields

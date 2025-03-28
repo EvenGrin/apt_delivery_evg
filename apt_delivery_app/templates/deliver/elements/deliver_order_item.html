@@ -1,8 +1,9 @@
 {% extends 'order/elements/order_item.html' %}
 {% block deliver %}
 
+
 <!-- для доставщика -->
-<table class="table table-desktop fs-6">
+<table class="table fs-6">
     <thead>
     <tr class="">
         <th scope="col">Номер заказа</th>
@@ -14,7 +15,7 @@
     </thead>
     <tbody>
     <tr class="">
-        <td>{{ order.id}}</td>
+        <td data-label="Номер заказа">{{ order.id}}</td>
         <td>{{order.order_date}}</td>
         <td>{{order.user}}</td>
         {% if order.deliver %}
